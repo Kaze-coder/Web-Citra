@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Perangkat - ISP Manager</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <div class="wrapper d-flex">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <i class="fas fa-wifi"></i>
+          <span>ISP Manager</span>
+        </div>
+      </div>
+
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="../index.html" class="nav-link">
+            <i class="fas fa-chart-line"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="pelanggan.html" class="nav-link">
+            <i class="fas fa-users"></i>
+            <span>Data Pelanggan</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="perangkat.html" class="nav-link active">
+            <i class="fas fa-server"></i>
+            <span>Data Perangkat</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="tagihan.html" class="nav-link">
+            <i class="fas fa-file-invoice"></i>
+            <span>Data Tagihan</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="peta.html" class="nav-link">
+            <i class="fas fa-map-location-dot"></i>
+            <span>Peta Lokasi</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Topbar -->
+      <nav class="topbar">
+        <div class="topbar-left">
+          <button class="btn-toggle-sidebar" id="toggleSidebar">
+            <i class="fas fa-bars"></i>
+          </button>
+          <h1 class="page-title">Data Perangkat</h1>
+        </div>
+      </nav>
+
+      <!-- Content -->
+      <div class="content-area">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Daftar Perangkat WiFi</h5>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Pelanggan</th>
+                <th>Nama Perangkat</th>
+                <th>Tipe</th>
+                <th>IP Address</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="perangkatTable">
+              <tr><td colspan="5" class="text-center">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/axios@1/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/perangkat.js"></script>
+</body>
+</html>
