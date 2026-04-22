@@ -6,7 +6,7 @@ async function loadTagihan() {
   try {
     const res = await axios.get('/tagihan');
     if (res.data.success) {
-      const table = document.getElementById('tagihanTable').querySelector('tbody');
+      const table = document.getElementById('tagihanTable');
       table.innerHTML = res.data.data.map(t => `
         <tr>
           <td>${t.nama_pelanggan}</td>

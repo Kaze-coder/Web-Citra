@@ -6,7 +6,7 @@ async function loadPerangkat() {
   try {
     const res = await axios.get('/perangkat');
     if (res.data.success) {
-      const table = document.getElementById('perangkatTable').querySelector('tbody');
+      const table = document.getElementById('perangkatTable');
       table.innerHTML = res.data.data.map(p => `
         <tr>
           <td>${p.nama_pelanggan}</td>

@@ -8,7 +8,7 @@ async function loadPelanggan(page = 1) {
     const res = await axios.get('/pelanggan', { params: { page, search, limit: 10 } });
     
     if (res.data.success) {
-      const table = document.getElementById('pelangganTable').querySelector('tbody');
+      const table = document.getElementById('pelangganTable');
       table.innerHTML = res.data.data.map(p => `
         <tr>
           <td>${p.nama_pelanggan}</td>
@@ -49,8 +49,24 @@ function deletePelanggan(id) {
     });
 }
 
+function exportCSV() {
+  showNotification('Fitur export akan segera hadir', 'info');
+}
+
 function renderPagination(pagination) {
   // TODO: Implement pagination
+}
+
+// Search event listener
+const searchInput = document.getElementById('searchPelanggan');
+if (searchInput) {
+  let searchTimeout;
+  searchInput.addEventListener('input', () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      loadPelanggan(1);
+    }, 500);
+  });
 }
 
 if (document.readyState === 'loading') {

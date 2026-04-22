@@ -26,17 +26,17 @@ async function loadStatistics() {
 
 async function loadRecentTagihan() {
   try {
-    const res = await axios.get('/tagihan?limit=5');
+    const res = await axios.get('/tagihan');
     
     if (res.data.success) {
-      const table = document.getElementById('tagihanTable').querySelector('tbody');
+      const table = document.getElementById('tagihanTable');
       
-      if (!res.data.data.length) {
+      if (!res.data.data || res.data.data.length === 0) {
         table.innerHTML = '<tr><td colspan="5" class="text-center">Tidak ada data</td></tr>';
         return;
       }
 
-      table.innerHTML = res.data.data.map(t => `
+      table.innerHTML = res.data.data.slice(0, 5).map(t => `
         <tr>
           <td>${t.nama_pelanggan}</td>
           <td>${formatRupiah(t.jumlah_tagihan)}</td>

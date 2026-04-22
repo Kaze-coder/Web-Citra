@@ -74,12 +74,12 @@
         <div class="card">
           <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="card-title mb-0">Daftar Pelanggan</h5>
-            <div class="d-flex gap-2">
-              <input type="text" id="searchPelanggan" class="form-control" placeholder="Cari pelanggan..." style="width: 250px;">
+            <div class="d-flex gap-2" style="flex-wrap: wrap; min-width: 0;">
+              <input type="text" id="searchPelanggan" class="form-control" placeholder="Cari pelanggan..." style="min-width: 200px; flex: 1; max-width: 300px;">
               <button class="btn btn-primary" onclick="document.getElementById('tambahModal').style.display='flex';">
                 <i class="fas fa-plus"></i> Tambah Pelanggan
               </button>
-              <button class="btn btn-success">
+              <button class="btn btn-success" onclick="exportCSV();">
                 <i class="fas fa-download"></i> Export CSV
               </button>
             </div>
