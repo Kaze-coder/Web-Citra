@@ -108,6 +108,64 @@
     </div>
   </div>
 
+  <!-- Modal Tambah/Edit Pelanggan -->
+  <div id="tambahModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitle">Tambah Pelanggan</h5>
+        <button type="button" class="btn-close" onclick="closeModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form id="pelangganForm">
+          <div class="mb-3">
+            <label for="nama" class="form-label">Nama Pelanggan</label>
+            <input type="text" class="form-control" id="nama" required>
+          </div>
+          <div class="mb-3">
+            <label for="no_telepon" class="form-label">No. Telepon</label>
+            <input type="text" class="form-control" id="no_telepon" required>
+          </div>
+          <div class="mb-3">
+            <label for="paket_layanan" class="form-label">Paket Layanan</label>
+            <input type="text" class="form-control" id="paket_layanan" placeholder="misal: 30 Mbps" required>
+          </div>
+          <div class="mb-3">
+            <label for="harga_bulanan" class="form-label">Harga Bulanan (Rp)</label>
+            <input type="number" class="form-control" id="harga_bulanan" required>
+          </div>
+          <div class="mb-3">
+            <label for="status" class="form-label">Status</label>
+            <select class="form-control" id="status" required>
+              <option value="Aktif">Aktif</option>
+              <option value="Nonaktif">Nonaktif</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="savePelanggan()" id="saveBtn">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Confirm Delete -->
+  <div id="deleteModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 400px;">
+      <div class="modal-header">
+        <h5 class="modal-title">Konfirmasi Hapus</h5>
+        <button type="button" class="btn-close" onclick="closeDeleteModal()"></button>
+      </div>
+      <div class="modal-body">
+        <p>Apakah Anda yakin ingin menghapus pelanggan ini?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Batal</button>
+        <button type="button" class="btn btn-danger" onclick="confirmDelete()" id="confirmDeleteBtn">Hapus</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/axios@1/dist/axios.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
