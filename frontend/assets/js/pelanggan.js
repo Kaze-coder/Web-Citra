@@ -4,6 +4,21 @@
 
 let editingId = null;
 let deletingId = null;
+let lokasiMap = null;
+
+// Parse coordinate dari alamat
+function parseCoordinates(alamatText) {
+  // Format: "-6.400064597825348, 106.97385676753991"
+  const coordMatch = alamatText.match(/(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)/);
+  if (coordMatch) {
+    return {
+      lat: parseFloat(coordMatch[1]),
+      lng: parseFloat(coordMatch[2]),
+      isCoordinate: true
+    };
+  }
+  return null;
+}
 
 async function loadPelanggan(page = 1) {
   try {
@@ -16,6 +31,7 @@ async function loadPelanggan(page = 1) {
         <tr>
           <td>${p.nama_pelanggan}</td>
           <td>${p.no_telepon}</td>
+          <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${p.alamat || '-'}">${p.alamat || '-'}</td>
           <td>${p.paket_layanan}</td>
           <td>${formatRupiah(p.harga_bulanan)}</td>
           <td>${getStatusBadge(p.status)}</td>
@@ -59,6 +75,103 @@ function closeModal() {
   document.getElementById('tambahModal').style.display = 'none';
   editingId = null;
   document.getElementById('pelangganForm').reset();
+}
+
+// Cek dan tampilkan lokasi di map
+function checkAlamatLocation() {
+  const alamat = document.getElementById('alamat').value.trim();
+  
+  if (!alamat) {
+    showNotification('Silakan isi alamat terlebih dahulu', 'warning');
+    return;
+  }
+
+  // Cek apakah format koordinat
+  const coords = parseCoordinates(alamat);
+  
+  if (coords) {
+    // Format koordinat ditemukan
+    displayLocationMap(coords.lat, coords.lng, alamat);
+  } else {
+    // Text address - gunakan Nominatim untuk geocoding
+    geocodeAddress(alamat);
+  }
+}
+
+// Geocode text address menggunakan Nominatim (OpenStreetMap)
+async function geocodeAddress(address) {
+  try {
+    showNotification('Mencari lokasi...', 'info');
+    
+    const res = await axios.get('https://nominatim.openstreetmap.org/search', {
+      params: {
+        q: address,
+        format: 'json',
+        limit: 1
+      }
+    });
+
+    if (res.data && res.data.length > 0) {
+      const result = res.data[0];
+      const lat = parseFloat(result.lat);
+      const lng = parseFloat(result.lon);
+      displayLocationMap(lat, lng, address);
+      showNotification('Lokasi ditemukan!', 'success');
+    } else {
+      showNotification('Alamat tidak ditemukan. Gunakan format koordinat: lat, lng', 'warning');
+    }
+  } catch (error) {
+    console.error('Geocoding error:', error);
+    showNotification('Gagal geocode alamat. Gunakan format koordinat: -6.xxx, 106.xxx', 'error');
+  }
+}
+
+// Tampilkan map dengan marker
+function displayLocationMap(lat, lng, address) {
+  document.getElementById('lokasiModal').style.display = 'flex';
+  
+  // Destroy existing map jika ada
+  if (lokasiMap) {
+    lokasiMap.remove();
+  }
+
+  // Initialize Leaflet map
+  const mapContainer = document.getElementById('mapContainer');
+  mapContainer.innerHTML = '';
+  
+  lokasiMap = L.map(mapContainer).setView([lat, lng], 15);
+  
+  // Add tile layer
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors',
+    maxZoom: 19
+  }).addTo(lokasiMap);
+
+  // Add marker
+  L.marker([lat, lng], {
+    icon: L.icon({
+      iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+      shadowSize: [41, 41]
+    })
+  }).addTo(lokasiMap).bindPopup(address);
+
+  // Display coordinates
+  document.getElementById('coordDisplay').textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+  
+  // Trigger map resize
+  setTimeout(() => lokasiMap.invalidateSize(), 100);
+}
+
+function closeLokasiModal() {
+  document.getElementById('lokasiModal').style.display = 'none';
+  if (lokasiMap) {
+    lokasiMap.remove();
+    lokasiMap = null;
+  }
 }
 
 async function loadPelangganData(id) {
@@ -223,6 +336,7 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     closeModal();
     closeDeleteModal();
+    closeLokasiModal();
   }
 });
 
@@ -233,6 +347,10 @@ document.getElementById('tambahModal')?.addEventListener('click', (e) => {
 
 document.getElementById('deleteModal')?.addEventListener('click', (e) => {
   if (e.target.id === 'deleteModal') closeDeleteModal();
+});
+
+document.getElementById('lokasiModal')?.addEventListener('click', (e) => {
+  if (e.target.id === 'lokasiModal') closeLokasiModal();
 });
 
 if (document.readyState === 'loading') {
