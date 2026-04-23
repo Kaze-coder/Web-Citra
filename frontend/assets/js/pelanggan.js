@@ -68,6 +68,7 @@ async function loadPelangganData(id) {
       const p = res.data.data;
       document.getElementById('nama').value = p.nama_pelanggan;
       document.getElementById('no_telepon').value = p.no_telepon;
+      document.getElementById('alamat').value = p.alamat || '';
       document.getElementById('paket_layanan').value = p.paket_layanan;
       document.getElementById('harga_bulanan').value = p.harga_bulanan;
       document.getElementById('status').value = p.status;
@@ -82,12 +83,13 @@ async function savePelanggan() {
     const data = {
       nama_pelanggan: document.getElementById('nama').value,
       no_telepon: document.getElementById('no_telepon').value,
+      alamat: document.getElementById('alamat').value,
       paket_layanan: document.getElementById('paket_layanan').value,
       harga_bulanan: parseInt(document.getElementById('harga_bulanan').value),
       status: document.getElementById('status').value
     };
 
-    if (!data.nama_pelanggan || !data.no_telepon || !data.paket_layanan || !data.harga_bulanan) {
+    if (!data.nama_pelanggan || !data.no_telepon || !data.alamat || !data.paket_layanan || !data.harga_bulanan) {
       showNotification('Semua field harus diisi', 'error');
       return;
     }
@@ -115,7 +117,23 @@ function editPelanggan(id) {
 }
 
 function openDeleteModal(id) {
+  // Get pelanggan data dari tabel
+  const rows = document.querySelectorAll('#pelangganTable tr');
+  let pelangganName = '';
+  
+  rows.forEach(row => {
+    const cells = row.querySelectorAll('td');
+    // Find the row with the delete button we clicked
+    if (cells[0]) {
+      const deleteBtn = row.querySelector(`button[onclick="openDeleteModal(${id})"]`);
+      if (deleteBtn) {
+        pelangganName = cells[0].textContent;
+      }
+    }
+  });
+
   deletingId = id;
+  document.getElementById('deletePelangganName').textContent = pelangganName || 'Pelanggan';
   document.getElementById('deleteModal').style.display = 'flex';
 }
 
@@ -126,8 +144,9 @@ function closeDeleteModal() {
 
 async function confirmDelete() {
   try {
+    const pelangganName = document.getElementById('deletePelangganName').textContent;
     await axios.delete(`/pelanggan/${deletingId}`);
-    showNotification('Pelanggan berhasil dihapus', 'success');
+    showNotification(`✓ Pelanggan "${pelangganName}" telah dihapus`, 'success');
     closeDeleteModal();
     loadPelanggan();
   } catch (error) {

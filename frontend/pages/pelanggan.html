@@ -126,8 +126,22 @@
             <input type="text" class="form-control" id="no_telepon" required>
           </div>
           <div class="mb-3">
+            <label for="alamat" class="form-label">Alamat</label>
+            <textarea class="form-control" id="alamat" rows="2" required></textarea>
+          </div>
+          <div class="mb-3">
             <label for="paket_layanan" class="form-label">Paket Layanan</label>
-            <input type="text" class="form-control" id="paket_layanan" placeholder="misal: 30 Mbps" required>
+            <select class="form-control" id="paket_layanan" required>
+              <option value="">-- Pilih Paket --</option>
+              <option value="10 Mbps">10 Mbps</option>
+              <option value="25 Mbps">25 Mbps</option>
+              <option value="30 Mbps">30 Mbps</option>
+              <option value="50 Mbps">50 Mbps</option>
+              <option value="100 Mbps">100 Mbps</option>
+              <option value="150 Mbps">150 Mbps</option>
+              <option value="200 Mbps">200 Mbps</option>
+              <option value="300 Mbps">300 Mbps</option>
+            </select>
           </div>
           <div class="mb-3">
             <label for="harga_bulanan" class="form-label">Harga Bulanan (Rp)</label>
@@ -157,11 +171,19 @@
         <button type="button" class="btn-close" onclick="closeDeleteModal()"></button>
       </div>
       <div class="modal-body">
-        <p>Apakah Anda yakin ingin menghapus pelanggan ini?</p>
+        <div style="padding: 15px; background: #FEF2F2; border-left: 4px solid #EF4444; border-radius: 6px; margin-bottom: 15px;">
+          <p style="margin: 0; color: #7F1D1D; font-weight: 500;">
+            Anda akan menghapus pelanggan:
+          </p>
+          <p id="deletePelangganName" style="margin: 8px 0 0 0; color: #DC2626; font-weight: 600; font-size: 16px;"></p>
+        </div>
+        <p style="margin: 0; color: #6B7280;">Data pelanggan tidak dapat dikembalikan setelah dihapus.</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Batal</button>
-        <button type="button" class="btn btn-danger" onclick="confirmDelete()" id="confirmDeleteBtn">Hapus</button>
+        <button type="button" class="btn btn-danger" onclick="confirmDelete()" id="confirmDeleteBtn">
+          <i class="fas fa-trash"></i> Hapus Sekarang
+        </button>
       </div>
     </div>
   </div>

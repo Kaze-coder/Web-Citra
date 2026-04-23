@@ -91,7 +91,7 @@ class PelangganController {
       const { nama_pelanggan, no_telepon, email, alamat, status, paket_layanan, harga_bulanan, tanggal_langganan, latitude, longitude } = req.body;
 
       // Validasi data
-      if (!nama_pelanggan || !no_telepon || !alamat || !tanggal_langganan) {
+      if (!nama_pelanggan || !no_telepon || !alamat) {
         return res.status(400).json({
           success: false,
           message: 'Data pelanggan tidak lengkap'
@@ -104,10 +104,10 @@ class PelangganController {
         no_telepon,
         email,
         alamat,
-        status,
+        status: status || 'Aktif',
         paket_layanan,
         harga_bulanan,
-        tanggal_langganan
+        tanggal_langganan: tanggal_langganan || new Date().toISOString().split('T')[0]
       });
 
       // Create lokasi jika ada koordinat
