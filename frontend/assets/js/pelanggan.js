@@ -6,6 +6,18 @@ let editingId = null;
 let deletingId = null;
 let lokasiMap = null;
 
+// Mapping paket ke harga (dalam Rupiah)
+const paketHargaMap = {
+  '10 Mbps': 150000,
+  '25 Mbps': 200000,
+  '30 Mbps': 250000,
+  '50 Mbps': 350000,
+  '100 Mbps': 500000,
+  '150 Mbps': 650000,
+  '200 Mbps': 800000,
+  '300 Mbps': 1000000
+};
+
 // Parse coordinate dari alamat
 function parseCoordinates(alamatText) {
   // Format: "-6.400064597825348, 106.97385676753991"
@@ -75,6 +87,17 @@ function closeModal() {
   document.getElementById('tambahModal').style.display = 'none';
   editingId = null;
   document.getElementById('pelangganForm').reset();
+}
+
+// Auto-fill harga berdasarkan paket
+function updateHargaFromPaket() {
+  const paketSelect = document.getElementById('paket_layanan');
+  const hargaInput = document.getElementById('harga_bulanan');
+  const selectedPaket = paketSelect.value;
+
+  if (selectedPaket && paketHargaMap[selectedPaket]) {
+    hargaInput.value = paketHargaMap[selectedPaket];
+  }
 }
 
 // Cek dan tampilkan lokasi di map
@@ -353,8 +376,26 @@ document.getElementById('lokasiModal')?.addEventListener('click', (e) => {
   if (e.target.id === 'lokasiModal') closeLokasiModal();
 });
 
+// Auto-fill harga saat paket berubah
+const paketSelect = document.getElementById('paket_layanan');
+if (paketSelect) {
+  paketSelect.addEventListener('change', updateHargaFromPaket);
+}
+
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => loadPelanggan());
+  document.addEventListener('DOMContentLoaded', () => {
+    loadPelanggan();
+    // Setup paket listener
+    const paketSelect = document.getElementById('paket_layanan');
+    if (paketSelect) {
+      paketSelect.addEventListener('change', updateHargaFromPaket);
+    }
+  });
 } else {
   loadPelanggan();
+  // Setup paket listener
+  const paketSelect = document.getElementById('paket_layanan');
+  if (paketSelect) {
+    paketSelect.addEventListener('change', updateHargaFromPaket);
+  }
 }
