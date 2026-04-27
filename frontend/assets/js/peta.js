@@ -40,8 +40,12 @@ async function loadLocationMarkers() {
       }
 
       lokasiData.forEach(loc => {
-        if (loc.latitude && loc.longitude) {
-          const marker = L.marker([loc.latitude, loc.longitude], {
+        // Convert to number if string
+        const lat = parseFloat(loc.latitude);
+        const lng = parseFloat(loc.longitude);
+        
+        if (lat && lng) {
+          const marker = L.marker([lat, lng], {
             icon: L.icon({
               iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
               iconSize: [25, 41],
@@ -58,7 +62,7 @@ async function loadLocationMarkers() {
               <hr style="margin: 5px 0;">
               <small>${loc.keterangan_lokasi}</small><br>
               <small style="color: #6B7280;">
-                ${loc.latitude.toFixed(4)}, ${loc.longitude.toFixed(4)}
+                ${lat.toFixed(4)}, ${lng.toFixed(4)}
               </small>
             </div>
           `)
