@@ -78,7 +78,15 @@
       </nav>
 
       <!-- Content -->
-      <div class="content-area">
+      <div class="content-area" style="display: flex; flex-direction: column; gap: 15px;">
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-primary" onclick="refreshMapLocations()" title="Refresh lokasi">
+            <i class="fas fa-sync-alt"></i> Refresh Peta
+          </button>
+          <span style="color: #6B7280; font-size: 14px; align-self: center;">
+            <i class="fas fa-info-circle"></i> Klik refresh untuk memperbarui lokasi pelanggan terbaru
+          </span>
+        </div>
         <div id="map"></div>
       </div>
     </div>

@@ -216,10 +216,11 @@ async function loadPelangganData(id) {
 
 async function savePelanggan() {
   try {
+    const alamatText = document.getElementById('alamat').value;
     const data = {
       nama_pelanggan: document.getElementById('nama').value,
       no_telepon: document.getElementById('no_telepon').value,
-      alamat: document.getElementById('alamat').value,
+      alamat: alamatText,
       paket_layanan: document.getElementById('paket_layanan').value,
       harga_bulanan: parseInt(document.getElementById('harga_bulanan').value),
       status: document.getElementById('status').value
@@ -228,6 +229,13 @@ async function savePelanggan() {
     if (!data.nama_pelanggan || !data.no_telepon || !data.alamat || !data.paket_layanan || !data.harga_bulanan) {
       showNotification('Semua field harus diisi', 'error');
       return;
+    }
+
+    // Extract coordinates dari alamat (jika format koordinat)
+    const coords = parseCoordinates(alamatText);
+    if (coords) {
+      data.latitude = coords.lat;
+      data.longitude = coords.lng;
     }
 
     let res;
