@@ -77,6 +77,34 @@ class TagihanController {
     }
   }
 
+  // GET tagihan by ID
+  static async getTagihanById(req, res) {
+    try {
+      const { id } = req.params;
+      const tagihan = await TagihanModel.getTagihanById(id);
+
+      if (!tagihan) {
+        return res.status(404).json({
+          success: false,
+          message: 'Tagihan tidak ditemukan'
+        });
+      }
+
+      res.json({
+        success: true,
+        message: 'Data tagihan berhasil diambil',
+        data: tagihan
+      });
+    } catch (error) {
+      console.error('Error getting tagihan by ID:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Gagal mengambil data tagihan',
+        error: error.message
+      });
+    }
+  }
+
   // GET tagihan by pelanggan ID
   static async getTagihanByPelangganId(req, res) {
     try {

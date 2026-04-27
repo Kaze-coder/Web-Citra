@@ -12,6 +12,7 @@ const { validateTagihan } = require('../middleware/validateInput');
 router.get('/', TagihanController.getAllTagihan);
 router.get('/statistik', TagihanController.getStatistikTagihan);
 router.get('/belum-bayar', TagihanController.getTagihanBelumBayar);
+router.get('/:id', TagihanController.getTagihanById);
 router.get('/pelanggan/:pelanggan_id', TagihanController.getTagihanByPelangganId);
 
 // POST route

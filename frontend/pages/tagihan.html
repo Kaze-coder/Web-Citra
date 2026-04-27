@@ -75,10 +75,10 @@
           <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="card-title mb-0">Daftar Tagihan</h5>
             <div class="d-flex gap-2">
-              <button class="btn btn-primary">
+              <button class="btn btn-primary" onclick="openCreateModal();">
                 <i class="fas fa-plus"></i> Buat Tagihan Baru
               </button>
-              <button class="btn btn-success">
+              <button class="btn btn-success" onclick="exportTagihanCSV();">
                 <i class="fas fa-download"></i> Export CSV
               </button>
             </div>
@@ -117,6 +117,111 @@
             </tbody>
           </table>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Buat/Edit Tagihan -->
+  <div id="tagihanModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitle">Buat Tagihan Baru</h5>
+        <button type="button" class="btn-close" onclick="closeTagihanModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form id="tagihanForm">
+          <div class="mb-3">
+            <label for="pelanggan_id" class="form-label">Pelanggan</label>
+            <select class="form-control" id="pelanggan_id" required>
+              <option value="">-- Pilih Pelanggan --</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="bulan_tagihan" class="form-label">Bulan Tagihan</label>
+            <input type="month" class="form-control" id="bulan_tagihan" required>
+          </div>
+          <div class="mb-3">
+            <label for="jumlah_tagihan" class="form-label">Jumlah Tagihan (Rp)</label>
+            <input type="number" class="form-control" id="jumlah_tagihan" required>
+          </div>
+          <div class="mb-3">
+            <label for="status_pembayaran" class="form-label">Status Pembayaran</label>
+            <select class="form-control" id="status_pembayaran" required>
+              <option value="belum_lunas">Belum Lunas</option>
+              <option value="lunas">Lunas</option>
+              <option value="cicilan">Cicilan</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="metode_pembayaran" class="form-label">Metode Pembayaran</label>
+            <select class="form-control" id="metode_pembayaran">
+              <option value="">Belum Pembayaran</option>
+              <option value="transfer">Transfer Bank</option>
+              <option value="tunai">Tunai</option>
+              <option value="e-wallet">E-Wallet</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="catatan" class="form-label">Catatan</label>
+            <textarea class="form-control" id="catatan" rows="2"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeTagihanModal()">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="saveTagihan()">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Mark as Paid -->
+  <div id="markPaidModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 400px;">
+      <div class="modal-header">
+        <h5 class="modal-title">Tandai Lunas</h5>
+        <button type="button" class="btn-close" onclick="closeMarkPaidModal()"></button>
+      </div>
+      <div class="modal-body">
+        <p>Tagihan untuk pelanggan <strong id="markPaidPelanggan"></strong> akan ditandai sebagai lunas.</p>
+        <div class="mb-3">
+          <label for="markPaidDate" class="form-label">Tanggal Pembayaran</label>
+          <input type="date" class="form-control" id="markPaidDate">
+        </div>
+        <div class="mb-3">
+          <label for="markPaidMethod" class="form-label">Metode Pembayaran</label>
+          <select class="form-control" id="markPaidMethod">
+            <option value="transfer">Transfer Bank</option>
+            <option value="tunai">Tunai</option>
+            <option value="e-wallet">E-Wallet</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeMarkPaidModal()">Batal</button>
+        <button type="button" class="btn btn-success" onclick="confirmMarkPaid()">Tandai Lunas</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Confirm Delete -->
+  <div id="deleteTagihanModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 400px;">
+      <div class="modal-header">
+        <h5 class="modal-title">Konfirmasi Hapus</h5>
+        <button type="button" class="btn-close" onclick="closeDeleteTagihanModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div style="padding: 15px; background: #FEF2F2; border-left: 4px solid #EF4444; border-radius: 6px; margin-bottom: 15px;">
+          <p style="margin: 0; color: #7F1D1D; font-weight: 500;">
+            Anda akan menghapus tagihan:
+          </p>
+          <p id="deleteTagihanInfo" style="margin: 8px 0 0 0; color: #DC2626; font-weight: 600; font-size: 14px;"></p>
+        </div>
+        <p style="margin: 0; color: #6B7280;">Data tidak dapat dikembalikan setelah dihapus.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeDeleteTagihanModal()">Batal</button>
+        <button type="button" class="btn btn-danger" onclick="confirmDeleteTagihan()">Hapus</button>
       </div>
     </div>
   </div>

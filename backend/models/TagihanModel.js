@@ -40,6 +40,22 @@ class TagihanModel {
     }
   }
 
+  // Get tagihan by ID
+  static async getTagihanById(id) {
+    try {
+      const [rows] = await pool.query(
+        `SELECT t.*, p.nama_pelanggan, p.no_telepon 
+         FROM tagihan t 
+         LEFT JOIN pelanggan p ON t.pelanggan_id = p.id 
+         WHERE t.id = ?`,
+        [id]
+      );
+      return rows[0] || null;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   // Get tagihan by pelanggan ID
   static async getTagihanByPelangganId(pelanggan_id) {
     try {
