@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.0.7/css/dataTables.bootstrap5.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/style.css">
@@ -25,7 +26,7 @@
     <nav class="sidebar">
       <div class="sidebar-header">
         <div class="logo">
-          <img src="../assets/logo JHP new.png" alt="Citra NET">
+          <img src="../assets/logo.png" alt="Citra NET">
           <span class="logo-text">Citra NET Manager</span>
         </div>
       </div>
@@ -88,7 +89,6 @@
           <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="card-title mb-0">Daftar Pelanggan</h5>
             <div class="d-flex gap-2" style="flex-wrap: wrap; min-width: 0;">
-              <input type="text" id="searchPelanggan" class="form-control" placeholder="Cari pelanggan..." style="min-width: 200px; flex: 1; max-width: 300px;">
               <button class="btn btn-primary" onclick="openModal()">
                 <i class="fas fa-plus"></i> Tambah Pelanggan
               </button>
@@ -98,25 +98,26 @@
             </div>
           </div>
 
-          <table>
-            <thead>
-              <tr>
-                <th>Nama</th>
-                <th>No. Telepon</th>
-                <th>Alamat</th>
-                <th>Paket</th>
-                <th>Harga Bulanan</th>
-                <th>Status</th>
-                <th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="pelangganTable">
-              <tr><td colspan="7" class="text-center">Loading...</td></tr>
-            </tbody>
-          </table>
+          <div class="table-responsive" style="padding: 20px;">
+            <table id="mainTable" class="table table-hover w-100">
+              <thead>
+                <tr>
+                  <th>Nama</th>
+                  <th>No. Telepon</th>
+                  <th>Alamat</th>
+                  <th>Paket</th>
+                  <th>Harga Bulanan</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="pelangganTable">
+                <tr><td colspan="7" class="text-center">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
 
-          <!-- Pagination -->
-          <div style="padding: 20px; text-align: center;" id="pagination"></div>
+
         </div>
       </div>
     </div>
@@ -234,6 +235,9 @@
   <script src="https://cdn.jsdelivr.net/npm/axios@1/dist/axios.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/2.0.7/js/dataTables.js"></script>
+  <script src="https://cdn.datatables.net/2.0.7/js/dataTables.bootstrap5.js"></script>
   <script src="../assets/js/main.js"></script>
   <script src="../assets/js/pelanggan.js"></script>
 </body>

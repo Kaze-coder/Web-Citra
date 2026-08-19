@@ -45,6 +45,10 @@ Thumbs.db
 .nyc_output/
 coverage/
 
+# Google Cloud Service Account Keys
+config/gee-service-account.json
+*.json.key
+
 # Production
 .next/
 out/

@@ -1,24 +1,16 @@
 /**
- * Admin Routes (placeholder)
+ * Admin Routes
  * Routes untuk endpoint admin authentication
  */
 
 const express = require('express');
 const router = express.Router();
+const AdminController = require('../controllers/AdminController');
 
-// Placeholder untuk admin login/register
-router.post('/login', (req, res) => {
-  res.json({
-    success: false,
-    message: 'Authentication not implemented yet'
-  });
-});
+// POST /api/admin/login
+router.post('/login', AdminController.login);
 
-router.post('/register', (req, res) => {
-  res.json({
-    success: false,
-    message: 'Registration not implemented yet'
-  });
-});
+// POST /api/admin/register
+router.post('/register', AdminController.register);
 
 module.exports = router;

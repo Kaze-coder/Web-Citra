@@ -1,18 +1,14 @@
 /**
  * WhatsApp Controller
- * Controller untuk menangani WhatsApp operations
  */
 
-const axios = require('axios');
 const TagihanModel = require('../models/TagihanModel');
 const PelangganModel = require('../models/PelangganModel');
 const WhatsAppService = require('../services/WhatsAppService');
 require('dotenv').config();
 
 class WhatsAppController {
-  /**
-   * Send general message
-   */
+  // Kirim pesan umum
   static async sendMessage(req, res) {
     try {
       const { phone, message } = req.body;
@@ -53,20 +49,20 @@ class WhatsAppController {
     }
   }
 
-  /**
-   * Send reminder untuk tagihan belum bayar (H-3)
-   */
+  // Kirim reminder tagihan (H-3)
   static async sendReminderTagihanH3(req, res) {
     try {
-      // Get tagihan yang akan jatuh tempo dalam 3 hari
+      // Get tagihan yang belum lunas (sudah join data pelanggan)
       const tagihan = await TagihanModel.getTagihanBelumBayar();
       const today = new Date();
-      
+      today.setHours(0, 0, 0, 0);
+
       let sendCount = 0;
       let failCount = 0;
 
       for (let t of tagihan) {
         const dueDate = new Date(t.bulan_tagihan);
+        dueDate.setHours(0, 0, 0, 0);
         const daysUntilDue = Math.floor((dueDate - today) / (1000 * 60 * 60 * 24));
 
         // Jika akan jatuh tempo dalam 3 hari
@@ -100,9 +96,7 @@ class WhatsAppController {
     }
   }
 
-  /**
-   * Send manual reminder
-   */
+  // Kirim reminder manual
   static async sendManualReminder(req, res) {
     try {
       const { pelanggan_id, tagihan_id } = req.body;
@@ -123,9 +117,12 @@ class WhatsAppController {
         });
       }
 
+      const tagihan = await TagihanModel.getTagihanById(tagihan_id);
+      const jumlah = tagihan ? Number(tagihan.jumlah_tagihan) : Number(pelanggan.harga_bulanan) || 0;
+
       // Send message
       const wa = new WhatsAppService();
-      const message = `Halo ${pelanggan.nama_pelanggan}! 👋\n\nReminder pembayaran WiFi Anda:\n\n💰 Jumlah: Rp${WhatsAppController.formatCurrency(pelanggan.harga_bulanan)}\n\nMohon segera lakukan pembayaran. Terima kasih! 🙏`;
+      const message = `Halo ${pelanggan.nama_pelanggan}! 👋\n\nReminder pembayaran WiFi Anda:\n\n💰 Jumlah: Rp${WhatsAppController.formatCurrency(jumlah)}\n\nMohon segera lakukan pembayaran. Terima kasih! 🙏`;
 
       const result = await wa.sendMessage(pelanggan.no_telepon, message);
 
@@ -152,9 +149,7 @@ class WhatsAppController {
     }
   }
 
-  /**
-   * Send payment confirmation
-   */
+  // Kirim konfirmasi pembayaran
   static async sendPaymentConfirmation(req, res) {
     try {
       const { pelanggan_id } = req.body;
@@ -176,7 +171,7 @@ class WhatsAppController {
 
       const wa = new WhatsAppService();
       const result = await wa.sendPaymentConfirmation(pelanggan, {
-        jumlah_tagihan: pelanggan.harga_bulanan
+        jumlah_tagihan: Number(pelanggan.harga_bulanan) || 0
       });
 
       if (result.success) {
@@ -200,9 +195,7 @@ class WhatsAppController {
     }
   }
 
-  /**
-   * Format currency
-   */
+  // Format mata uang
   static formatCurrency(value) {
     return new Intl.NumberFormat('id-ID').format(value);
   }

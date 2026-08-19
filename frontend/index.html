@@ -26,7 +26,7 @@
     <nav class="sidebar">
       <div class="sidebar-header">
         <div class="logo">
-          <img src="assets/logo JHP new.png" alt="Citra NET">
+          <img src="assets/logo.png" alt="Citra NET">
           <span class="logo-text">Citra NET Manager</span>
         </div>
       </div>
@@ -83,79 +83,101 @@
         </div>
       </nav>
 
-      <!-- Content -->
+      <!-- Isi Halaman -->
       <div class="content-area">
-        <!-- Stats -->
+        <!-- Statistik Ringkas -->
         <div class="row mb-4">
-          <div class="col-md-3 mb-3">
+          <div class="col-xl-3 col-md-6 mb-4">
             <div class="stat-card">
-              <div class="stat-icon bg-primary">
-                <i class="fas fa-users"></i>
+              <div class="stat-header">
+                <div class="stat-icon bg-primary">
+                  <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-trend trend-up" id="trend-total-pelanggan">
+                  <i class="fas fa-arrow-up" id="icon-total-pelanggan"></i> <span id="pct-total-pelanggan">0%</span>
+                </div>
               </div>
               <div class="stat-content">
-                <h6 class="stat-label">Total Pelanggan</h6>
+                <span class="stat-label">Total Pelanggan</span>
                 <h3 class="stat-value" id="totalPelanggan">0</h3>
               </div>
             </div>
           </div>
 
-          <div class="col-md-3 mb-3">
+          <div class="col-xl-3 col-md-6 mb-4">
             <div class="stat-card">
-              <div class="stat-icon bg-success">
-                <i class="fas fa-check-circle"></i>
+              <div class="stat-header">
+                <div class="stat-icon bg-success">
+                  <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-trend trend-up" id="trend-pelanggan-aktif">
+                  <i class="fas fa-arrow-up" id="icon-pelanggan-aktif"></i> <span id="pct-pelanggan-aktif">0%</span>
+                </div>
               </div>
               <div class="stat-content">
-                <h6 class="stat-label">Pelanggan Aktif</h6>
+                <span class="stat-label">Pelanggan Aktif</span>
                 <h3 class="stat-value" id="pelangganAktif">0</h3>
               </div>
             </div>
           </div>
 
-          <div class="col-md-3 mb-3">
+          <div class="col-xl-3 col-md-6 mb-4">
             <div class="stat-card">
-              <div class="stat-icon bg-warning">
-                <i class="fas fa-clock"></i>
+              <div class="stat-header">
+                <div class="stat-icon bg-warning">
+                  <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-trend trend-down" id="trend-tagihan-belum">
+                  <i class="fas fa-arrow-down" id="icon-tagihan-belum"></i> <span id="pct-tagihan-belum">0%</span>
+                </div>
               </div>
               <div class="stat-content">
-                <h6 class="stat-label">Tagihan Belum Bayar</h6>
+                <span class="stat-label">Tagihan Belum Bayar</span>
                 <h3 class="stat-value" id="tagihanBelum">0</h3>
               </div>
             </div>
           </div>
 
-          <div class="col-md-3 mb-3">
+          <div class="col-xl-3 col-md-6 mb-4">
             <div class="stat-card">
-              <div class="stat-icon bg-info">
-                <i class="fas fa-money-bill"></i>
+              <div class="stat-header">
+                <div class="stat-icon bg-info">
+                  <i class="fas fa-money-bill"></i>
+                </div>
+                <div class="stat-trend trend-up" id="trend-pemasukan">
+                  <i class="fas fa-arrow-up" id="icon-pemasukan"></i> <span id="pct-pemasukan">0%</span>
+                </div>
               </div>
               <div class="stat-content">
-                <h6 class="stat-label">Total Pemasukan</h6>
+                <span class="stat-label">Total Pemasukan</span>
                 <h3 class="stat-value" id="totalPemasukan">Rp 0</h3>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Tables & Charts Row -->
+        <!-- Tabel & Grafik -->
         <div class="row">
           <div class="col-lg-8">
             <div class="card">
               <div class="card-header">
                 <h5 class="card-title mb-0">Tagihan Terbaru</h5>
               </div>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Pelanggan</th>
-                    <th>Jumlah</th>
-                    <th>Status</th>
-                    <th>Bulan</th>
-                  </tr>
-                </thead>
-                <tbody id="tagihanTable">
-                  <tr><td colspan="4" class="text-center">Loading...</td></tr>
-                </tbody>
-              </table>
+              <div class="table-responsive">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Pelanggan</th>
+                      <th>Jumlah</th>
+                      <th>Status</th>
+                      <th>Bulan</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tagihanTable">
+                    <tr><td colspan="4" class="text-center">Loading...</td></tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
 
@@ -207,4 +229,3 @@
   <script src="assets/js/dashboard.js"></script>
 </body>
 </html>
-

@@ -1,26 +1,38 @@
 /**
- * Database Connection Configuration
- * File ini mengatur koneksi ke MongoDB menggunakan Mongoose
+ * Database Configuration - MySQL (mysql2/promise)
+ * Koneksi ke MySQL lokal (Laragon/phpMyAdmin)
  */
 
-const mongoose = require('mongoose');
+const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-const MONGO_URI = process.env.MONGO_URI;
+const pool = mysql.createPool({
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || 'isp_management',
+  port: parseInt(process.env.DB_PORT, 10) || 3306,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+  dateStrings: true // Kembalikan DATE/DATETIME sebagai string agar konsisten di JSON
+});
 
-const connectDB = async () => {
+// Cek koneksi awal (non-blocking: server tetap jalan walau DB belum siap)
+const testConnection = async () => {
   try {
-    if (!MONGO_URI || MONGO_URI.includes('your_mongodb_atlas_connection_string_here')) {
-      throw new Error('MONGO_URI belum dikonfigurasi di file .env');
-    }
-
-    const conn = await mongoose.connect(MONGO_URI);
-    console.log(`✓ MongoDB Connected: ${conn.connection.host}`);
+    const connection = await pool.getConnection();
+    console.log(`✓ MySQL Connected: ${process.env.DB_HOST || 'localhost'}:${process.env.DB_PORT || 3306}/${process.env.DB_NAME || 'isp_management'}`);
+    connection.release();
+    return true;
   } catch (error) {
-    console.error(`✗ Error koneksi MongoDB: ${error.message}`);
-    // Jangan exit process jika hanya gagal koneksi awal, biarkan server berjalan
-    // tapi log error dengan jelas.
+    console.error(`✗ Error koneksi MySQL: ${error.message}`);
+    return false;
   }
 };
 
-module.exports = connectDB;
+// PENTING: jangan set `module.exports.pool = pool` — itu menimpa properti internal
+// `this.pool` milik mysql2 PromisePool dan menyebabkan rekursi tak terbatas di query().
+pool.testConnection = testConnection;
+
+module.exports = pool;

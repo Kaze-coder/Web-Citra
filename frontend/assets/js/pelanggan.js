@@ -1,10 +1,11 @@
 /**
- * Pelanggan (Customer) JavaScript
+ * Modul Pelanggan - Citra NET Manager
  */
 
 let editingId = null;
 let deletingId = null;
 let lokasiMap = null;
+let dataTableInstance = null;
 
 // Mapping paket ke harga (dalam Rupiah)
 const paketHargaMap = {
@@ -32,30 +33,44 @@ function parseCoordinates(alamatText) {
   return null;
 }
 
-async function loadPelanggan(page = 1) {
+// Ambil data pelanggan dari API
+async function loadPelanggan() {
   try {
-    const search = document.getElementById('searchPelanggan')?.value || '';
-    const res = await axios.get('/pelanggan', { params: { page, search, limit: 10 } });
+    const res = await axios.get('/pelanggan', { params: { limit: 10000 } });
     
     if (res.data.success) {
       const table = document.getElementById('pelangganTable');
+      
+      if (dataTableInstance) {
+        dataTableInstance.destroy();
+      }
+      
       table.innerHTML = res.data.data.map(p => `
         <tr>
-          <td>${p.nama_pelanggan}</td>
-          <td>${p.no_telepon}</td>
-          <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${p.alamat || '-'}">${p.alamat || '-'}</td>
-          <td>${p.paket_layanan}</td>
+          <td>${escapeHtml(p.nama_pelanggan)}</td>
+          <td>${escapeHtml(p.no_telepon)}</td>
+          <td style="max-width: 250px;" title="${escapeHtml(p.alamat || '-')}">
+            <div class="d-flex align-items-center justify-content-between">
+              <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(p.alamat || '-')}</span>
+              ${p.alamat ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.alamat)}" target="_blank" class="btn btn-sm btn-outline-primary ms-2" style="padding: 2px 6px;" title="Buka di Google Maps"><i class="fas fa-map-marker-alt"></i></a>` : ''}
+            </div>
+          </td>
+          <td>${escapeHtml(p.paket_layanan)}</td>
           <td>${formatRupiah(p.harga_bulanan)}</td>
           <td>${getStatusBadge(p.status)}</td>
           <td>
-            <button class="btn btn-primary btn-sm" onclick="editPelanggan('${p._id}')">Edit</button>
-            <button class="btn btn-danger btn-sm" onclick="openDeleteModal('${p._id}')">Hapus</button>
+            <button class="btn btn-primary btn-sm" onclick="editPelanggan('${p.id}')"><i class="fas fa-edit"></i> Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="openDeleteModal('${p.id}')"><i class="fas fa-trash"></i> Hapus</button>
           </td>
         </tr>
       `).join('');
-      
-      // Render pagination
-      renderPagination(res.data.pagination);
+
+      dataTableInstance = new DataTable('#mainTable', {
+        language: { search: "Cari:", lengthMenu: "Tampilkan _MENU_ data", info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data" },
+        columnDefs: [
+          { className: "text-start", targets: "_all" }
+        ]
+      });
     }
   } catch (error) {
     console.error('Error loading pelanggan:', error);
@@ -63,7 +78,7 @@ async function loadPelanggan(page = 1) {
   }
 }
 
-// Modal Functions
+// Fungsi Modal
 function openModal(id = null) {
   const form = document.getElementById('pelangganForm');
   const title = document.getElementById('modalTitle');
@@ -149,7 +164,7 @@ async function geocodeAddress(address) {
   }
 }
 
-// Tampilkan map dengan marker
+// Tampilkan peta lokasi
 function displayLocationMap(lat, lng, address) {
   document.getElementById('lokasiModal').style.display = 'flex';
   
@@ -162,32 +177,24 @@ function displayLocationMap(lat, lng, address) {
   const mapContainer = document.getElementById('mapContainer');
   mapContainer.innerHTML = '';
   
-  const googleStreets = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
-    maxZoom: 20,
-    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-    attribution: '&copy; Google'
-  });
-
-  const googleHybrid = L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
-    maxZoom: 20,
-    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-    attribution: '&copy; Google'
-  });
-
   const osmMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap',
+    maxZoom: 19
+  });
+
+  const esriSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: '&copy; Esri, Maxar, Earthstar Geographics',
     maxZoom: 19
   });
 
   lokasiMap = L.map(mapContainer, {
     center: [lat, lng],
     zoom: 15,
-    layers: [googleStreets]
+    layers: [esriSatellite]
   });
 
   const baseMaps = {
-    "Google Streets": googleStreets,
-    "Google Hybrid (Satelit)": googleHybrid,
+    "ESRI Satelit": esriSatellite,
     "OpenStreetMap": osmMap
   };
 
@@ -204,7 +211,7 @@ function displayLocationMap(lat, lng, address) {
       shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
       shadowSize: [41, 41]
     })
-  }).addTo(lokasiMap).bindPopup(address);
+  }).addTo(lokasiMap).bindPopup(escapeHtml(address));
 
   // Display coordinates
   document.getElementById('coordDisplay').textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
@@ -369,23 +376,9 @@ async function exportCSV() {
   }
 }
 
-function renderPagination(pagination) {
-  // TODO: Implement pagination
-}
 
-// Search event listener
-const searchInput = document.getElementById('searchPelanggan');
-if (searchInput) {
-  let searchTimeout;
-  searchInput.addEventListener('input', () => {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-      loadPelanggan(1);
-    }, 500);
-  });
-}
 
-// Close modals on ESC key
+// Tutup modal dengan tombol ESC
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     closeModal();
@@ -394,7 +387,7 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// Close modals on background click
+// Tutup modal dengan klik background
 document.getElementById('tambahModal')?.addEventListener('click', (e) => {
   if (e.target.id === 'tambahModal') closeModal();
 });

@@ -1,43 +1,31 @@
 /**
  * Pelanggan Controller
- * Controller untuk menangani request pelanggan menggunakan Mongoose
  */
 
-const Pelanggan = require('../models/Pelanggan');
-const Lokasi = require('../models/Lokasi');
+const PelangganModel = require('../models/PelangganModel');
+const LokasiModel = require('../models/LokasiModel');
+const TagihanModel = require('../models/TagihanModel');
 const geocoding = require('../services/GeocodingService');
 
 class PelangganController {
-  // GET all pelanggan
+  // Ambil semua pelanggan
   static async getAllPelanggan(req, res) {
     try {
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search || '';
 
-      const query = search ? {
-        $or: [
-          { nama_pelanggan: { $regex: search, $options: 'i' } },
-          { no_telepon: { $regex: search, $options: 'i' } },
-          { alamat: { $regex: search, $options: 'i' } }
-        ]
-      } : {};
-
-      const total = await Pelanggan.countDocuments(query);
-      const data = await Pelanggan.find(query)
-        .sort({ tanggal_dibuat: -1 })
-        .skip((page - 1) * limit)
-        .limit(limit);
+      const result = await PelangganModel.getAllPelanggan(page, limit, search);
 
       res.json({
         success: true,
         message: 'Data pelanggan berhasil diambil',
-        data,
+        data: result.data,
         pagination: {
-          page,
-          limit,
-          total,
-          pages: Math.ceil(total / limit)
+          page: result.page,
+          limit: result.limit,
+          total: result.total,
+          pages: result.pages
         }
       });
     } catch (error) {
@@ -50,27 +38,20 @@ class PelangganController {
     }
   }
 
-  // GET statistik pelanggan
+  // Ambil statistik pelanggan
   static async getStatistik(req, res) {
     try {
-      const totalPelanggan = await Pelanggan.countDocuments();
-      const pelangganAktif = await Pelanggan.countDocuments({ status: 'aktif' });
-      
-      // Hitung pemasukan (dari tagihan lunas)
-      const Tagihan = require('../models/Tagihan');
-      const lunasBills = await Tagihan.find({ status_pembayaran: 'lunas' });
-      const totalPemasukan = lunasBills.reduce((acc, curr) => acc + curr.jumlah_tagihan, 0);
-      
-      const tagihanBelum = await Tagihan.countDocuments({ status_pembayaran: 'belum_lunas' });
+      const statistik = await PelangganModel.getStatistik();
+      const statistikTagihan = await TagihanModel.getStatistikTagihan();
 
       res.json({
         success: true,
         message: 'Statistik pelanggan berhasil diambil',
         data: {
-          total: totalPelanggan,
-          aktif: pelangganAktif,
-          tagihanBelum,
-          totalPemasukan
+          total: statistik.total,
+          aktif: statistik.aktif,
+          tagihanBelum: statistikTagihan.belum_lunas,
+          totalPemasukan: statistikTagihan.totalPemasukan
         }
       });
     } catch (error) {
@@ -83,11 +64,11 @@ class PelangganController {
     }
   }
 
-  // GET pelanggan by ID
+  // Ambil pelanggan berdasarkan ID
   static async getPelangganById(req, res) {
     try {
       const { id } = req.params;
-      const pelanggan = await Pelanggan.findById(id);
+      const pelanggan = await PelangganModel.getPelangganById(id);
 
       if (!pelanggan) {
         return res.status(404).json({
@@ -97,15 +78,15 @@ class PelangganController {
       }
 
       // Ambil lokasi jika ada
-      const lokasi = await Lokasi.findOne({ pelanggan_id: id });
+      const lokasi = await LokasiModel.getLokasiByPelangganId(id);
 
       res.json({
         success: true,
         message: 'Data pelanggan berhasil diambil',
         data: {
-          ...pelanggan.toObject(),
-          latitude: lokasi ? lokasi.latitude : 0,
-          longitude: lokasi ? lokasi.longitude : 0
+          ...pelanggan,
+          latitude: lokasi ? Number(lokasi.latitude) : 0,
+          longitude: lokasi ? Number(lokasi.longitude) : 0
         }
       });
     } catch (error) {
@@ -118,13 +99,13 @@ class PelangganController {
     }
   }
 
-  // POST create pelanggan baru
+  // Buat pelanggan baru
   static async createPelanggan(req, res) {
     try {
       const { nama_pelanggan, no_telepon, email, alamat, status, paket_layanan, harga_bulanan, tanggal_langganan, latitude, longitude } = req.body;
 
       // Create pelanggan
-      const pelanggan = await Pelanggan.create({
+      const pelanggan = await PelangganModel.createPelanggan({
         nama_pelanggan,
         no_telepon,
         email,
@@ -137,20 +118,19 @@ class PelangganController {
 
       // Create lokasi jika ada koordinat
       if (latitude && longitude) {
-        await Lokasi.create({
-          pelanggan_id: pelanggan._id,
+        await LokasiModel.createLokasi({
+          pelanggan_id: pelanggan.id,
           latitude,
           longitude,
           keterangan_lokasi: `Lokasi ${nama_pelanggan}`
         });
       } else {
         // Auto geocode dari alamat
-        const GeocodingService = require('../services/GeocodingService');
-        const geoResult = await GeocodingService.geocodeAddress(alamat);
-        
+        const geoResult = await geocoding.geocodeAddress(alamat);
+
         if (geoResult.success) {
-          await Lokasi.create({
-            pelanggan_id: pelanggan._id,
+          await LokasiModel.createLokasi({
+            pelanggan_id: pelanggan.id,
             latitude: geoResult.latitude,
             longitude: geoResult.longitude,
             keterangan_lokasi: `Auto-generated dari alamat: ${alamat}`
@@ -165,6 +145,16 @@ class PelangganController {
       });
     } catch (error) {
       console.error('Error creating pelanggan:', error);
+
+      // Duplicate no_telepon (UNIQUE)
+      if (error.code === 'ER_DUP_ENTRY') {
+        return res.status(400).json({
+          success: false,
+          message: 'Nomor telepon sudah terdaftar',
+          error: error.message
+        });
+      }
+
       res.status(500).json({
         success: false,
         message: 'Gagal menambahkan pelanggan baru',
@@ -173,13 +163,13 @@ class PelangganController {
     }
   }
 
-  // PUT update pelanggan
+  // Perbarui data pelanggan
   static async updatePelanggan(req, res) {
     try {
       const { id } = req.params;
       const { nama_pelanggan, no_telepon, email, alamat, status, paket_layanan, harga_bulanan, latitude, longitude } = req.body;
 
-      const pelanggan = await Pelanggan.findByIdAndUpdate(id, {
+      const pelanggan = await PelangganModel.updatePelanggan(id, {
         nama_pelanggan,
         no_telepon,
         email,
@@ -187,7 +177,7 @@ class PelangganController {
         status,
         paket_layanan,
         harga_bulanan
-      }, { new: true });
+      });
 
       if (!pelanggan) {
         return res.status(404).json({
@@ -198,11 +188,11 @@ class PelangganController {
 
       // Update/Create lokasi
       if (latitude && longitude) {
-        await Lokasi.findOneAndUpdate(
-          { pelanggan_id: id },
-          { latitude, longitude, keterangan_lokasi: alamat },
-          { upsert: true, new: true }
-        );
+        await LokasiModel.upsertLokasiByPelanggan(id, {
+          latitude,
+          longitude,
+          keterangan_lokasi: alamat
+        });
       }
 
       res.json({
@@ -212,6 +202,15 @@ class PelangganController {
       });
     } catch (error) {
       console.error('Error updating pelanggan:', error);
+
+      if (error.code === 'ER_DUP_ENTRY') {
+        return res.status(400).json({
+          success: false,
+          message: 'Nomor telepon sudah terdaftar',
+          error: error.message
+        });
+      }
+
       res.status(500).json({
         success: false,
         message: 'Gagal memperbarui pelanggan',
@@ -220,25 +219,19 @@ class PelangganController {
     }
   }
 
-  // DELETE pelanggan
+  // Hapus pelanggan
   static async deletePelanggan(req, res) {
     try {
       const { id } = req.params;
 
-      const pelanggan = await Pelanggan.findByIdAndDelete(id);
-      if (!pelanggan) {
+      // FK ON DELETE CASCADE ikut menghapus lokasi, perangkat, dan tagihan terkait
+      const deleted = await PelangganModel.deletePelanggan(id);
+      if (!deleted) {
         return res.status(404).json({
           success: false,
           message: 'Pelanggan tidak ditemukan'
         });
       }
-
-      // Delete related data
-      await Lokasi.deleteMany({ pelanggan_id: id });
-      const Perangkat = require('../models/Perangkat');
-      const Tagihan = require('../models/Tagihan');
-      await Perangkat.deleteMany({ pelanggan_id: id });
-      await Tagihan.deleteMany({ pelanggan_id: id });
 
       res.json({
         success: true,
@@ -254,24 +247,26 @@ class PelangganController {
     }
   }
 
-  // GET pelanggan with coordinates untuk peta
+  // Ambil data untuk peta
   static async getPelangganWithCoordinates(req, res) {
     try {
-      const lokasiList = await Lokasi.find().populate('pelanggan_id');
-      
-      const data = lokasiList.filter(l => l.pelanggan_id).map(l => ({
-        id: l.pelanggan_id._id.toString(),
-        nama_pelanggan: l.pelanggan_id.nama_pelanggan,
-        no_telepon: l.pelanggan_id.no_telepon,
-        email: l.pelanggan_id.email,
-        alamat: l.pelanggan_id.alamat,
-        status: l.pelanggan_id.status,
-        paket_layanan: l.pelanggan_id.paket_layanan,
-        harga_bulanan: l.pelanggan_id.harga_bulanan,
-        latitude: l.latitude,
-        longitude: l.longitude,
-        keterangan_lokasi: l.keterangan_lokasi
-      }));
+      const lokasiList = await LokasiModel.getAllLokasi();
+
+      const data = lokasiList
+        .filter(l => l.pelanggan_id && l.nama_pelanggan)
+        .map(l => ({
+          id: l.pelanggan_id,
+          nama_pelanggan: l.nama_pelanggan,
+          no_telepon: l.no_telepon,
+          email: l.email,
+          alamat: l.alamat,
+          status: l.status,
+          paket_layanan: l.paket_layanan,
+          harga_bulanan: Number(l.harga_bulanan) || 0,
+          latitude: Number(l.latitude),
+          longitude: Number(l.longitude),
+          keterangan_lokasi: l.keterangan_lokasi
+        }));
 
       res.json({
         success: true,
@@ -288,28 +283,28 @@ class PelangganController {
     }
   }
 
-  // POST auto-geocode semua pelanggan yang belum punya koordinat
+  // Auto-geocode alamat pelanggan
   static async geocodeAllPelanggan(req, res) {
     try {
-      const pelangganList = await Pelanggan.find();
+      const pelangganList = await PelangganModel.getAll();
       let geocoded = 0;
       let failed = 0;
 
       for (const p of pelangganList) {
-        const hasLokasi = await Lokasi.findOne({ pelanggan_id: p._id });
+        const hasLokasi = await LokasiModel.getLokasiByPelangganId(p.id);
         if (!hasLokasi || !hasLokasi.latitude) {
           const result = await geocoding.geocodeAddress(p.alamat);
           if (result.success) {
-            await Lokasi.findOneAndUpdate(
-              { pelanggan_id: p._id },
-              { latitude: result.latitude, longitude: result.longitude, keterangan_lokasi: p.alamat },
-              { upsert: true }
-            );
+            await LokasiModel.upsertLokasiByPelanggan(p.id, {
+              latitude: result.latitude,
+              longitude: result.longitude,
+              keterangan_lokasi: p.alamat
+            });
             geocoded++;
           } else {
             failed++;
           }
-          // Simple delay
+          // Simple delay (rate limit Nominatim)
           await new Promise(r => setTimeout(r, 1000));
         }
       }
@@ -329,18 +324,110 @@ class PelangganController {
       });
     }
   }
-  // POST import pelanggan from Excel
+
+  // Import pelanggan dari Excel
   static async importFromExcel(req, res) {
     try {
       if (!req.file) {
         return res.status(400).json({ success: false, message: 'File tidak ditemukan' });
       }
 
-      // Implementasi import excel ke MongoDB
-      // Untuk sementara, kita kembalikan sukses agar route tidak error
+      const ExcelJS = require('exceljs');
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.load(req.file.buffer);
+
+      const worksheet = workbook.worksheets[0];
+      if (!worksheet) {
+        return res.status(400).json({ success: false, message: 'Sheet pertama tidak ditemukan' });
+      }
+
+      // Baris 1 = header, cari kolom berdasarkan nama header
+      const headerMap = {};
+      worksheet.getRow(1).eachCell((cell, colNumber) => {
+        const header = String(cell.value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        headerMap[header] = colNumber;
+      });
+
+      const col = (name) => headerMap[name] || null;
+      const colNama = col('namapelanggan') || col('nama');
+      const colTelepon = col('notelepon') || col('telepon') || col('nohp');
+      const colEmail = col('email');
+      const colAlamat = col('alamat');
+      const colPaket = col('paketlayanan') || col('paket');
+      const colHarga = col('hargabulanan') || col('harga');
+      const colTanggal = col('tanggallangganan');
+
+      if (!colNama || !colTelepon || !colAlamat) {
+        return res.status(400).json({
+          success: false,
+          message: 'Kolom wajib tidak ditemukan. Header harus memuat: nama_pelanggan, no_telepon, alamat'
+        });
+      }
+
+      let imported = 0;
+      let skipped = 0;
+      const errors = [];
+
+      for (let i = 2; i <= worksheet.rowCount; i++) {
+        const row = worksheet.getRow(i);
+        const nama_pelanggan = String(row.getCell(colNama).value || '').trim();
+        const no_telepon = String(row.getCell(colTelepon).value || '').trim();
+        const alamat = String(row.getCell(colAlamat).value || '').trim();
+
+        if (!nama_pelanggan || !no_telepon || !alamat) {
+          skipped++;
+          continue;
+        }
+
+        const email = colEmail ? String(row.getCell(colEmail).value || '').trim() : null;
+        const paket_layanan = colPaket ? String(row.getCell(colPaket).value || '').trim() : null;
+        const harga_bulanan = colHarga ? Number(row.getCell(colHarga).value) || null : null;
+
+        let tanggal_langganan = null;
+        if (colTanggal) {
+          const raw = row.getCell(colTanggal).value;
+          const parsed = raw instanceof Date ? raw : new Date(raw);
+          if (!isNaN(parsed.getTime())) tanggal_langganan = parsed;
+        }
+        if (!tanggal_langganan) tanggal_langganan = new Date();
+
+        try {
+          const pelanggan = await PelangganModel.createPelanggan({
+            nama_pelanggan,
+            no_telepon,
+            email,
+            alamat,
+            status: 'aktif',
+            paket_layanan,
+            harga_bulanan,
+            tanggal_langganan
+          });
+
+          // Auto geocode dari alamat (best effort)
+          const geoResult = await geocoding.geocodeAddress(alamat);
+          if (geoResult.success) {
+            await LokasiModel.createLokasi({
+              pelanggan_id: pelanggan.id,
+              latitude: geoResult.latitude,
+              longitude: geoResult.longitude,
+              keterangan_lokasi: `Auto-generated dari alamat: ${alamat}`
+            });
+          }
+
+          imported++;
+        } catch (err) {
+          if (err.code === 'ER_DUP_ENTRY') {
+            skipped++;
+          } else {
+            errors.push(`Baris ${i}: ${err.message}`);
+          }
+        }
+      }
+
       res.json({
         success: true,
-        message: 'Fitur import Excel sedang dalam tahap penyesuaian untuk MongoDB'
+        message: `Import selesai: ${imported} berhasil, ${skipped} dilewati${errors.length > 0 ? `, ${errors.length} error` : ''}`,
+        data: { imported, skipped, errors }
       });
     } catch (error) {
       console.error('Error importing from Excel:', error);

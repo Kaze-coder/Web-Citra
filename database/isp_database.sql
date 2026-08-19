@@ -117,6 +117,11 @@ INSERT INTO tagihan (pelanggan_id, bulan_tagihan, jumlah_tagihan, status_pembaya
 (5, '2026-04-01', 300000, 'belum_lunas', NULL, NULL),
 (6, '2026-04-01', 500000, 'cicilan', '2026-04-10', 'transfer');
 
+-- ===== DEFAULT ADMIN CREDENTIALS =====
+-- Password disimpan sebagai hash bcrypt (JANGAN simpan plaintext).
+--   admin    / admin123    (role: super_admin)
+--   operator / operator123 (role: operator)
+-- Segera ganti password default setelah instalasi.
 INSERT INTO admin (username, email, password, nama_lengkap, status, role) VALUES
-('admin', 'admin@isp.local', 'admin123', 'Administrator', 'aktif', 'super_admin'),
-('operator', 'operator@isp.local', 'operator123', 'Operator', 'aktif', 'operator');
+('admin', 'admin@isp.local', '$2a$10$fqqO315SSgyp/erHwdgS4eu9GPZrJitaiSXPV0AsVNrk9dSPgCiWi', 'Administrator', 'aktif', 'super_admin'),
+('operator', 'operator@isp.local', '$2a$10$8RSVgTszV75CSoxquE03vOpQ31UVa2Khu.APi6xiG8smyeRATcOVq', 'Operator', 'aktif', 'operator');

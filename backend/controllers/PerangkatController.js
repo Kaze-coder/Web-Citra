@@ -1,34 +1,28 @@
 /**
  * Perangkat Controller
- * Controller untuk menangani request perangkat menggunakan Mongoose
  */
 
-const Perangkat = require('../models/Perangkat');
-const Pelanggan = require('../models/Pelanggan');
+const PerangkatModel = require('../models/PerangkatModel');
+const PelangganModel = require('../models/PelangganModel');
 
 class PerangkatController {
-  // GET all perangkat
+  // Ambil semua perangkat
   static async getAllPerangkat(req, res) {
     try {
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
 
-      const total = await Perangkat.countDocuments();
-      const data = await Perangkat.find()
-        .populate('pelanggan_id')
-        .sort({ tanggal_dibuat: -1 })
-        .skip((page - 1) * limit)
-        .limit(limit);
+      const result = await PerangkatModel.getAllPerangkat(page, limit);
 
       res.json({
         success: true,
         message: 'Data perangkat berhasil diambil',
-        data,
+        data: result.data,
         pagination: {
-          page,
-          limit,
-          total,
-          pages: Math.ceil(total / limit)
+          page: result.page,
+          limit: result.limit,
+          total: result.total,
+          pages: result.pages
         }
       });
     } catch (error) {
@@ -41,12 +35,12 @@ class PerangkatController {
     }
   }
 
-  // GET perangkat by pelanggan ID
+  // Ambil perangkat berdasarkan ID pelanggan
   static async getPerangkatByPelangganId(req, res) {
     try {
       const { pelanggan_id } = req.params;
 
-      const perangkat = await Perangkat.find({ pelanggan_id });
+      const perangkat = await PerangkatModel.getPerangkatByPelangganId(pelanggan_id);
 
       res.json({
         success: true,
@@ -63,11 +57,11 @@ class PerangkatController {
     }
   }
 
-  // GET perangkat by ID
+  // Ambil perangkat berdasarkan ID
   static async getPerangkatById(req, res) {
     try {
       const { id } = req.params;
-      const perangkat = await Perangkat.findById(id).populate('pelanggan_id');
+      const perangkat = await PerangkatModel.getPerangkatById(id);
 
       if (!perangkat) {
         return res.status(404).json({
@@ -91,12 +85,21 @@ class PerangkatController {
     }
   }
 
-  // POST create perangkat baru
+  // Buat perangkat baru
   static async createPerangkat(req, res) {
     try {
       const { pelanggan_id, nama_perangkat, tipe_perangkat, ip_address, mac_address, serial_number, status_perangkat, tanggal_instalasi } = req.body;
 
-      const perangkat = await Perangkat.create({
+      // Validasi pelanggan ada
+      const pelanggan = await PelangganModel.getPelangganById(pelanggan_id);
+      if (!pelanggan) {
+        return res.status(404).json({
+          success: false,
+          message: 'Pelanggan tidak ditemukan'
+        });
+      }
+
+      const perangkat = await PerangkatModel.createPerangkat({
         pelanggan_id,
         nama_perangkat,
         tipe_perangkat,
@@ -122,20 +125,20 @@ class PerangkatController {
     }
   }
 
-  // PUT update perangkat
+  // Perbarui data perangkat
   static async updatePerangkat(req, res) {
     try {
       const { id } = req.params;
       const { nama_perangkat, tipe_perangkat, ip_address, mac_address, serial_number, status_perangkat } = req.body;
 
-      const perangkat = await Perangkat.findByIdAndUpdate(id, {
+      const perangkat = await PerangkatModel.updatePerangkat(id, {
         nama_perangkat,
         tipe_perangkat,
         ip_address,
         mac_address,
         serial_number,
         status_perangkat
-      }, { new: true });
+      });
 
       if (!perangkat) {
         return res.status(404).json({
@@ -159,13 +162,13 @@ class PerangkatController {
     }
   }
 
-  // DELETE perangkat
+  // Hapus perangkat
   static async deletePerangkat(req, res) {
     try {
       const { id } = req.params;
 
-      const perangkat = await Perangkat.findByIdAndDelete(id);
-      if (!perangkat) {
+      const deleted = await PerangkatModel.deletePerangkat(id);
+      if (!deleted) {
         return res.status(404).json({
           success: false,
           message: 'Perangkat tidak ditemukan'

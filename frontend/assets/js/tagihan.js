@@ -1,17 +1,16 @@
 /**
- * Tagihan (Invoice) JavaScript
+ * Modul Tagihan - Citra NET Manager
  */
 
 // Initialize
+let dataTableInstance = null;
 document.addEventListener('DOMContentLoaded', () => {
   loadSchedulerStatus();
   loadTagihan();
   setupEventListeners();
 });
 
-/**
- * Load scheduler status
- */
+// Ambil status scheduler
 async function loadSchedulerStatus() {
   try {
     const response = await axios.get('/billing/scheduler/status');
@@ -39,9 +38,7 @@ async function loadSchedulerStatus() {
   }
 }
 
-/**
- * Trigger manual billing check
- */
+// Jalankan pengecekan billing manual
 async function triggerBillingCheck() {
   try {
     const btn = document.getElementById('checkBillingBtn');
@@ -73,34 +70,55 @@ async function triggerBillingCheck() {
   }
 }
 
-/**
- * Load tagihan data
- */
+// Terapkan filter status & bulan pada data tagihan
+function applyTagihanFilters(data) {
+  const filterStatus = document.getElementById('filterStatus')?.value;
+  if (filterStatus) {
+    data = data.filter(t => t.status_pembayaran === filterStatus);
+  }
+
+  // input type="month" menghasilkan "YYYY-MM"; bulan_tagihan disimpan "YYYY-MM-01"
+  const filterBulan = document.getElementById('filterBulan')?.value;
+  if (filterBulan) {
+    data = data.filter(t => (t.bulan_tagihan || '').startsWith(filterBulan));
+  }
+
+  return data;
+}
+
+// Ambil data tagihan
 async function loadTagihan() {
   try {
-    const res = await axios.get('/tagihan?page=1&limit=100');
+    const res = await axios.get('/tagihan?page=1&limit=10000');
     const table = document.getElementById('tagihanTable');
     
     if (!table) return;
     
-    if (res.data.success && res.data.data && res.data.data.length > 0) {
+    if (dataTableInstance) {
+      dataTableInstance.destroy();
+    }
+    
+    let data = (res.data.success && res.data.data) ? res.data.data : [];
+    data = applyTagihanFilters(data);
+
+    if (data.length > 0) {
       // Sort by bulan_tagihan (due date) - ascending order (earliest first)
-      const sortedData = res.data.data.sort((a, b) => {
+      const sortedData = data.sort((a, b) => {
         return new Date(a.bulan_tagihan) - new Date(b.bulan_tagihan);
       });
 
       table.innerHTML = sortedData.map(t => `
         <tr>
-          <td><strong>${t.nama_pelanggan}</strong></td>
-          <td>${t.no_telepon}</td>
-          <td>Rp${formatCurrency(t.jumlah_tagihan)}</td>
+          <td><strong>${escapeHtml(t.nama_pelanggan)}</strong></td>
+          <td>${escapeHtml(t.no_telepon)}</td>
+          <td>${formatRupiah(t.jumlah_tagihan)}</td>
           <td>${getStatusBadge(t.status_pembayaran)}</td>
           <td>${formatDateShort(t.bulan_tagihan)}</td>
           <td>
-            <button class="btn btn-sm btn-primary" onclick="editTagihan('${t._id}')">
+            <button class="btn btn-sm btn-primary" onclick="editTagihan('${t.id}')">
               <i class="fas fa-edit"></i>
             </button>
-            <button class="btn btn-sm btn-danger" onclick="deleteTagihan('${t._id}')">
+            <button class="btn btn-sm btn-danger" onclick="deleteTagihan('${t.id}')">
               <i class="fas fa-trash"></i>
             </button>
           </td>
@@ -109,6 +127,12 @@ async function loadTagihan() {
     } else {
       table.innerHTML = '<tr><td colspan="6" class="text-center">Tidak ada data tagihan</td></tr>';
     }
+    dataTableInstance = new DataTable('#mainTable', {
+      language: { search: "Cari:", lengthMenu: "Tampilkan _MENU_ data", info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data" },
+      columnDefs: [
+        { className: "text-start", targets: "_all" }
+      ]
+    });
   } catch (error) {
     console.error('Error loading tagihan:', error);
     const table = document.getElementById('tagihanTable');
@@ -118,45 +142,55 @@ async function loadTagihan() {
   }
 }
 
-/**
- * Get status badge HTML
- */
-function getStatusBadge(status) {
-  const badges = {
-    'lunas': '<span class="badge bg-success">Lunas</span>',
-    'belum_lunas': '<span class="badge bg-danger">Belum Lunas</span>',
-    'cicilan': '<span class="badge bg-warning">Cicilan</span>'
-  };
-  return badges[status] || `<span class="badge bg-secondary">${status}</span>`;
+// Export CSV dari data tagihan yang sedang terfilter
+async function exportTagihanCSV() {
+  try {
+    const res = await axios.get('/tagihan?page=1&limit=10000');
+    let data = (res.data.success && res.data.data) ? res.data.data : [];
+    data = applyTagihanFilters(data);
+
+    if (!data.length) {
+      showNotification('Tidak ada data untuk diekspor', 'warning');
+      return;
+    }
+
+    const headers = ['Pelanggan', 'No. HP', 'Jumlah', 'Status', 'Bulan'];
+    const rows = data.map(t => [
+      t.nama_pelanggan,
+      t.no_telepon,
+      t.jumlah_tagihan,
+      t.status_pembayaran,
+      formatDateShort(t.bulan_tagihan)
+    ]);
+
+    let csv = headers.join(',') + '\n';
+    rows.forEach(row => {
+      csv += row.map(cell => {
+        cell = String(cell ?? '');
+        if (cell.includes(',') || cell.includes('"') || cell.includes('\n')) {
+          return `"${cell.replace(/"/g, '""')}"`;
+        }
+        return cell;
+      }).join(',') + '\n';
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.setAttribute('href', URL.createObjectURL(blob));
+    link.setAttribute('download', `tagihan_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    showNotification('Data tagihan berhasil diunduh', 'success');
+  } catch (error) {
+    console.error('Error exporting tagihan:', error);
+    showNotification('Gagal mengekspor data', 'error');
+  }
 }
 
-/**
- * Format currency
- */
-function formatCurrency(value) {
-  return new Intl.NumberFormat('id-ID').format(value);
-}
-
-/**
- * Format Rupiah (backward compatibility)
- */
-function formatRupiah(value) {
-  return formatCurrency(value);
-}
-
-/**
- * Format date short
- */
-function formatDateShort(date) {
-  return new Date(date).toLocaleDateString('id-ID', { 
-    month: 'short', 
-    year: 'numeric' 
-  });
-}
-
-/**
- * Setup event listeners
- */
+// Setup event listener
 function setupEventListeners() {
   // Check billing button
   const checkBtn = document.getElementById('checkBillingBtn');
@@ -170,6 +204,20 @@ function setupEventListeners() {
     filterStatus.addEventListener('change', () => {
       loadTagihan();
     });
+  }
+
+  // Bulan filter
+  const filterBulan = document.getElementById('filterBulan');
+  if (filterBulan) {
+    filterBulan.addEventListener('change', () => {
+      loadTagihan();
+    });
+  }
+
+  // Export CSV
+  const btnExportCSV = document.getElementById('btnExportCSV');
+  if (btnExportCSV) {
+    btnExportCSV.addEventListener('click', exportTagihanCSV);
   }
 
 
@@ -195,9 +243,7 @@ function setupEventListeners() {
   loadPelangganOptions();
 }
 
-/**
- * Edit tagihan
- */
+// Edit data tagihan
 async function editTagihan(id) {
   try {
     // Get tagihan data
@@ -207,8 +253,8 @@ async function editTagihan(id) {
       const tagihan = response.data.data;
       
       // Fill form
-      document.getElementById('editTagihanId').value = tagihan._id;
-      document.getElementById('editPelangganNama').value = tagihan.nama_pelanggan;
+      document.getElementById('editTagihanId').value = tagihan.id;
+      document.getElementById('editPelangganNama').value = tagihan.nama_pelanggan || (tagihan.pelanggan_id && tagihan.pelanggan_id.nama_pelanggan) || '-';
       
       // Format bulan_tagihan as YYYY-MM for month input
       const bulanDate = new Date(tagihan.bulan_tagihan);
@@ -229,9 +275,7 @@ async function editTagihan(id) {
   }
 }
 
-/**
- * Delete tagihan
- */
+// Hapus data tagihan
 async function deleteTagihan(id) {
   // Ask for confirmation
   if (!confirm('Apakah Anda yakin ingin menghapus tagihan ini?')) {
@@ -254,27 +298,9 @@ async function deleteTagihan(id) {
 /**
  * Show notification
  */
-function showNotification(message, type = 'success') {
-  try {
-    const Notyf = window.Notyf || class { constructor() { this.success = this.error = this.warning = () => {}; } };
-    const notyf = new Notyf();
-    if (type === 'error') {
-      notyf.error(message);
-    } else if (type === 'warning') {
-      notyf.warning(message);
-    } else if (type === 'info') {
-      notyf.success(message);
-    } else {
-      notyf.success(message);
-    }
-  } catch (e) {
-    console.log(message);
-  }
-}
+// (menggunakan showNotification dari main.js)
 
-/**
- * Load pelanggan options untuk dropdown
- */
+// Load opsi pelanggan untuk dropdown
 async function loadPelangganOptions() {
   try {
     const response = await axios.get('/pelanggan?limit=100');
@@ -282,7 +308,7 @@ async function loadPelangganOptions() {
       const select = document.getElementById('selectPelanggan');
       if (select) {
         const options = response.data.data.map(p => 
-          `<option value="${p._id}">${p.nama_pelanggan} (${p.no_telepon})</option>`
+          `<option value="${p.id}">${escapeHtml(p.nama_pelanggan)} (${escapeHtml(p.no_telepon)})</option>`
         ).join('');
         select.innerHTML = '<option value="">-- Pilih Pelanggan --</option>' + options;
       }
@@ -410,9 +436,7 @@ async function simpanEditTagihan() {
   }
 }
 
-/**
- * Kirim notasi WhatsApp ke pelanggan tentang tagihan
- */
+// Kirim notifikasi WhatsApp ke pelanggan
 async function kirimNotasiWhatsAppTagihan(pelangganId, tagihanData) {
   try {
     // Get pelanggan data

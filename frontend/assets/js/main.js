@@ -1,42 +1,95 @@
 /**
- * Main JavaScript - Utility Functions & API Setup
+ * Utilitas Utama Citra NET Manager
  */
 
-// Notyf Notification
+// Notifikasi Notyf
 const notyf = new Notyf({
   duration: 4000,
   position: { x: 'right', y: 'bottom' }
 });
 
-// API Configuration
-const API_BASE_URL = 'http://localhost:5000/api';
-axios.defaults.baseURL = API_BASE_URL;
+// ===== KONFIGURASI API =====
+// Backend menyajikan frontend secara statis, jadi API berada di origin yang sama
+const API_BASE = window.location.origin + '/api';
+axios.defaults.baseURL = API_BASE;
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 
-// Sidebar Toggle - Desktop and Mobile
+// ===== AUTH (JWT) =====
+// login.html berada di frontend/pages/login.html
+const LOGIN_PATH = window.location.pathname.includes('/pages/') ? 'login.html' : 'pages/login.html';
+
+function isLoginPage() {
+  return window.location.pathname.endsWith('login.html');
+}
+
+function logout() {
+  localStorage.removeItem('token');
+  window.location.href = LOGIN_PATH;
+}
+
+// Interceptor request: lampirkan token JWT jika ada
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Interceptor response: 401 -> hapus token & redirect ke login
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('token');
+      // Jangan redirect-loop di halaman login itu sendiri
+      if (!isLoginPage()) {
+        window.location.href = LOGIN_PATH;
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+// Auth guard: tanpa token -> redirect ke halaman login
+document.addEventListener('DOMContentLoaded', () => {
+  if (!localStorage.getItem('token') && !isLoginPage()) {
+    window.location.href = LOGIN_PATH;
+    return;
+  }
+  console.log('Citra NET Manager loaded');
+});
+
+// Toggle Sidebar (Desktop & Mobile)
 const toggleSidebarBtn = document.getElementById('toggleSidebar');
 const sidebar = document.querySelector('.sidebar');
 const mainContent = document.querySelector('.main-content');
 const wrapper = document.querySelector('.wrapper');
 
 if (toggleSidebarBtn && sidebar) {
-  toggleSidebarBtn.addEventListener('click', () => {
-    sidebar.classList.toggle('collapsed');
-    mainContent.classList.toggle('collapsed');
+  toggleSidebarBtn.addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevent document click from immediately closing it
     
-    const isNowCollapsed = sidebar.classList.contains('collapsed');
-    localStorage.setItem('sidebar-collapsed', isNowCollapsed);
-    
-    if (isNowCollapsed) {
-      document.documentElement.classList.add('sidebar-collapsed');
+    if (window.innerWidth <= 1024) {
+      sidebar.classList.toggle('active');
     } else {
-      document.documentElement.classList.remove('sidebar-collapsed');
+      sidebar.classList.toggle('collapsed');
+      mainContent.classList.toggle('collapsed');
+      
+      const isNowCollapsed = sidebar.classList.contains('collapsed');
+      localStorage.setItem('sidebar-collapsed', isNowCollapsed);
+      
+      if (isNowCollapsed) {
+        document.documentElement.classList.add('sidebar-collapsed');
+      } else {
+        document.documentElement.classList.remove('sidebar-collapsed');
+      }
     }
   });
   
-  // Restore sidebar state from localStorage
+  // Restore state sidebar
   const isCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
-  if (isCollapsed) {
+  if (isCollapsed && window.innerWidth > 1024) {
     sidebar.classList.add('collapsed');
     mainContent.classList.add('collapsed');
     document.documentElement.classList.add('sidebar-collapsed');
@@ -45,16 +98,16 @@ if (toggleSidebarBtn && sidebar) {
   }
 }
 
-// Close sidebar when clicking outside (mobile)
+// Tutup sidebar jika klik di luar (Mobile)
 document.addEventListener('click', (e) => {
-  if (window.innerWidth <= 768) {
+  if (window.innerWidth <= 1024) {
     if (!e.target.closest('.sidebar') && !e.target.closest('.btn-toggle-sidebar')) {
       sidebar?.classList.remove('active');
     }
   }
 });
 
-// ===== UTILITY FUNCTIONS =====
+// ===== FUNGSI UTILITAS =====
 
 function showNotification(message, type = 'success') {
   switch(type) {
@@ -113,7 +166,13 @@ function getStatusBadge(status) {
   return badges[status] || status;
 }
 
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('Citra NET Manager loaded');
-});
+// Escape HTML untuk string yang dikontrol pengguna (anti-XSS)
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}

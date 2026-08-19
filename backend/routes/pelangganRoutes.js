@@ -1,6 +1,5 @@
 /**
  * Pelanggan Routes
- * Routes untuk endpoint pelanggan
  */
 
 const express = require('express');
@@ -9,7 +8,7 @@ const multer = require('multer');
 const PelangganController = require('../controllers/PelangganController');
 const { validatePelanggan } = require('../middleware/validateInput');
 
-// Setup multer untuk file upload
+// Konfigurasi Multer
 const storage = multer.memoryStorage();
 const upload = multer({ 
   storage: storage,
@@ -37,23 +36,23 @@ const upload = multer({
   }
 });
 
-// GET routes
+// Endpoint GET
 router.get('/', PelangganController.getAllPelanggan);
 router.get('/statistik', PelangganController.getStatistik);
 router.get('/peta/coordinates', PelangganController.getPelangganWithCoordinates);
 router.get('/:id', PelangganController.getPelangganById);
 
-// POST route
+// Endpoint POST
 router.post('/', validatePelanggan, PelangganController.createPelanggan);
 router.post('/geocode/auto-all', PelangganController.geocodeAllPelanggan);
 
-// IMPORT route
+// Endpoint Import
 router.post('/import/excel', upload.single('file'), PelangganController.importFromExcel);
 
-// PUT route
+// Endpoint PUT
 router.put('/:id', validatePelanggan, PelangganController.updatePelanggan);
 
-// DELETE route
+// Endpoint DELETE
 router.delete('/:id', PelangganController.deletePelanggan);
 
 module.exports = router;

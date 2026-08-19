@@ -1,15 +1,11 @@
 /**
  * Geocoding Controller
- * Controller untuk menangani request geocoding alamat
  */
 
 const GeocodingService = require('../services/GeocodingService');
 
 class GeocodingController {
-  /**
-   * POST geocode address
-   * @param {string} address - Alamat yang akan di-geocode
-   */
+  // Geocode alamat ke koordinat
   static async geocodeAddress(req, res) {
     try {
       const { address } = req.body;
@@ -50,9 +46,7 @@ class GeocodingController {
     }
   }
 
-  /**
-   * POST reverse geocode dari LAT/LNG
-   */
+  // Reverse geocode dari koordinat ke alamat
   static async reverseGeocode(req, res) {
     try {
       const { latitude, longitude } = req.body;

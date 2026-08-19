@@ -1,47 +1,29 @@
 /**
  * Tagihan Controller
- * Controller untuk menangani request tagihan menggunakan Mongoose
  */
 
-const Tagihan = require('../models/Tagihan');
-const Pelanggan = require('../models/Pelanggan');
+const TagihanModel = require('../models/TagihanModel');
+const PelangganModel = require('../models/PelangganModel');
 
 class TagihanController {
-  // GET all tagihan
+  // Ambil semua tagihan
   static async getAllTagihan(req, res) {
     try {
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
       const status = req.query.status || null;
 
-      const query = status ? { status_pembayaran: status } : {};
-
-      const total = await Tagihan.countDocuments(query);
-      const data = await Tagihan.find(query)
-        .populate('pelanggan_id')
-        .sort({ bulan_tagihan: -1 })
-        .skip((page - 1) * limit)
-        .limit(limit);
-
-      // Mapping untuk kemiripan dengan format lama jika perlu
-      const formattedData = data.map(t => {
-        const obj = t.toObject();
-        if (obj.pelanggan_id) {
-          obj.nama_pelanggan = obj.pelanggan_id.nama_pelanggan;
-          obj.no_telepon = obj.pelanggan_id.no_telepon;
-        }
-        return obj;
-      });
+      const result = await TagihanModel.getAllTagihan(page, limit, status);
 
       res.json({
         success: true,
         message: 'Data tagihan berhasil diambil',
-        data: formattedData,
+        data: result.data,
         pagination: {
-          page,
-          limit,
-          total,
-          pages: Math.ceil(total / limit)
+          page: result.page,
+          limit: result.limit,
+          total: result.total,
+          pages: result.pages
         }
       });
     } catch (error) {
@@ -54,10 +36,10 @@ class TagihanController {
     }
   }
 
-  // GET tagihan belum dibayar (untuk reminder whatsapp)
+  // Ambil tagihan yang belum lunas
   static async getTagihanBelumBayar(req, res) {
     try {
-      const result = await Tagihan.find({ status_pembayaran: 'belum_lunas' }).populate('pelanggan_id');
+      const result = await TagihanModel.getTagihanBelumBayar();
 
       res.json({
         success: true,
@@ -74,22 +56,20 @@ class TagihanController {
     }
   }
 
-  // GET statistik tagihan
+  // Ambil statistik tagihan (satu-satunya implementasi)
   static async getStatistikTagihan(req, res) {
     try {
-      const totalTagihan = await Tagihan.countDocuments();
-      const lunasCount = await Tagihan.countDocuments({ status_pembayaran: 'lunas' });
-      const belumCount = await Tagihan.countDocuments({ status_pembayaran: 'belum_lunas' });
-      const cicilanCount = await Tagihan.countDocuments({ status_pembayaran: 'cicilan' });
+      const statistik = await TagihanModel.getStatistikTagihan();
 
       res.json({
         success: true,
         message: 'Statistik tagihan berhasil diambil',
         data: {
-          total: totalTagihan,
-          lunas: lunasCount,
-          belum_lunas: belumCount,
-          cicilan: cicilanCount
+          total: statistik.total,
+          lunas: statistik.lunas,
+          belum_lunas: statistik.belum_lunas,
+          cicilan: statistik.cicilan,
+          totalPemasukan: statistik.totalPemasukan
         }
       });
     } catch (error) {
@@ -102,12 +82,12 @@ class TagihanController {
     }
   }
 
-  // GET tagihan by pelanggan ID
+  // Ambil tagihan berdasarkan ID pelanggan
   static async getTagihanByPelangganId(req, res) {
     try {
       const { pelanggan_id } = req.params;
 
-      const tagihan = await Tagihan.find({ pelanggan_id }).sort({ bulan_tagihan: -1 });
+      const tagihan = await TagihanModel.getTagihanByPelangganId(pelanggan_id);
 
       res.json({
         success: true,
@@ -124,12 +104,12 @@ class TagihanController {
     }
   }
 
-  // GET tagihan by ID
+  // Ambil tagihan berdasarkan ID
   static async getTagihanById(req, res) {
     try {
       const { id } = req.params;
 
-      const tagihan = await Tagihan.findById(id).populate('pelanggan_id');
+      const tagihan = await TagihanModel.getTagihanById(id);
       if (!tagihan) {
         return res.status(404).json({
           success: false,
@@ -152,16 +132,26 @@ class TagihanController {
     }
   }
 
-  // POST create tagihan baru
+  // Buat tagihan baru
   static async createTagihan(req, res) {
     try {
-      const { pelanggan_id, bulan_tagihan, jumlah_tagihan, status_pembayaran, metode_pembayaran, catatan } = req.body;
+      const { pelanggan_id, bulan_tagihan, jumlah_tagihan, status_pembayaran, tanggal_pembayaran, metode_pembayaran, catatan } = req.body;
 
-      const tagihan = await Tagihan.create({
+      // Validasi pelanggan ada
+      const pelanggan = await PelangganModel.getPelangganById(pelanggan_id);
+      if (!pelanggan) {
+        return res.status(404).json({
+          success: false,
+          message: 'Pelanggan tidak ditemukan'
+        });
+      }
+
+      const tagihan = await TagihanModel.createTagihan({
         pelanggan_id,
         bulan_tagihan,
         jumlah_tagihan,
         status_pembayaran: status_pembayaran || 'belum_lunas',
+        tanggal_pembayaran,
         metode_pembayaran,
         catatan
       });
@@ -181,20 +171,20 @@ class TagihanController {
     }
   }
 
-  // PUT update tagihan
+  // Perbarui data tagihan
   static async updateTagihan(req, res) {
     try {
       const { id } = req.params;
       const { bulan_tagihan, jumlah_tagihan, status_pembayaran, tanggal_pembayaran, metode_pembayaran, catatan } = req.body;
 
-      const tagihan = await Tagihan.findByIdAndUpdate(id, {
+      const tagihan = await TagihanModel.updateTagihan(id, {
         bulan_tagihan,
         jumlah_tagihan,
         status_pembayaran,
         tanggal_pembayaran,
         metode_pembayaran,
         catatan
-      }, { new: true });
+      });
 
       if (!tagihan) {
         return res.status(404).json({
@@ -218,13 +208,13 @@ class TagihanController {
     }
   }
 
-  // DELETE tagihan
+  // Hapus tagihan
   static async deleteTagihan(req, res) {
     try {
       const { id } = req.params;
 
-      const tagihan = await Tagihan.findByIdAndDelete(id);
-      if (!tagihan) {
+      const deleted = await TagihanModel.deleteTagihan(id);
+      if (!deleted) {
         return res.status(404).json({
           success: false,
           message: 'Tagihan tidak ditemukan'
@@ -240,30 +230,6 @@ class TagihanController {
       res.status(500).json({
         success: false,
         message: 'Gagal menghapus tagihan',
-        error: error.message
-      });
-    }
-  }
-  // GET statistik tagihan untuk dashboard
-  static async getStatistikTagihan(req, res) {
-    try {
-      const belumLunas = await Tagihan.countDocuments({ status_pembayaran: 'belum_lunas' });
-      const lunasBills = await Tagihan.find({ status_pembayaran: 'lunas' });
-      const totalNilai = lunasBills.reduce((acc, curr) => acc + curr.jumlah_tagihan, 0);
-
-      res.json({
-        success: true,
-        message: 'Statistik tagihan berhasil diambil',
-        data: {
-          belumLunas,
-          totalNilai
-        }
-      });
-    } catch (error) {
-      console.error('Error getting statistik tagihan:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Gagal mengambil statistik tagihan',
         error: error.message
       });
     }

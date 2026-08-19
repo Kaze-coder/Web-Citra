@@ -1,6 +1,5 @@
 /**
  * Tagihan Routes
- * Routes untuk endpoint tagihan
  */
 
 const express = require('express');
@@ -8,20 +7,20 @@ const router = express.Router();
 const TagihanController = require('../controllers/TagihanController');
 const { validateTagihan } = require('../middleware/validateInput');
 
-// GET routes
+// Endpoint GET
 router.get('/', TagihanController.getAllTagihan);
 router.get('/statistik', TagihanController.getStatistikTagihan);
 router.get('/belum-bayar', TagihanController.getTagihanBelumBayar);
 router.get('/:id', TagihanController.getTagihanById);
 router.get('/pelanggan/:pelanggan_id', TagihanController.getTagihanByPelangganId);
 
-// POST route
+// Endpoint POST
 router.post('/', validateTagihan, TagihanController.createTagihan);
 
-// PUT route
+// Endpoint PUT
 router.put('/:id', TagihanController.updateTagihan);
 
-// DELETE route
+// Endpoint DELETE
 router.delete('/:id', TagihanController.deleteTagihan);
 
 module.exports = router;

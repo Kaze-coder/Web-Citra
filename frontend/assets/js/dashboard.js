@@ -1,24 +1,90 @@
 /**
- * Dashboard JavaScript with Charts
+ * Modul Dashboard - Citra NET Manager
  */
 
 let chartPembayaran, chartPaket, chartRevenue;
+
+// Store previous percentages untuk comparison
+let previousPercentages = {
+  totalPelanggan: 0,
+  pelangganAktif: 0,
+  tagihanBelum: 0,
+  pemasukan: 0
+};
+
+function updateTrendColor(elementId, currentValue, previousValue) {
+  const trendElement = document.getElementById(`trend-${elementId}`);
+  const iconElement = document.getElementById(`icon-${elementId}`);
+  let trendClass = 'trend-neutral';
+  let iconClass = 'fas fa-water'; // Wavy icon untuk neutral
+  
+  if (currentValue > previousValue) {
+    trendClass = 'trend-up';
+    iconClass = 'fas fa-arrow-up';
+  } else if (currentValue < previousValue) {
+    trendClass = 'trend-down';
+    iconClass = 'fas fa-arrow-down';
+  }
+  
+  // Remove all trend classes
+  trendElement.classList.remove('trend-up', 'trend-down', 'trend-neutral');
+  trendElement.classList.add(trendClass);
+  
+  // Update icon
+  iconElement.className = iconClass;
+}
 
 async function loadStatistics() {
   try {
     const pelRes = await axios.get('/pelanggan/statistik');
     const tagRes = await axios.get('/tagihan/statistik');
 
+    let pelStats = {};
+    let tagStats = {};
+
     if (pelRes.data.success) {
-      const stats = pelRes.data.data;
-      document.getElementById('totalPelanggan').textContent = stats.total;
-      document.getElementById('pelangganAktif').textContent = stats.aktif;
+      pelStats = pelRes.data.data;
+      document.getElementById('totalPelanggan').textContent = pelStats.total || 0;
+      document.getElementById('pelangganAktif').textContent = pelStats.aktif || 0;
+      
+      // Calculate percentage: aktif dari total
+      const pctAktif = pelStats.total > 0 ? Math.round((pelStats.aktif / pelStats.total) * 100) : 0;
+      document.getElementById('pct-pelanggan-aktif').textContent = pctAktif + '%';
+      document.getElementById('pct-total-pelanggan').textContent = pctAktif + '%';
+      
+      // Update trend color untuk pelanggan aktif
+      updateTrendColor('pelanggan-aktif', pctAktif, previousPercentages.pelangganAktif);
+      updateTrendColor('total-pelanggan', pctAktif, previousPercentages.totalPelanggan);
+      
+      // Store untuk comparison berikutnya
+      previousPercentages.pelangganAktif = pctAktif;
+      previousPercentages.totalPelanggan = pctAktif;
     }
 
     if (tagRes.data.success) {
-      const tStats = tagRes.data.data;
-      document.getElementById('tagihanBelum').textContent = tStats.belumLunas || 0;
-      document.getElementById('totalPemasukan').textContent = formatRupiah(tStats.totalNilai || 0);
+      tagStats = tagRes.data.data;
+      document.getElementById('tagihanBelum').textContent = tagStats.belum_lunas || 0;
+      // Backend statistik mengembalikan field totalPemasukan
+      document.getElementById('totalPemasukan').textContent = formatRupiah(pelStats.totalPemasukan || 0);
+      
+      // Calculate percentage: belum lunas dari total tagihan
+      const totalTag = (tagStats.lunas || 0) + (tagStats.belum_lunas || 0) + (tagStats.cicilan || 0);
+      const pctBelumLunas = totalTag > 0 ? Math.round(((tagStats.belum_lunas || 0) / totalTag) * 100) : 0;
+      document.getElementById('pct-tagihan-belum').textContent = pctBelumLunas + '%';
+      
+      // Update trend color untuk tagihan belum lunas
+      updateTrendColor('tagihan-belum', pctBelumLunas, previousPercentages.tagihanBelum);
+      
+      // Calculate pemasukan percentage: lunas dari total tagihan
+      const pctLunas = totalTag > 0 ? Math.round(((tagStats.lunas || 0) / totalTag) * 100) : 0;
+      document.getElementById('pct-pemasukan').textContent = pctLunas + '%';
+      
+      // Update trend color untuk pemasukan (semakin tinggi semakin baik)
+      updateTrendColor('pemasukan', pctLunas, previousPercentages.pemasukan);
+      
+      // Store untuk comparison berikutnya
+      previousPercentages.tagihanBelum = pctBelumLunas;
+      previousPercentages.pemasukan = pctLunas;
     }
   } catch (error) {
     console.error('Error loading statistics:', error);
@@ -40,7 +106,7 @@ async function loadRecentTagihan() {
 
       table.innerHTML = res.data.data.slice(0, 5).map(t => `
         <tr>
-          <td>${t.nama_pelanggan}</td>
+          <td>${escapeHtml(t.nama_pelanggan)}</td>
           <td>${formatRupiah(t.jumlah_tagihan)}</td>
           <td>${getStatusBadge(t.status_pembayaran)}</td>
           <td>${formatDateShort(t.bulan_tagihan)}</td>
@@ -61,7 +127,7 @@ async function loadCharts() {
       const tagihanData = tagRes.data.data;
       const pelangganData = pelRes.data.data;
 
-      // Chart 1: Status Pembayaran (Pie)
+      // Chart 1: Status Pembayaran (Donut)
       let countLunas = 0;
       let countBelumLunas = 0;
       let countCicilan = 0;
@@ -76,12 +142,12 @@ async function loadCharts() {
       const data = [];
       const bgColors = [];
 
-      // Always show all 3 statuses for consistency, or hide zero values
+      // Tampilkan status pembayaran
       if (countLunas > 0) { labels.push('Lunas'); data.push(countLunas); bgColors.push('#00B368'); }
       if (countBelumLunas > 0) { labels.push('Belum Lunas'); data.push(countBelumLunas); bgColors.push('#FF6B6B'); }
       if (countCicilan > 0) { labels.push('Cicilan'); data.push(countCicilan); bgColors.push('#FFC107'); }
 
-      // If no data at all, just show a grey placeholder
+      // Jika tidak ada data
       if (data.length === 0) {
         labels.push('Belum Ada Data');
         data.push(1);
@@ -96,19 +162,33 @@ async function loadCharts() {
           labels: labels,
           datasets: [{
             data: data,
-            backgroundColor: bgColors,
+            backgroundColor: ['#2563eb', '#ef4444', '#f59e0b', '#0ea5e9', '#64748b'],
             borderColor: '#ffffff',
-            borderWidth: 2,
-            tension: 0.3
+            borderWidth: 4,
+            hoverOffset: 10
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          cutout: '75%',
           plugins: {
             legend: {
               position: 'bottom',
-              labels: { font: { family: "'Poppins', sans-serif", size: 12 }, padding: 15 }
+              labels: { 
+                font: { family: "'Poppins', sans-serif", size: 12, weight: '500' }, 
+                padding: 20,
+                usePointStyle: true,
+                pointStyle: 'circle'
+              }
+            },
+            tooltip: {
+              backgroundColor: '#1e293b',
+              padding: 12,
+              titleFont: { size: 14, weight: 'bold' },
+              bodyFont: { size: 13 },
+              cornerRadius: 8,
+              displayColors: true
             }
           }
         }
@@ -122,6 +202,10 @@ async function loadCharts() {
       });
 
       const ctxPaket = document.getElementById('chartPaket');
+      const gradientBar = ctxPaket.getContext('2d').createLinearGradient(0, 0, 400, 0);
+      gradientBar.addColorStop(0, 'rgba(37, 99, 235, 0.8)');
+      gradientBar.addColorStop(1, 'rgba(37, 99, 235, 0.2)');
+
       if (chartPaket) chartPaket.destroy();
       chartPaket = new Chart(ctxPaket, {
         type: 'bar',
@@ -130,10 +214,11 @@ async function loadCharts() {
           datasets: [{
             label: 'Jumlah Pelanggan',
             data: Object.values(paketCounts),
-            backgroundColor: '#0066CC',
-            borderColor: '#0052A3',
-            borderWidth: 2,
-            borderRadius: 6
+            backgroundColor: gradientBar,
+            borderColor: '#2563eb',
+            borderWidth: 1,
+            borderRadius: 8,
+            barThickness: 20
           }]
         },
         options: {
@@ -141,10 +226,22 @@ async function loadCharts() {
           maintainAspectRatio: false,
           indexAxis: 'y',
           plugins: {
-            legend: { display: false }
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#1e293b',
+              cornerRadius: 8
+            }
           },
           scales: {
-            x: { beginAtZero: true }
+            x: { 
+              beginAtZero: true,
+              grid: { display: false },
+              ticks: { font: { family: "'Poppins', sans-serif" } }
+            },
+            y: {
+              grid: { display: false },
+              ticks: { font: { family: "'Poppins', sans-serif", weight: '500' } }
+            }
           }
         }
       });
@@ -157,6 +254,10 @@ async function loadCharts() {
       });
 
       const ctxRevenue = document.getElementById('chartRevenue');
+      const gradientLine = ctxRevenue.getContext('2d').createLinearGradient(0, 0, 0, 300);
+      gradientLine.addColorStop(0, 'rgba(37, 99, 235, 0.2)');
+      gradientLine.addColorStop(1, 'rgba(37, 99, 235, 0)');
+
       if (chartRevenue) chartRevenue.destroy();
       chartRevenue = new Chart(ctxRevenue, {
         type: 'line',
@@ -165,28 +266,43 @@ async function loadCharts() {
           datasets: [{
             label: 'Jumlah Tagihan',
             data: Object.values(bulanCounts).slice(-12),
-            borderColor: '#0066CC',
-            backgroundColor: 'rgba(0, 102, 204, 0.1)',
+            borderColor: '#2563eb',
+            backgroundColor: gradientLine,
             tension: 0.4,
             fill: true,
-            borderWidth: 3,
-            pointRadius: 5,
-            pointBackgroundColor: '#0066CC',
-            pointBorderColor: 'white',
-            pointBorderWidth: 2
+            borderWidth: 4,
+            pointRadius: 0,
+            pointHoverRadius: 6,
+            pointHoverBackgroundColor: '#2563eb',
+            pointHoverBorderColor: 'white',
+            pointHoverBorderWidth: 2
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          interaction: {
+            intersect: false,
+            mode: 'index'
+          },
           plugins: {
-            legend: {
-              display: true,
-              labels: { font: { family: "'Poppins', sans-serif", size: 12 } }
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#1e293b',
+              padding: 12,
+              cornerRadius: 8
             }
           },
           scales: {
-            y: { beginAtZero: true }
+            y: { 
+              beginAtZero: true,
+              grid: { color: '#f1f5f9' },
+              ticks: { font: { family: "'Poppins', sans-serif" } }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { font: { family: "'Poppins', sans-serif" } }
+            }
           }
         }
       });

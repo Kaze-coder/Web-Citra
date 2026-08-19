@@ -4,6 +4,7 @@
 
 let editingPerangkatId = null;
 let deletingPerangkatId = null;
+let dataTableInstance = null;
 
 async function loadPelangganList() {
   try {
@@ -11,7 +12,7 @@ async function loadPelangganList() {
     if (res.data.success) {
       const select = document.getElementById('pelanggan_id');
       select.innerHTML = '<option value="">-- Pilih Pelanggan --</option>' + 
-        res.data.data.map(p => `<option value="${p._id}">${p.nama_pelanggan}</option>`).join('');
+        res.data.data.map(p => `<option value="${p.id}">${escapeHtml(p.nama_pelanggan)}</option>`).join('');
     }
   } catch (error) {
     console.error('Error loading pelanggan:', error);
@@ -20,23 +21,35 @@ async function loadPelangganList() {
 
 async function loadPerangkat() {
   try {
-    const res = await axios.get('/perangkat');
+    const res = await axios.get('/perangkat', { params: { limit: 10000 } });
     if (res.data.success) {
       const table = document.getElementById('perangkatTable');
+      
+      if (dataTableInstance) {
+        dataTableInstance.destroy();
+      }
+      
       table.innerHTML = res.data.data.map(p => `
         <tr>
-          <td>${p.pelanggan_id ? p.pelanggan_id.nama_pelanggan : '-'}</td>
-          <td>${p.nama_perangkat}</td>
-          <td>${p.tipe_perangkat}</td>
-          <td>${p.ip_address || '-'}</td>
-          <td>${p.mac_address || '-'}</td>
+          <td>${p.pelanggan_id ? escapeHtml(p.pelanggan_id.nama_pelanggan) : '-'}</td>
+          <td>${escapeHtml(p.nama_perangkat)}</td>
+          <td>${escapeHtml(p.tipe_perangkat)}</td>
+          <td>${escapeHtml(p.ip_address || '-')}</td>
+          <td>${escapeHtml(p.mac_address || '-')}</td>
           <td>${getStatusBadge(p.status_perangkat)}</td>
           <td>
-            <button class="btn btn-primary btn-sm" onclick="editPerangkat('${p._id}')"><i class="fas fa-edit"></i> Edit</button>
-            <button class="btn btn-danger btn-sm" onclick="openDeletePerangkatModal('${p._id}', '${p.nama_perangkat}')"><i class="fas fa-trash"></i> Hapus</button>
+            <button class="btn btn-primary btn-sm" onclick="editPerangkat('${p.id}')"><i class="fas fa-edit"></i> Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="openDeletePerangkatModal('${p.id}', '${escapeHtml(p.nama_perangkat)}')"><i class="fas fa-trash"></i> Hapus</button>
           </td>
         </tr>
       `).join('');
+
+      dataTableInstance = new DataTable('#mainTable', {
+        language: { search: "Cari:", lengthMenu: "Tampilkan _MENU_ data", info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data" },
+        columnDefs: [
+          { className: "text-start", targets: "_all" }
+        ]
+      });
     }
   } catch (error) {
     console.error('Error loading perangkat:', error);
@@ -74,7 +87,7 @@ async function loadPerangkatData(id) {
     const res = await axios.get(`/perangkat/${id}`);
     if (res.data.success) {
       const p = res.data.data;
-      document.getElementById('pelanggan_id').value = p.pelanggan_id._id || p.pelanggan_id;
+      document.getElementById('pelanggan_id').value = p.pelanggan_id.id || p.pelanggan_id;
       document.getElementById('nama_perangkat').value = p.nama_perangkat;
       document.getElementById('tipe_perangkat').value = p.tipe_perangkat;
       document.getElementById('ip_address').value = p.ip_address || '';
