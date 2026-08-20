@@ -143,15 +143,15 @@ async function loadCharts() {
       const bgColors = [];
 
       // Tampilkan status pembayaran
-      if (countLunas > 0) { labels.push('Lunas'); data.push(countLunas); bgColors.push('#00B368'); }
-      if (countBelumLunas > 0) { labels.push('Belum Lunas'); data.push(countBelumLunas); bgColors.push('#FF6B6B'); }
-      if (countCicilan > 0) { labels.push('Cicilan'); data.push(countCicilan); bgColors.push('#FFC107'); }
+      if (countLunas > 0) { labels.push('Lunas'); data.push(countLunas); bgColors.push('#2B2B2B'); }
+      if (countBelumLunas > 0) { labels.push('Belum Lunas'); data.push(countBelumLunas); bgColors.push('#DC2626'); }
+      if (countCicilan > 0) { labels.push('Cicilan'); data.push(countCicilan); bgColors.push('#A3A3A3'); }
 
       // Jika tidak ada data
       if (data.length === 0) {
         labels.push('Belum Ada Data');
         data.push(1);
-        bgColors.push('#e0e0e0');
+        bgColors.push('#E5E5E5');
       }
 
       const ctxPembayaran = document.getElementById('chartPembayaran');
@@ -162,7 +162,7 @@ async function loadCharts() {
           labels: labels,
           datasets: [{
             data: data,
-            backgroundColor: ['#346538', '#9F2F2D', '#956400', '#1F6C9F', '#787774'],
+            backgroundColor: ['#2B2B2B', '#DC2626', '#A3A3A3', '#737373', '#E5E5E5'],
             borderColor: '#ffffff',
             borderWidth: 4,
             hoverOffset: 10
@@ -176,14 +176,14 @@ async function loadCharts() {
             legend: {
               position: 'bottom',
               labels: { 
-                font: { family: "'Switzer', 'Helvetica Neue', sans-serif", size: 12, weight: '500' }, 
+                font: { family: "'Geist Sans', -apple-system, sans-serif", size: 12, weight: '500' }, 
                 padding: 20,
                 usePointStyle: true,
                 pointStyle: 'circle'
               }
             },
             tooltip: {
-              backgroundColor: '#111111',
+              backgroundColor: '#1A1A1A',
               padding: 12,
               titleFont: { size: 14, weight: 'bold' },
               bodyFont: { size: 13 },
@@ -211,8 +211,8 @@ async function loadCharts() {
           datasets: [{
             label: 'Jumlah Pelanggan',
             data: Object.values(paketCounts),
-            backgroundColor: '#2F3437',
-            borderColor: '#2F3437',
+            backgroundColor: '#2B2B2B',
+            borderColor: '#2B2B2B',
             borderWidth: 1,
             borderRadius: 4,
             barThickness: 20
@@ -225,7 +225,7 @@ async function loadCharts() {
           plugins: {
             legend: { display: false },
             tooltip: {
-              backgroundColor: '#111111',
+              backgroundColor: '#1A1A1A',
               cornerRadius: 8
             }
           },
@@ -233,11 +233,11 @@ async function loadCharts() {
             x: { 
               beginAtZero: true,
               grid: { display: false },
-              ticks: { font: { family: "'Switzer', 'Helvetica Neue', sans-serif" } }
+              ticks: { font: { family: "'Geist Sans', -apple-system, sans-serif" } }
             },
             y: {
               grid: { display: false },
-              ticks: { font: { family: "'Switzer', 'Helvetica Neue', sans-serif", weight: '500' } }
+              ticks: { font: { family: "'Geist Sans', -apple-system, sans-serif", weight: '500' } }
             }
           }
         }
@@ -252,8 +252,8 @@ async function loadCharts() {
 
       const ctxRevenue = document.getElementById('chartRevenue');
       const gradientLine = ctxRevenue.getContext('2d').createLinearGradient(0, 0, 0, 300);
-      gradientLine.addColorStop(0, 'rgba(17, 17, 17, 0.06)');
-      gradientLine.addColorStop(1, 'rgba(17, 17, 17, 0)');
+      gradientLine.addColorStop(0, 'rgba(43, 43, 43, 0.06)');
+      gradientLine.addColorStop(1, 'rgba(43, 43, 43, 0)');
 
       if (chartRevenue) chartRevenue.destroy();
       chartRevenue = new Chart(ctxRevenue, {
@@ -263,14 +263,14 @@ async function loadCharts() {
           datasets: [{
             label: 'Jumlah Tagihan',
             data: Object.values(bulanCounts).slice(-12),
-            borderColor: '#111111',
+            borderColor: '#2B2B2B',
             backgroundColor: gradientLine,
             tension: 0.4,
             fill: true,
             borderWidth: 2,
             pointRadius: 0,
             pointHoverRadius: 6,
-            pointHoverBackgroundColor: '#111111',
+            pointHoverBackgroundColor: '#2B2B2B',
             pointHoverBorderColor: 'white',
             pointHoverBorderWidth: 2
           }]
@@ -285,7 +285,7 @@ async function loadCharts() {
           plugins: {
             legend: { display: false },
             tooltip: {
-              backgroundColor: '#111111',
+              backgroundColor: '#1A1A1A',
               padding: 12,
               cornerRadius: 8
             }
@@ -293,12 +293,12 @@ async function loadCharts() {
           scales: {
             y: { 
               beginAtZero: true,
-              grid: { color: '#EAEAEA' },
-              ticks: { font: { family: "'Switzer', 'Helvetica Neue', sans-serif" } }
+              grid: { color: '#E5E5E5' },
+              ticks: { font: { family: "'Geist Sans', -apple-system, sans-serif" } }
             },
             x: {
               grid: { display: false },
-              ticks: { font: { family: "'Switzer', 'Helvetica Neue', sans-serif" } }
+              ticks: { font: { family: "'Geist Sans', -apple-system, sans-serif" } }
             }
           }
         }

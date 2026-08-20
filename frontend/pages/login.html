@@ -9,10 +9,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-sans/style.css">
   <link rel="stylesheet" href="../assets/css/style.css">
 
   <style>
@@ -24,51 +21,51 @@
       align-items: center;
       justify-content: center;
       padding: 32px 16px;
-      background: var(--bg);
+      background: var(--background);
     }
 
     .login-card {
       position: relative;
       width: 100%;
-      max-width: 420px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: none;
+      max-width: 360px;
+      background: var(--card);
+      border: none;
+      border-radius: 0;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
       overflow: hidden;
-      animation: login-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation: login-rise 0.15s ease-out both;
     }
 
     .login-card-body {
-      padding: 40px 36px 32px;
+      padding: 24px;
     }
 
     .login-brand {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 24px;
     }
 
     .login-brand img {
-      width: 56px;
-      height: 56px;
+      width: 40px;
+      height: 40px;
       object-fit: contain;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
     .login-brand h1 {
-      font-family: var(--font-serif);
-      font-size: 26px;
+      font-family: var(--font-sans);
+      font-size: 18px;
       font-weight: 600;
-      letter-spacing: -0.02em;
-      line-height: 1.1;
-      color: var(--text-strong);
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+      color: var(--foreground);
       margin: 0;
     }
 
     .login-brand p {
-      font-size: 13.5px;
-      color: var(--text-secondary);
-      margin: 8px 0 0;
+      font-size: 12px;
+      color: var(--muted-foreground);
+      margin: 6px 0 0;
     }
 
     /* Toggle lihat/sembunyikan password */
@@ -77,54 +74,55 @@
     }
 
     .password-wrap input {
-      padding-right: 46px;
+      padding-right: 40px;
     }
 
     .btn-toggle-password {
       position: absolute;
       top: 50%;
-      right: 8px;
+      right: 6px;
       transform: translateY(-50%);
-      width: 32px;
-      height: 32px;
+      width: 24px;
+      height: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
       border: none;
       background: transparent;
       border-radius: 6px;
-      color: var(--text-secondary);
+      color: var(--muted-foreground);
       cursor: pointer;
-      transition: color 0.2s ease, background-color 0.2s ease;
+      transition: color 0.15s ease, background-color 0.15s ease;
     }
 
     .btn-toggle-password:hover {
-      color: var(--text-strong);
-      background: var(--surface-hover);
+      color: var(--foreground);
+      background: var(--muted);
     }
 
     .btn-toggle-password:focus-visible {
-      outline: 2px solid var(--primary);
-      outline-offset: 1px;
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
     }
 
     .btn-login {
       margin-top: 8px;
-      padding: 12px 22px;
-      font-size: 14px;
+      height: 32px;
+      padding: 0 12px;
+      font-size: 12px;
     }
 
     .login-footer {
-      margin: 24px 0 0;
+      margin: 20px 0 0;
       text-align: center;
-      font-size: 12px;
-      color: var(--text-secondary);
+      font-size: 11px;
+      color: var(--muted-foreground);
     }
 
     @keyframes login-rise {
       from {
         opacity: 0;
-        transform: translateY(12px);
+        transform: scale(0.95);
       }
       to {
         opacity: 1;
@@ -140,7 +138,7 @@
 
     @media (max-width: 480px) {
       .login-card-body {
-        padding: 32px 24px 26px;
+        padding: 20px 16px;
       }
     }
   </style>
