@@ -115,17 +115,27 @@ async function loadTagihan() {
           <td>${getStatusBadge(t.status_pembayaran)}</td>
           <td>${formatDateShort(t.bulan_tagihan)}</td>
           <td>
-            <button class="btn btn-sm btn-primary" onclick="editTagihan('${t.id}')">
+            <button class="btn btn-sm btn-primary" onclick="editTagihan('${t.id}')" aria-label="Edit tagihan ${escapeHtml(t.nama_pelanggan)}">
               <i class="fas fa-edit"></i>
             </button>
-            <button class="btn btn-sm btn-danger" onclick="deleteTagihan('${t.id}')">
+            <button class="btn btn-sm btn-danger" onclick="deleteTagihan('${t.id}')" aria-label="Hapus tagihan ${escapeHtml(t.nama_pelanggan)}">
               <i class="fas fa-trash"></i>
             </button>
           </td>
         </tr>
       `).join('');
     } else {
-      table.innerHTML = '<tr><td colspan="6" class="text-center">Tidak ada data tagihan</td></tr>';
+      const filterActive = Boolean(document.getElementById('filterStatus')?.value || document.getElementById('filterBulan')?.value);
+      const emptyMsg = filterActive
+        ? 'Tidak ada data yang cocok dengan filter.'
+        : 'Belum ada tagihan. Klik tombol "Buat Tagihan Baru" untuk menambahkan.';
+      table.innerHTML = `
+        <tr><td colspan="6" class="text-center py-5">
+          <div class="empty-state">
+            <i class="fas fa-inbox fa-2x mb-2" style="color:var(--text-secondary)"></i>
+            <p class="mb-1" style="color:var(--text-secondary)">${emptyMsg}</p>
+          </div>
+        </td></tr>`;
     }
     dataTableInstance = new DataTable('#mainTable', {
       language: { search: "Cari:", lengthMenu: "Tampilkan _MENU_ data", info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data" },
@@ -137,7 +147,7 @@ async function loadTagihan() {
     console.error('Error loading tagihan:', error);
     const table = document.getElementById('tagihanTable');
     if (table) {
-      table.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Error loading data</td></tr>';
+      table.innerHTML = '<tr><td colspan="6" class="text-center text-danger"><span role="alert">Error loading data</span></td></tr>';
     }
   }
 }

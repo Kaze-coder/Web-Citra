@@ -29,7 +29,17 @@ async function loadPerangkat() {
         dataTableInstance.destroy();
       }
       
-      table.innerHTML = res.data.data.map(p => `
+      if (!res.data.data || res.data.data.length === 0) {
+        table.innerHTML = `
+          <tr><td colspan="7" class="text-center py-5">
+            <div class="empty-state">
+              <i class="fas fa-inbox fa-2x mb-2" style="color:var(--text-secondary)"></i>
+              <p class="mb-1" style="color:var(--text-secondary)">Belum ada perangkat</p>
+              <small style="color:var(--text-secondary)">Klik tombol "Tambah Perangkat" untuk menambahkan data baru.</small>
+            </div>
+          </td></tr>`;
+      } else {
+        table.innerHTML = res.data.data.map(p => `
         <tr>
           <td>${p.pelanggan_id ? escapeHtml(p.pelanggan_id.nama_pelanggan) : '-'}</td>
           <td>${escapeHtml(p.nama_perangkat)}</td>
@@ -38,11 +48,12 @@ async function loadPerangkat() {
           <td>${escapeHtml(p.mac_address || '-')}</td>
           <td>${getStatusBadge(p.status_perangkat)}</td>
           <td>
-            <button class="btn btn-primary btn-sm" onclick="editPerangkat('${p.id}')"><i class="fas fa-edit"></i> Edit</button>
-            <button class="btn btn-danger btn-sm" onclick="openDeletePerangkatModal('${p.id}', '${escapeHtml(p.nama_perangkat)}')"><i class="fas fa-trash"></i> Hapus</button>
+            <button class="btn btn-primary btn-sm" onclick="editPerangkat('${p.id}')" aria-label="Edit perangkat ${escapeHtml(p.nama_perangkat)}"><i class="fas fa-edit"></i> Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="openDeletePerangkatModal('${p.id}', '${escapeHtml(p.nama_perangkat)}')" aria-label="Hapus perangkat ${escapeHtml(p.nama_perangkat)}"><i class="fas fa-trash"></i> Hapus</button>
           </td>
         </tr>
       `).join('');
+      }
 
       dataTableInstance = new DataTable('#mainTable', {
         language: { search: "Cari:", lengthMenu: "Tampilkan _MENU_ data", info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data" },

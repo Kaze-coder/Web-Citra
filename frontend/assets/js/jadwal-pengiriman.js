@@ -65,17 +65,27 @@ async function loadSchedules() {
                 ${s.days_until_billing <= 0 ? 'OVERDUE' : s.days_until_billing + ' hari'}
               </span>
             <td>
-              <button class="btn btn-sm btn-info btn-preview" title="Preview pesan">
+              <button class="btn btn-sm btn-info btn-preview" title="Preview pesan" aria-label="Preview pesan untuk ${escapeHtml(s.nama_pelanggan)}">
                 <i class="fas fa-eye"></i>
               </button>
-              <button class="btn btn-sm btn-success btn-send" title="Kirim sekarang">
+              <button class="btn btn-sm btn-success btn-send" title="Kirim sekarang" aria-label="Kirim pesan sekarang ke ${escapeHtml(s.nama_pelanggan)}">
                 <i class="fas fa-paper-plane"></i>
               </button>
             </td>
           </tr>
         `).join('');
       } else {
-        table.innerHTML = '<tr><td colspan="8" class="text-center">Tidak ada data</td></tr>';
+        const filterActive = Boolean(filter);
+        const emptyMsg = filterActive
+          ? 'Tidak ada jadwal yang cocok dengan filter.'
+          : 'Tidak ada jadwal pengiriman.';
+        table.innerHTML = `
+          <tr><td colspan="8" class="text-center py-5">
+            <div class="empty-state">
+              <i class="fas fa-inbox fa-2x mb-2" style="color:var(--text-secondary)"></i>
+              <p class="mb-1" style="color:var(--text-secondary)">${emptyMsg}</p>
+            </div>
+          </td></tr>`;
       }
       dataTableInstance = new DataTable('#mainTable', {
         language: { search: "Cari:", lengthMenu: "Tampilkan _MENU_ data", info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data" },

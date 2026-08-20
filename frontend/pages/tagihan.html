@@ -22,6 +22,7 @@
   </script>
 </head>
 <body>
+  <a href="#main-content" class="skip-link">Langsung ke konten</a>
   <div class="wrapper d-flex">
     <!-- Sidebar -->
     <nav class="sidebar">
@@ -73,11 +74,11 @@
     </nav>
 
     <!-- Main Content -->
-    <div class="main-content">
+    <div class="main-content" id="main-content">
       <!-- Topbar -->
       <nav class="topbar">
         <div class="topbar-left">
-          <button class="btn-toggle-sidebar" id="toggleSidebar" title="Toggle Sidebar">
+          <button class="btn-toggle-sidebar" id="toggleSidebar" title="Toggle Sidebar" aria-label="Toggle sidebar">
             <i class="fas fa-bars"></i>
           </button>
           <h1 class="page-title">Data Tagihan</h1>
@@ -96,7 +97,7 @@
           <div class="card-body">
             <div class="row">
               <div class="col-md-8">
-                <div class="alert alert-info" id="schedulerStatus">
+                <div class="alert alert-info" id="schedulerStatus" role="alert">
                   <i class="fas fa-spinner fa-spin"></i> Loading scheduler status...
                 </div>
               </div>
@@ -186,7 +187,7 @@
           <h5 class="modal-title">
             <i class="fas fa-plus"></i> Buat Tagihan Baru
           </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" title="Tutup modal"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" title="Tutup modal" aria-label="Tutup"></button>
         </div>
         <div class="modal-body">
           <form id="formBuatTagihan">
@@ -201,11 +202,11 @@
               <input type="month" class="form-control" id="inputBulanTagihan" title="Pilih bulan tagihan" required>
             </div>
             <div class="mb-3">
-              <label class="form-label">Jumlah Tagihan (Rp)</label>
+              <label class="form-label" for="inputJumlahTagihan">Jumlah Tagihan (Rp)</label>
               <input type="number" class="form-control" id="inputJumlahTagihan" placeholder="500000" required>
             </div>
             <div class="mb-3">
-              <label class="form-label">Status</label>
+              <label class="form-label" for="selectStatusTagihan">Status</label>
               <select class="form-select" id="selectStatusTagihan" title="Pilih status pembayaran" required>
                 <option value="belum_lunas">Belum Lunas</option>
                 <option value="cicilan">Cicilan</option>
@@ -213,7 +214,7 @@
               </select>
             </div>
             <div class="mb-3">
-              <label class="form-label">Catatan</label>
+              <label class="form-label" for="inputCatatan">Catatan</label>
               <textarea class="form-control" id="inputCatatan" rows="2" placeholder="Opsional"></textarea>
             </div>
             <div class="form-check">
@@ -242,7 +243,7 @@
           <h5 class="modal-title">
             <i class="fas fa-edit"></i> Edit Tagihan
           </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" title="Tutup modal"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" title="Tutup modal" aria-label="Tutup"></button>
         </div>
         <div class="modal-body">
           <form id="formEditTagihan">
@@ -260,7 +261,7 @@
               <input type="number" class="form-control" id="editJumlahTagihan" placeholder="0" title="Masukkan jumlah tagihan" required>
             </div>
             <div class="mb-3">
-              <label class="form-label">Status</label>
+              <label class="form-label" for="editStatusTagihan">Status</label>
               <select class="form-select" id="editStatusTagihan" title="Edit status pembayaran" required>
                 <option value="belum_lunas">Belum Lunas</option>
                 <option value="cicilan">Cicilan</option>
@@ -291,7 +292,7 @@
           <h5 class="modal-title">
             <i class="fas fa-paper-plane"></i> Test Kirim WhatsApp
           </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" title="Tutup modal"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" title="Tutup modal" aria-label="Tutup"></button>
         </div>
         <div class="modal-body">
           <form id="formTestWhatsApp">
@@ -299,11 +300,11 @@
               <i class="fas fa-info-circle"></i> Kirim pesan test ke nomor WhatsApp Anda
             </div>
             <div class="mb-3">
-              <label class="form-label">Nomor Telepon (format: 62812... atau 0812...)</label>
+              <label class="form-label" for="inputNomorTest">Nomor Telepon (format: 62812... atau 0812...)</label>
               <input type="text" class="form-control" id="inputNomorTest" placeholder="0812-1234-5678" required>
             </div>
             <div class="mb-3">
-              <label class="form-label">Pesan</label>
+              <label class="form-label" for="inputPesanTest">Pesan</label>
               <textarea class="form-control" id="inputPesanTest" rows="4" placeholder="Halo! Ini adalah pesan test dari ISP Manager">Halo! 👋
 
 Ini adalah pesan test dari ISP Manager.

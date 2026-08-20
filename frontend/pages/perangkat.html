@@ -22,6 +22,7 @@
   </script>
 </head>
 <body>
+  <a href="#main-content" class="skip-link">Langsung ke konten</a>
   <div class="wrapper d-flex">
     <!-- Sidebar -->
     <nav class="sidebar">
@@ -73,11 +74,11 @@
     </nav>
 
     <!-- Main Content -->
-    <div class="main-content">
+    <div class="main-content" id="main-content">
       <!-- Topbar -->
       <nav class="topbar">
         <div class="topbar-left">
-          <button class="btn-toggle-sidebar" id="toggleSidebar">
+          <button class="btn-toggle-sidebar" id="toggleSidebar" aria-label="Toggle sidebar">
             <i class="fas fa-bars"></i>
           </button>
           <h1 class="page-title">Data Perangkat</h1>
@@ -124,7 +125,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="perangkatModalTitle">Tambah Perangkat</h5>
-        <button type="button" class="btn-close" onclick="closePerangkatModal()"></button>
+        <button type="button" class="btn-close" onclick="closePerangkatModal()" aria-label="Tutup"></button>
       </div>
       <div class="modal-body">
         <form id="perangkatForm">
@@ -190,7 +191,7 @@
     <div class="modal-content" style="max-width: 400px;">
       <div class="modal-header">
         <h5 class="modal-title">Konfirmasi Hapus</h5>
-        <button type="button" class="btn-close" onclick="closeDeletePerangkatModal()"></button>
+        <button type="button" class="btn-close" onclick="closeDeletePerangkatModal()" aria-label="Tutup"></button>
       </div>
       <div class="modal-body">
         <div style="padding: 15px; background: #FEF2F2; border-left: 4px solid #EF4444; border-radius: 6px; margin-bottom: 15px;">

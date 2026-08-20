@@ -169,6 +169,7 @@
   </script>
 </head>
 <body>
+  <a href="#main-content" class="skip-link">Langsung ke konten</a>
   <div class="wrapper d-flex">
     <!-- Sidebar -->
     <nav class="sidebar">
@@ -220,11 +221,11 @@
     </nav>
 
     <!-- Main Content -->
-    <div class="main-content">
+    <div class="main-content" id="main-content">
       <!-- Topbar -->
       <nav class="topbar">
         <div class="topbar-left">
-          <button class="btn-toggle-sidebar" id="toggleSidebar" title="Toggle Sidebar">
+          <button class="btn-toggle-sidebar" id="toggleSidebar" title="Toggle Sidebar" aria-label="Toggle sidebar">
             <i class="fas fa-bars"></i>
           </button>
           <h1 class="page-title">Peta Lokasi Pelanggan</h1>
@@ -234,10 +235,10 @@
       <!-- Content -->
       <div class="content-area">
         <div class="map-controls-panel">
-          <button id="refreshMapBtn" class="btn btn-sm btn-primary" title="Refresh peta">
+          <button id="refreshMapBtn" class="btn btn-sm btn-primary" title="Refresh peta" aria-label="Refresh peta">
             <i class="fas fa-sync-alt"></i> Refresh Peta
           </button>
-          <button id="geocodeBtn" class="btn btn-sm btn-info" title="Generate koordinat pelanggan">
+          <button id="geocodeBtn" class="btn btn-sm btn-info" title="Generate koordinat pelanggan" aria-label="Generate koordinat pelanggan">
             <i class="fas fa-location-crosshairs"></i> Generate Koordinat
           </button>
           <div id="geocodeStatus" class="geocode-status-text"></div>

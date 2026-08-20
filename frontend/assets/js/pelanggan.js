@@ -45,25 +45,36 @@ async function loadPelanggan() {
         dataTableInstance.destroy();
       }
       
-      table.innerHTML = res.data.data.map(p => `
+      if (!res.data.data || res.data.data.length === 0) {
+        table.innerHTML = `
+          <tr><td colspan="7" class="text-center py-5">
+            <div class="empty-state">
+              <i class="fas fa-inbox fa-2x mb-2" style="color:var(--text-secondary)"></i>
+              <p class="mb-1" style="color:var(--text-secondary)">Belum ada pelanggan</p>
+              <small style="color:var(--text-secondary)">Klik tombol "Tambah Pelanggan" untuk menambahkan data baru.</small>
+            </div>
+          </td></tr>`;
+      } else {
+        table.innerHTML = res.data.data.map(p => `
         <tr>
           <td>${escapeHtml(p.nama_pelanggan)}</td>
           <td>${escapeHtml(p.no_telepon)}</td>
           <td style="max-width: 250px;" title="${escapeHtml(p.alamat || '-')}">
             <div class="d-flex align-items-center justify-content-between">
               <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(p.alamat || '-')}</span>
-              ${p.alamat ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.alamat)}" target="_blank" class="btn btn-sm btn-outline-primary ms-2" style="padding: 2px 6px;" title="Buka di Google Maps"><i class="fas fa-map-marker-alt"></i></a>` : ''}
+              ${p.alamat ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.alamat)}" target="_blank" class="btn btn-sm btn-outline-primary ms-2" style="padding: 2px 6px;" title="Buka di Google Maps" aria-label="Buka di Google Maps"><i class="fas fa-map-marker-alt"></i></a>` : ''}
             </div>
           </td>
           <td>${escapeHtml(p.paket_layanan)}</td>
           <td>${formatRupiah(p.harga_bulanan)}</td>
           <td>${getStatusBadge(p.status)}</td>
           <td>
-            <button class="btn btn-primary btn-sm" onclick="editPelanggan('${p.id}')"><i class="fas fa-edit"></i> Edit</button>
-            <button class="btn btn-danger btn-sm" onclick="openDeleteModal('${p.id}')"><i class="fas fa-trash"></i> Hapus</button>
+            <button class="btn btn-primary btn-sm" onclick="editPelanggan('${p.id}')" aria-label="Edit pelanggan ${escapeHtml(p.nama_pelanggan)}"><i class="fas fa-edit"></i> Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="openDeleteModal('${p.id}')" aria-label="Hapus pelanggan ${escapeHtml(p.nama_pelanggan)}"><i class="fas fa-trash"></i> Hapus</button>
           </td>
         </tr>
       `).join('');
+      }
 
       dataTableInstance = new DataTable('#mainTable', {
         language: { search: "Cari:", lengthMenu: "Tampilkan _MENU_ data", info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data" },

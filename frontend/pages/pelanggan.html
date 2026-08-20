@@ -23,6 +23,7 @@
   </script>
 </head>
 <body>
+  <a href="#main-content" class="skip-link">Langsung ke konten</a>
   <div class="wrapper d-flex">
     <!-- Sidebar -->
     <nav class="sidebar">
@@ -74,11 +75,11 @@
     </nav>
 
     <!-- Main Content -->
-    <div class="main-content">
+    <div class="main-content" id="main-content">
       <!-- Topbar -->
       <nav class="topbar">
         <div class="topbar-left">
-          <button class="btn-toggle-sidebar" id="toggleSidebar">
+          <button class="btn-toggle-sidebar" id="toggleSidebar" aria-label="Toggle sidebar">
             <i class="fas fa-bars"></i>
           </button>
           <h1 class="page-title">Data Pelanggan</h1>
@@ -130,7 +131,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modalTitle">Tambah Pelanggan</h5>
-        <button type="button" class="btn-close" onclick="closeModal()"></button>
+        <button type="button" class="btn-close" onclick="closeModal()" aria-label="Tutup"></button>
       </div>
       <div class="modal-body">
         <form id="pelangganForm">
@@ -191,7 +192,7 @@
     <div class="modal-content" style="max-width: 600px;">
       <div class="modal-header">
         <h5 class="modal-title">Preview Lokasi</h5>
-        <button type="button" class="btn-close" onclick="closeLokasiModal()"></button>
+        <button type="button" class="btn-close" onclick="closeLokasiModal()" aria-label="Tutup"></button>
       </div>
       <div class="modal-body">
         <div id="mapContainer" style="width: 100%; height: 400px; border-radius: 8px; overflow: hidden; background: #E5E7EB; display: flex; align-items: center; justify-content: center;">
@@ -213,7 +214,7 @@
     <div class="modal-content" style="max-width: 400px;">
       <div class="modal-header">
         <h5 class="modal-title">Konfirmasi Hapus</h5>
-        <button type="button" class="btn-close" onclick="closeDeleteModal()"></button>
+        <button type="button" class="btn-close" onclick="closeDeleteModal()" aria-label="Tutup"></button>
       </div>
       <div class="modal-body">
         <div style="padding: 15px; background: #FEF2F2; border-left: 4px solid #EF4444; border-radius: 6px; margin-bottom: 15px;">

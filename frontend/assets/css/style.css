@@ -56,6 +56,89 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* ==========================================================================
+   Accessibility primitives
+   ========================================================================== */
+
+/* Global focus ring */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Interactive elements always show pointer */
+a,
+button,
+[role="button"],
+.btn,
+label.form-check-label,
+.page-link,
+summary {
+  cursor: pointer;
+}
+
+/* Minimum touch targets */
+.btn,
+.form-control,
+.form-select {
+  min-height: 44px;
+}
+
+.btn-sm {
+  min-height: 36px;
+}
+
+/* Checkbox row gets a 44px hit area without distorting the control */
+.form-check {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  padding-left: 1.75em;
+}
+
+.form-check-input {
+  min-width: 18px;
+  min-height: 18px;
+}
+
+/* Skip link — hidden until focused */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  z-index: 9999;
+  padding: 8px 16px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.skip-link:focus {
+  top: 16px;
+  color: #fff;
+}
+
+/* Empty state block inside tables */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 24px 16px;
+}
+
+.empty-state p {
+  margin: 0;
+  font-weight: 500;
+}
+
 * {
   margin: 0;
   padding: 0;
