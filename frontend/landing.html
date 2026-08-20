@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Citra NET — Internet cepat dan stabil untuk rumah Anda. Paket mulai dari 30 Mbps dengan instalasi gratis dan support 24/7.">
+  <title>Citra NET — Internet Cepat untuk Rumah Anda</title>
+
+  <!-- Fonts: Satoshi from Fontshare -->
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
+
+  <!-- Phosphor Icons -->
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/regular/style.css">
+
+  <!-- Landing CSS -->
+  <link rel="stylesheet" href="assets/css/landing.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="nav" id="nav" aria-label="Navigasi utama">
+    <div class="nav__inner">
+      <a href="#" class="nav__logo" aria-label="Citra NET - Beranda">
+        <span class="nav__logo-mark"></span>
+        Citra NET
+      </a>
+
+      <ul class="nav__links" id="navLinks" role="menubar">
+        <li role="none"><a href="#paket" role="menuitem" class="nav__link">Paket</a></li>
+        <li role="none"><a href="#cakupan" role="menuitem" class="nav__link">Cakupan</a></li>
+        <li role="none"><a href="#tentang" role="menuitem" class="nav__link">Tentang</a></li>
+      </ul>
+
+      <div class="nav__actions">
+        <a href="/index.html" class="nav__cta">Masuk ke Dashboard</a>
+        <button class="nav__hamburger" id="hamburger" aria-label="Buka menu navigasi" aria-expanded="false" aria-controls="navLinks">
+          <span class="nav__hamburger-line"></span>
+          <span class="nav__hamburger-line"></span>
+          <span class="nav__hamburger-line"></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu Overlay -->
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <ul class="mobile-menu__list">
+      <li><a href="#paket" class="mobile-menu__link">Paket</a></li>
+      <li><a href="#cakupan" class="mobile-menu__link">Cakupan</a></li>
+      <li><a href="#tentang" class="mobile-menu__link">Tentang</a></li>
+      <li><a href="/index.html" class="mobile-menu__link mobile-menu__link--cta">Masuk ke Dashboard</a></li>
+    </ul>
+  </div>
+
+  <main>
+    <!-- HERO — Attention -->
+    <section class="hero" id="hero" aria-label="Hero">
+      <div class="hero__bg" aria-hidden="true">
+        <img
+          src="https://picsum.photos/seed/fiber-internet/1920/1080"
+          alt=""
+          class="hero__bg-img"
+          loading="eager"
+        >
+        <div class="hero__overlay"></div>
+        <div class="hero__grain"></div>
+      </div>
+
+      <div class="hero__content">
+        <h1 class="hero__title" id="heroTitle">Internet Cepat untuk Rumah Anda</h1>
+        <p class="hero__subtitle" id="heroSubtitle">Koneksi fiber optik stabil hingga 100 Mbps, tanpa buffering, tanpa drama.</p>
+        <div class="hero__ctas" id="heroCtas">
+          <a href="#paket" class="btn btn--primary">Lihat Paket</a>
+          <a href="#kontak" class="btn btn--outline">Hubungi Kami</a>
+        </div>
+      </div>
+
+      <div class="hero__scroll-hint" aria-hidden="true">
+        <span class="hero__scroll-line"></span>
+      </div>
+    </section>
+
+    <!-- PACKAGES — Interest -->
+    <section class="packages" id="paket" aria-labelledby="paket-heading">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Pilihan Paket</span>
+          <h2 class="section-title" id="paket-heading">Paket Internet</h2>
+          <p class="section-desc">Pilih kecepatan yang sesuai kebutuhan rumah Anda. Semua paket termasuk instalasi gratis dan router WiFi.</p>
+        </div>
+
+        <div class="packages__grid">
+          <!-- Paket 30 Mbps -->
+          <article class="package-card" data-animate="card">
+            <div class="package-card__header">
+              <h3 class="package-card__name">Basic</h3>
+              <div class="package-card__speed">
+                <span class="package-card__speed-value">30</span>
+                <span class="package-card__speed-unit">Mbps</span>
+              </div>
+            </div>
+            <div class="package-card__price">
+              <span class="package-card__currency">Rp</span>
+              <span class="package-card__amount">150.000</span>
+              <span class="package-card__period">/bulan</span>
+            </div>
+            <ul class="package-card__features">
+              <li>
+                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                Kecepatan hingga 30 Mbps
+              </li>
+              <li>
+                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                Unlimited tanpa FUP
+              </li>
+              <li>
+                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                Router WiFi gratis
+              </li>
+              <li>
+                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                Support 24/7
+              </li>
+            </ul>
+            <a href="#kontak" class="btn btn--outline btn--full">Pilih Paket</a>
+          </article>
+
+          <!-- Paket 50 Mbps (Populer) -->
+          <article class="package-card package-card--featured" data-animate="card">
+            <div class="package-card__badge">Populer</div>
+            <div class="package-card__header">
+              <h3 class="package-card__name">Standard</h3>
+              <div class="package-card__speed">
+                <span class="package-card__speed-value">50</span>
+                <span class="package-card__speed-unit">Mbps</span>
+              </div>
+            </div>
+            <div class="package-card__price">
+              <span class="package-card__currency">Rp</span>
+              <span class="package-card__amount">250.000</span>
+              <span class="package-card__period">/bulan</span>
+            </div>
+            <ul class="package-card__features">
+              <li>
+                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                Kecepatan hingga 50 Mbps
+              </li>
+              <li>
+                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                Unlimited tanpa FUP
+              </li>
+              <li>
+                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                Router WiFi 6 gratis
+              </li>
+              <li>
+                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                Support 24/7 prioritas
+              </li>
+              <li>
+                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                Gratis instalasi
+              </li>
+            </ul>
+            <a href="#kontak" class="btn btn--primary btn--full">Pilih Paket</a>
+          </article>
+
+          <!-- Paket 100 Mbps -->
+          <article class="package-card" data-animate="card">
+            <div class="package-card__header">
+              <h3 class="package-card__name">Premium</h3>
+              <div class="package-card__speed">
+                <span class="package-card__speed-value">100</span>
+                <span class="package-card__speed-unit">Mbps</span>
+              </div>
+            </div>
+            <div class="package-card__price">
+              <span class="package-card__currency">Rp</span>
+              <span class="package-card__amount">400.000</span>
+              <span class="package-card__period">/bulan</span>
+            </div>
+            <ul class="package-card__features">
+              <li>
+                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                Kecepatan hingga 100 Mbps
+              </li>
+              <li>
+                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                Unlimited tanpa FUP
+              </li>
+              <li>
+                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                Router WiFi 6 mesh gratis
+              </li>
+              <li>
+                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                Support 24/7 prioritas
+              </li>
+              <li>
+                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                Gratis instalasi + kabel LAN
+              </li>
+            </ul>
+            <a href="#kontak" class="btn btn--outline btn--full">Pilih Paket</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES — Desire -->
+    <section class="features" id="tentang" aria-labelledby="tentang-heading">
+      <div class="container">
+        <div class="features__grid">
+          <div class="features__content">
+            <span class="section-tag">Kenapa Citra NET</span>
+            <h2 class="section-title" id="tentang-heading">Internet yang Bisa Diandalkan</h2>
+            <p class="section-desc">Kami membangun jaringan fiber optik khusus untuk perumahan, bukan berbagi bandwidth dengan ribuan pengguna lain.</p>
+
+            <ul class="features__list">
+              <li class="feature-item" data-animate="feature-left">
+                <div class="feature-item__icon" aria-hidden="true">
+                  <i class="ph ph-lightning"></i>
+                </div>
+                <div class="feature-item__text">
+                  <h3 class="feature-item__title">Kecepatan Stabil</h3>
+                  <p class="feature-item__desc">Tidak ada throttling di jam sibuk. Kecepatan yang Anda bayar adalah kecepatan yang Anda dapat, 24 jam penuh.</p>
+                </div>
+              </li>
+              <li class="feature-item" data-animate="feature-right">
+                <div class="feature-item__icon" aria-hidden="true">
+                  <i class="ph ph-wrench"></i>
+                </div>
+                <div class="feature-item__text">
+                  <h3 class="feature-item__title">Instalasi Gratis</h3>
+                  <p class="feature-item__desc">Tim teknisi kami datang ke rumah Anda tanpa biaya tambahan. Pemasangan rapi, kabel tersembunyi, selesai dalam sehari.</p>
+                </div>
+              </li>
+              <li class="feature-item" data-animate="feature-left">
+                <div class="feature-item__icon" aria-hidden="true">
+                  <i class="ph ph-headset"></i>
+                </div>
+                <div class="feature-item__text">
+                  <h3 class="feature-item__title">Support 24/7</h3>
+                  <p class="feature-item__desc">Ada masalah jam 2 pagi? Tim kami siap membantu via WhatsApp, telepon, atau kunjungan langsung ke lokasi.</p>
+                </div>
+              </li>
+              <li class="feature-item" data-animate="feature-right">
+                <div class="feature-item__icon" aria-hidden="true">
+                  <i class="ph ph-handshake"></i>
+                </div>
+                <div class="feature-item__text">
+                  <h3 class="feature-item__title">Tanpa Kontrak Panjang</h3>
+                  <p class="feature-item__desc">Berlangganan bulanan tanpa ikatan. Bisa berhenti kapan saja tanpa penalti. Kami yakin Anda akan tetap memilih kami.</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="features__image" data-animate="feature-image">
+            <img
+              src="https://picsum.photos/seed/home-wifi/800/600"
+              alt="Keluarga menikmati koneksi internet cepat di rumah"
+              class="features__img"
+              loading="lazy"
+            >
+            <div class="features__image-glow" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COVERAGE — Cakupan -->
+    <section class="coverage" id="cakupan" aria-labelledby="cakupan-heading">
+      <div class="container">
+        <div class="coverage__inner">
+          <div class="coverage__text">
+            <span class="section-tag">Area Layanan</span>
+            <h2 class="section-title" id="cakupan-heading">Cakupan Area</h2>
+            <p class="section-desc">Jaringan fiber optik kami terus berkembang. Saat ini kami melayani area perumahan dan perkotaan dengan ekspansi ke wilayah sekitar setiap kuartal.</p>
+            <div class="coverage__stats">
+              <div class="coverage__stat">
+                <span class="coverage__stat-value">5.000+</span>
+                <span class="coverage__stat-label">Pelanggan Aktif</span>
+              </div>
+              <div class="coverage__stat">
+                <span class="coverage__stat-value">99,7%</span>
+                <span class="coverage__stat-label">Uptime Jaringan</span>
+              </div>
+              <div class="coverage__stat">
+                <span class="coverage__stat-value">15</span>
+                <span class="coverage__stat-label">Kecamatan Terjangkau</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA — Action -->
+    <section class="cta" id="kontak" aria-labelledby="cta-heading">
+      <div class="container">
+        <div class="cta__inner" data-animate="cta">
+          <h2 class="cta__title" id="cta-heading">Siap Upgrade Internet Rumah Anda?</h2>
+          <p class="cta__desc">Hubungi tim kami sekarang. Konsultasi gratis, instalasi dalam 1-3 hari kerja.</p>
+          <a
+            href="https://wa.me/6281234567890?text=Halo%20Citra%20NET%2C%20saya%20ingin%20berlangganan%20internet."
+            class="btn btn--primary btn--lg"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Hubungi kami via WhatsApp"
+          >
+            <i class="ph ph-whatsapp-logo" aria-hidden="true"></i>
+            Hubungi Kami via WhatsApp
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__inner">
+        <div class="footer__brand">
+          <span class="footer__logo">
+            <span class="nav__logo-mark"></span>
+            Citra NET
+          </span>
+          <p class="footer__tagline">Internet cepat dan stabil untuk setiap rumah.</p>
+        </div>
+        <nav class="footer__nav" aria-label="Navigasi footer">
+          <a href="#paket" class="footer__link">Paket</a>
+          <a href="#cakupan" class="footer__link">Cakupan</a>
+          <a href="#tentang" class="footer__link">Tentang</a>
+          <a href="/index.html" class="footer__link">Dashboard</a>
+        </nav>
+        <p class="footer__copy">&copy; 2026 Citra NET. Seluruh hak cipta dilindungi.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <!-- Landing JS -->
+  <script src="assets/js/landing.js"></script>
+</body>
+</html>

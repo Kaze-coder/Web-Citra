@@ -197,3 +197,22 @@ function escapeHtml(str) {
   }, { threshold: 0.1, rootMargin: '0px 0px -24px 0px' });
   targets.forEach((el) => observer.observe(el));
 })();
+
+// ===== MOTION: subtle DataTables redraw feedback =====
+// Saat DataTables menggambar ulang tbody (pindah halaman / cari),
+// beri fade singkat sebagai umpan balik visual.
+document.addEventListener('DOMContentLoaded', () => {
+  const tables = document.querySelectorAll('.dataTables_wrapper');
+  tables.forEach((wrapper) => {
+    const tbody = wrapper.querySelector('tbody');
+    if (!tbody) return;
+    const observer = new MutationObserver(() => {
+      tbody.style.opacity = '0.6';
+      requestAnimationFrame(() => {
+        tbody.style.transition = 'opacity 200ms ease';
+        tbody.style.opacity = '1';
+      });
+    });
+    observer.observe(tbody, { childList: true });
+  });
+});
