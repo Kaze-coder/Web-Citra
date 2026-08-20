@@ -1,6 +1,6 @@
 /**
  * Citra NET — Landing Page
- * GSAP animations, smooth scroll, nav behavior, mobile menu.
+ * GSAP animations (quiet editorial motion), smooth scroll, nav behavior, mobile menu.
  */
 
 (function () {
@@ -10,6 +10,13 @@
      Utilities
   ------------------------------------------------------------------ */
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Motion tokens — quiet, editorial */
+  var EASE = 'expo.out'; /* cubic-bezier(0.16, 1, 0.3, 1) */
+  var DURATION = 0.6;
+  var TRAVEL_Y = 12;
+  var TRAVEL_X = 12;
+  var STAGGER = 0.08;
 
   /* ------------------------------------------------------------------
      Navigation — scroll behavior
@@ -101,7 +108,7 @@
   });
 
   /* ------------------------------------------------------------------
-     GSAP Animations
+     GSAP Animations — quiet scroll entries, transform + opacity only
   ------------------------------------------------------------------ */
   function initGSAPAnimations() {
     if (typeof gsap === 'undefined') return false;
@@ -110,32 +117,29 @@
 
     if (prefersReducedMotion) return true;
 
-    /* Hero — staggered entrance */
-    var heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    /* Hero — staggered entrance (title → subtitle → CTAs) */
+    var heroTl = gsap.timeline({ defaults: { ease: EASE, duration: DURATION } });
 
     heroTl
       .from('#heroTitle', {
         opacity: 0,
-        y: 40,
-        duration: 1,
-        delay: 0.2
+        y: TRAVEL_Y,
+        delay: 0.15
       })
       .from('#heroSubtitle', {
         opacity: 0,
-        y: 30,
-        duration: 0.8
-      }, '-=0.5')
+        y: TRAVEL_Y
+      }, '-=0.4')
       .from('#heroCtas', {
         opacity: 0,
-        y: 24,
-        duration: 0.8
-      }, '-=0.4')
+        y: TRAVEL_Y
+      }, '-=0.35')
       .from('.hero__scroll-hint', {
         opacity: 0,
-        duration: 0.6
+        duration: 0.5
       }, '-=0.2');
 
-    /* Package cards — stagger on scroll */
+    /* Package cards — stagger reveal on scroll, 80ms cascade */
     gsap.from('[data-animate="card"]', {
       scrollTrigger: {
         trigger: '.packages__grid',
@@ -143,13 +147,13 @@
         toggleActions: 'play none none none'
       },
       opacity: 0,
-      y: 50,
-      duration: 0.8,
-      stagger: 0.15,
-      ease: 'power3.out'
+      y: TRAVEL_Y,
+      duration: DURATION,
+      stagger: STAGGER,
+      ease: EASE
     });
 
-    /* Features — alternate left/right */
+    /* Features — alternate left/right, subtle travel */
     gsap.utils.toArray('[data-animate="feature-left"]').forEach(function (el) {
       gsap.from(el, {
         scrollTrigger: {
@@ -158,9 +162,9 @@
           toggleActions: 'play none none none'
         },
         opacity: 0,
-        x: -40,
-        duration: 0.8,
-        ease: 'power3.out'
+        x: -TRAVEL_X,
+        duration: DURATION,
+        ease: EASE
       });
     });
 
@@ -172,13 +176,13 @@
           toggleActions: 'play none none none'
         },
         opacity: 0,
-        x: 40,
-        duration: 0.8,
-        ease: 'power3.out'
+        x: TRAVEL_X,
+        duration: DURATION,
+        ease: EASE
       });
     });
 
-    /* Features image */
+    /* Features image — gentle fade + rise */
     gsap.from('[data-animate="feature-image"]', {
       scrollTrigger: {
         trigger: '[data-animate="feature-image"]',
@@ -186,12 +190,12 @@
         toggleActions: 'play none none none'
       },
       opacity: 0,
-      scale: 0.95,
-      duration: 1,
-      ease: 'power3.out'
+      y: TRAVEL_Y,
+      duration: DURATION,
+      ease: EASE
     });
 
-    /* Coverage stats */
+    /* Coverage */
     gsap.from('.coverage__inner', {
       scrollTrigger: {
         trigger: '.coverage__inner',
@@ -199,12 +203,12 @@
         toggleActions: 'play none none none'
       },
       opacity: 0,
-      y: 40,
-      duration: 0.9,
-      ease: 'power3.out'
+      y: TRAVEL_Y,
+      duration: DURATION,
+      ease: EASE
     });
 
-    /* CTA — scale up */
+    /* CTA — subtle scale-up reveal */
     gsap.from('[data-animate="cta"]', {
       scrollTrigger: {
         trigger: '[data-animate="cta"]',
@@ -212,9 +216,9 @@
         toggleActions: 'play none none none'
       },
       opacity: 0,
-      scale: 0.92,
-      duration: 0.9,
-      ease: 'power3.out'
+      scale: 0.98,
+      duration: DURATION,
+      ease: EASE
     });
 
     return true;
@@ -233,8 +237,8 @@
     /* Set initial hidden state via inline styles */
     animatedElements.forEach(function (el) {
       el.style.opacity = '0';
-      el.style.transform = 'translateY(30px)';
-      el.style.transition = 'opacity 0.7s ease, transform 0.7s ease';
+      el.style.transform = 'translateY(12px)';
+      el.style.transition = 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
     });
 
     var observer = new IntersectionObserver(

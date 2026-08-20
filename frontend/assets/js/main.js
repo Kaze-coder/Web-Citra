@@ -192,6 +192,12 @@ function escapeHtml(str) {
       if (entry.isIntersecting) {
         entry.target.classList.add('revealed');
         observer.unobserve(entry.target);
+        // Lepas class setelah animasi masuk selesai agar hover-lift kartu tetap bekerja
+        entry.target.addEventListener('transitionend', function cleanup(e) {
+          if (e.propertyName !== 'opacity') return;
+          entry.target.classList.remove('reveal', 'revealed');
+          entry.target.removeEventListener('transitionend', cleanup);
+        });
       }
     });
   }, { threshold: 0.1, rootMargin: '0px 0px -24px 0px' });
