@@ -162,7 +162,7 @@ async function loadCharts() {
           labels: labels,
           datasets: [{
             data: data,
-            backgroundColor: ['#2563eb', '#ef4444', '#f59e0b', '#0ea5e9', '#64748b'],
+            backgroundColor: ['#346538', '#9F2F2D', '#956400', '#1F6C9F', '#787774'],
             borderColor: '#ffffff',
             borderWidth: 4,
             hoverOffset: 10
@@ -176,14 +176,14 @@ async function loadCharts() {
             legend: {
               position: 'bottom',
               labels: { 
-                font: { family: "'Poppins', sans-serif", size: 12, weight: '500' }, 
+                font: { family: "'Switzer', 'Helvetica Neue', sans-serif", size: 12, weight: '500' }, 
                 padding: 20,
                 usePointStyle: true,
                 pointStyle: 'circle'
               }
             },
             tooltip: {
-              backgroundColor: '#1e293b',
+              backgroundColor: '#111111',
               padding: 12,
               titleFont: { size: 14, weight: 'bold' },
               bodyFont: { size: 13 },
@@ -202,9 +202,6 @@ async function loadCharts() {
       });
 
       const ctxPaket = document.getElementById('chartPaket');
-      const gradientBar = ctxPaket.getContext('2d').createLinearGradient(0, 0, 400, 0);
-      gradientBar.addColorStop(0, 'rgba(37, 99, 235, 0.8)');
-      gradientBar.addColorStop(1, 'rgba(37, 99, 235, 0.2)');
 
       if (chartPaket) chartPaket.destroy();
       chartPaket = new Chart(ctxPaket, {
@@ -214,10 +211,10 @@ async function loadCharts() {
           datasets: [{
             label: 'Jumlah Pelanggan',
             data: Object.values(paketCounts),
-            backgroundColor: gradientBar,
-            borderColor: '#2563eb',
+            backgroundColor: '#2F3437',
+            borderColor: '#2F3437',
             borderWidth: 1,
-            borderRadius: 8,
+            borderRadius: 4,
             barThickness: 20
           }]
         },
@@ -228,7 +225,7 @@ async function loadCharts() {
           plugins: {
             legend: { display: false },
             tooltip: {
-              backgroundColor: '#1e293b',
+              backgroundColor: '#111111',
               cornerRadius: 8
             }
           },
@@ -236,11 +233,11 @@ async function loadCharts() {
             x: { 
               beginAtZero: true,
               grid: { display: false },
-              ticks: { font: { family: "'Poppins', sans-serif" } }
+              ticks: { font: { family: "'Switzer', 'Helvetica Neue', sans-serif" } }
             },
             y: {
               grid: { display: false },
-              ticks: { font: { family: "'Poppins', sans-serif", weight: '500' } }
+              ticks: { font: { family: "'Switzer', 'Helvetica Neue', sans-serif", weight: '500' } }
             }
           }
         }
@@ -255,8 +252,8 @@ async function loadCharts() {
 
       const ctxRevenue = document.getElementById('chartRevenue');
       const gradientLine = ctxRevenue.getContext('2d').createLinearGradient(0, 0, 0, 300);
-      gradientLine.addColorStop(0, 'rgba(37, 99, 235, 0.2)');
-      gradientLine.addColorStop(1, 'rgba(37, 99, 235, 0)');
+      gradientLine.addColorStop(0, 'rgba(17, 17, 17, 0.06)');
+      gradientLine.addColorStop(1, 'rgba(17, 17, 17, 0)');
 
       if (chartRevenue) chartRevenue.destroy();
       chartRevenue = new Chart(ctxRevenue, {
@@ -266,14 +263,14 @@ async function loadCharts() {
           datasets: [{
             label: 'Jumlah Tagihan',
             data: Object.values(bulanCounts).slice(-12),
-            borderColor: '#2563eb',
+            borderColor: '#111111',
             backgroundColor: gradientLine,
             tension: 0.4,
             fill: true,
-            borderWidth: 4,
+            borderWidth: 2,
             pointRadius: 0,
             pointHoverRadius: 6,
-            pointHoverBackgroundColor: '#2563eb',
+            pointHoverBackgroundColor: '#111111',
             pointHoverBorderColor: 'white',
             pointHoverBorderWidth: 2
           }]
@@ -288,7 +285,7 @@ async function loadCharts() {
           plugins: {
             legend: { display: false },
             tooltip: {
-              backgroundColor: '#1e293b',
+              backgroundColor: '#111111',
               padding: 12,
               cornerRadius: 8
             }
@@ -296,12 +293,12 @@ async function loadCharts() {
           scales: {
             y: { 
               beginAtZero: true,
-              grid: { color: '#f1f5f9' },
-              ticks: { font: { family: "'Poppins', sans-serif" } }
+              grid: { color: '#EAEAEA' },
+              ticks: { font: { family: "'Switzer', 'Helvetica Neue', sans-serif" } }
             },
             x: {
               grid: { display: false },
-              ticks: { font: { family: "'Poppins', sans-serif" } }
+              ticks: { font: { family: "'Switzer', 'Helvetica Neue', sans-serif" } }
             }
           }
         }

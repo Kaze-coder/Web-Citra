@@ -176,3 +176,24 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
+
+// ===== MOTION: reveal-on-entry (transform/opacity only) =====
+// Elemen ber-class .reveal muncul dengan fade + translateY(12px).
+// Hormati prefers-reduced-motion: tanpa observer, CSS menampilkan elemen apa adanya.
+(function initReveal() {
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const targets = document.querySelectorAll('.reveal');
+  if (prefersReduced || !('IntersectionObserver' in window) || targets.length === 0) {
+    targets.forEach((el) => el.classList.add('revealed'));
+    return;
+  }
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -24px 0px' });
+  targets.forEach((el) => observer.observe(el));
+})();

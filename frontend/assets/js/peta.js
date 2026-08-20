@@ -68,7 +68,7 @@ async function tryLoadGeeLayers() {
     if (res.data.success && res.data.data && res.data.data.length > 0) {
       const geeTileLayers = {};
       res.data.data.forEach(layer => {
-        geeTileLayers['🛰️ GEE: ' + layer.name] = L.tileLayer(layer.url, {
+        geeTileLayers['GEE: ' + layer.name] = L.tileLayer(layer.url, {
           attribution: layer.attribution,
           maxZoom: 20,
           tileSize: 256
