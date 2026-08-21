@@ -18,8 +18,14 @@ class PelangganModel {
       params.push(searchTerm, searchTerm, searchTerm);
     }
 
+    // JOIN lokasi agar setiap baris membawa latitude/longitude (untuk peta/KML/Earth)
+    const whereJoined = where.replace(/\bnama_pelanggan\b/g, 'p.nama_pelanggan')
+      .replace(/\bno_telepon\b/g, 'p.no_telepon')
+      .replace(/\balamat\b/g, 'p.alamat');
     const [rows] = await pool.query(
-      `SELECT * FROM pelanggan${where} ORDER BY tanggal_dibuat DESC, id DESC LIMIT ? OFFSET ?`,
+      `SELECT p.*, l.latitude, l.longitude FROM pelanggan p
+       LEFT JOIN lokasi l ON l.pelanggan_id = p.id${whereJoined}
+       ORDER BY p.tanggal_dibuat DESC, p.id DESC LIMIT ? OFFSET ?`,
       [...params, limit, offset]
     );
     const [countResult] = await pool.query(

@@ -33,6 +33,73 @@ function parseCoordinates(alamatText) {
   return null;
 }
 
+// Ambil koordinat pelanggan: dari kolom lokasi (JOIN) atau dari alamat berupa koordinat
+function getPelangganCoords(p) {
+  const lat = Number(p.latitude);
+  const lng = Number(p.longitude);
+  if (lat && lng) return { lat, lng };
+  if (p.alamat) {
+    const parsed = parseCoordinates(p.alamat);
+    if (parsed) return { lat: parsed.lat, lng: parsed.lng };
+  }
+  return null;
+}
+
+// Buka lokasi pelanggan di Google Earth Web (3D, satu klik di browser)
+function openEarthWeb(lat, lng) {
+  // format: @lat,lng,altitude(a),distance(d),tilt(y),heading(h),tilt(t),roll(r)
+  const url = `https://earth.google.com/web/@${lat},${lng},150a,1200d,35y,0h,0t,0r`;
+  window.open(url, '_blank', 'noopener');
+}
+
+// Unduh file KML satu pelanggan (dibuka di Google Earth Pro desktop)
+function downloadKML(lat, lng, nama, alamat) {
+  const safeName = escapeXml(nama || 'Pelanggan');
+  const desc = escapeXml(alamat || '');
+  const kml = `<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>${safeName} - Citra NET</name>
+    <Placemark>
+      <name>${safeName}</name>
+      <description>${desc}</description>
+      <Point>
+        <coordinates>${lng},${lat},0</coordinates>
+      </Point>
+    </Placemark>
+  </Document>
+</kml>`;
+  const blob = new Blob([kml], { type: 'application/vnd.google-earth.kml+xml' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `lokasi-${(nama || 'pelanggan').replace(/[^a-z0-9]+/gi, '-').toLowerCase()}.kml`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// Escape teks untuk konten XML/KML
+function escapeXml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
+// Bangun tombol aksi lokasi (Earth Web + unduh KML) untuk satu baris pelanggan
+function buildLokasiButtons(p) {
+  const coords = getPelangganCoords(p);
+  if (!coords) return '';
+  const nama = escapeHtml(p.nama_pelanggan || '');
+  const btnEarth = `<button type="button" class="btn btn-outline-primary btn-sm ms-2" style="padding: 2px 7px;" onclick="openEarthWeb(${coords.lat}, ${coords.lng})" title="Buka di Google Earth Web" aria-label="Buka lokasi ${nama} di Google Earth Web"><i class="fas fa-globe"></i></button>`;
+  const btnKml = `<button type="button" class="btn btn-outline-secondary btn-sm ms-1" style="padding: 2px 7px;" onclick="downloadKML(${coords.lat}, ${coords.lng}, '${nama.replace(/'/g, "\\'")}', '${escapeHtml(p.alamat || '').replace(/'/g, "\\'")}')" title="Unduh KML (Google Earth Pro)" aria-label="Unduh file KML lokasi ${nama} untuk Google Earth Pro"><i class="fas fa-download"></i></button>`;
+  return btnEarth + btnKml;
+}
+
 // Ambil data pelanggan dari API
 async function loadPelanggan() {
   try {
@@ -62,7 +129,7 @@ async function loadPelanggan() {
           <td style="max-width: 250px;" title="${escapeHtml(p.alamat || '-')}">
             <div class="d-flex align-items-center justify-content-between">
               <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(p.alamat || '-')}</span>
-              ${p.alamat ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.alamat)}" target="_blank" class="btn btn-sm btn-outline-primary ms-2" style="padding: 2px 6px;" title="Buka di Google Maps" aria-label="Buka di Google Maps"><i class="fas fa-map-marker-alt"></i></a>` : ''}
+              ${buildLokasiButtons(p)}
             </div>
           </td>
           <td>${escapeHtml(p.paket_layanan)}</td>
