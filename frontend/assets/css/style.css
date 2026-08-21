@@ -66,10 +66,10 @@
   --destructive: #B42318;
   --input: #D8DEE6;
   --ring: #0E7490;
-  --sidebar: #0F1B2D;
-  --sidebar-foreground: rgba(255, 255, 255, 0.72);
-  --sidebar-accent: rgba(255, 255, 255, 0.08);
-  --sidebar-border: transparent;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #16233A;
+  --sidebar-accent: #FAFBFC;
+  --sidebar-border: #D8DEE6;
   --success: #0E7490;
   --success-soft: #E0F2F7;
   --danger: #B42318;
@@ -240,13 +240,13 @@ h1.page-title {
 }
 
 /* ==========================================================================
-   Sidebar — deep navy console rail
+   Sidebar — light console rail (shadcn-style)
    ========================================================================== */
 .sidebar {
   width: 256px;
-  background: var(--ink);
-  color: rgba(255, 255, 255, 0.72);
-  border-right: none;
+  background: var(--surface);
+  color: var(--text);
+  border-right: 1px solid var(--line);
   padding: 0;
   position: fixed;
   height: 100vh;
@@ -272,14 +272,14 @@ html.sidebar-collapsed .sidebar {
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.18);
+  background: var(--line);
   border-radius: 3px;
 }
 
 .sidebar-header {
   margin: 0;
   padding: 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--line);
   background: transparent;
   min-height: 56px;
   display: flex;
@@ -321,7 +321,7 @@ html.sidebar-collapsed .logo {
   font-size: 16px;
   font-weight: 600;
   letter-spacing: -0.01em;
-  color: #FFFFFF;
+  color: var(--ink);
   white-space: nowrap;
   overflow: visible;
   transition: opacity 0.2s ease, margin 0.2s ease, max-width 0.2s ease;
@@ -352,7 +352,7 @@ html.sidebar-collapsed .logo-text {
   align-items: center;
   min-height: 36px;
   padding: 10px 12px;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--text);
   text-decoration: none;
   border-radius: var(--radius-sm);
   transition: background-color 150ms ease, color 150ms ease;
@@ -377,13 +377,13 @@ html.sidebar-collapsed .logo-text {
 }
 
 .nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.08);
-  color: #FFFFFF;
+  background-color: var(--surface-2);
+  color: var(--ink);
 }
 
 .nav-link.active {
-  background-color: rgba(14, 116, 144, 0.28);
-  color: #FFFFFF;
+  background-color: var(--signal-soft);
+  color: var(--signal);
   font-weight: 500;
   box-shadow: none;
 }
@@ -527,7 +527,6 @@ html.sidebar-collapsed .main-content {
 
 .content-area {
   padding: 24px;
-  max-width: 1400px;
 }
 
 /* ==========================================================================
@@ -584,6 +583,26 @@ html.sidebar-collapsed .main-content {
 
 .card-body {
   padding: 20px;
+}
+
+/* Chart card header stack + container */
+.card-header > .card-header-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.card-description {
+  font-size: 12px;
+  color: var(--mute);
+  margin: 2px 0 0;
+}
+
+.chart-container {
+  position: relative;
+  height: 260px;
+  padding: 16px;
 }
 
 /* ==========================================================================

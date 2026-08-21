@@ -127,6 +127,48 @@ async function loadCharts() {
       const tagihanData = tagRes.data.data;
       const pelangganData = pelRes.data.data;
 
+      // Tooltip putih bergaya shadcn — dipakai semua chart
+      const shadcnTooltip = {
+        backgroundColor: '#FFFFFF',
+        titleColor: '#16233A',
+        bodyColor: '#5B6B7B',
+        borderColor: '#D8DEE6',
+        borderWidth: 1,
+        cornerRadius: 8,
+        padding: 12,
+        titleFont: { family: "'IBM Plex Sans', sans-serif", size: 13, weight: '600' },
+        bodyFont: { family: "'IBM Plex Mono', monospace", size: 12 },
+        displayColors: true,
+        boxWidth: 8,
+        boxHeight: 8,
+        boxPadding: 4,
+        usePointStyle: true
+      };
+
+      // Total tagihan di tengah donut (font mono)
+      const centerTextPlugin = {
+        id: 'centerText',
+        afterDraw(chart) {
+          if (chart.canvas.id !== 'chartPembayaran') return;
+          const { ctx, chartArea } = chart;
+          if (!chartArea) return;
+          if (chart.data.labels[0] === 'Belum Ada Data') return;
+          const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+          const x = (chartArea.left + chartArea.right) / 2;
+          const y = (chartArea.top + chartArea.bottom) / 2;
+          ctx.save();
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.font = "500 22px 'IBM Plex Mono', monospace";
+          ctx.fillStyle = '#0F1B2D';
+          ctx.fillText(total, x, y - 8);
+          ctx.font = "500 10px 'IBM Plex Sans', sans-serif";
+          ctx.fillStyle = '#5B6B7B';
+          ctx.fillText('TOTAL', x, y + 12);
+          ctx.restore();
+        }
+      };
+
       // Chart 1: Status Pembayaran (Donut)
       let countLunas = 0;
       let countBelumLunas = 0;
@@ -144,8 +186,8 @@ async function loadCharts() {
 
       // Tampilkan status pembayaran
       if (countLunas > 0) { labels.push('Lunas'); data.push(countLunas); bgColors.push('#0E7490'); }
-      if (countBelumLunas > 0) { labels.push('Belum Lunas'); data.push(countBelumLunas); bgColors.push('#34527A'); }
-      if (countCicilan > 0) { labels.push('Cicilan'); data.push(countCicilan); bgColors.push('#5B6B7B'); }
+      if (countBelumLunas > 0) { labels.push('Belum Lunas'); data.push(countBelumLunas); bgColors.push('#B42318'); }
+      if (countCicilan > 0) { labels.push('Cicilan'); data.push(countCicilan); bgColors.push('#93610B'); }
 
       // Jika tidak ada data
       if (data.length === 0) {
@@ -162,36 +204,32 @@ async function loadCharts() {
           labels: labels,
           datasets: [{
             data: data,
-            backgroundColor: ['#0E7490', '#34527A', '#5B6B7B', '#0F1B2D', '#D8DEE6'],
-            borderColor: '#ffffff',
-            borderWidth: 4,
-            hoverOffset: 10
+            backgroundColor: bgColors,
+            borderWidth: 0,
+            borderRadius: 4,
+            spacing: 2,
+            hoverOffset: 6
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          cutout: '75%',
+          cutout: '80%',
           plugins: {
             legend: {
               position: 'bottom',
               labels: { 
                 font: { family: "'IBM Plex Sans', sans-serif", size: 12, weight: '500' }, 
-                padding: 20,
+                padding: 16,
                 usePointStyle: true,
-                pointStyle: 'circle'
+                pointStyle: 'circle',
+                pointStyleWidth: 8
               }
             },
-            tooltip: {
-              backgroundColor: '#0F1B2D',
-              padding: 12,
-              titleFont: { size: 14, weight: 'bold' },
-              bodyFont: { size: 13 },
-              cornerRadius: 8,
-              displayColors: true
-            }
+            tooltip: shadcnTooltip
           }
-        }
+        },
+        plugins: [centerTextPlugin]
       });
 
       // Chart 2: Paket Layanan (Bar)
@@ -212,10 +250,9 @@ async function loadCharts() {
             label: 'Jumlah Pelanggan',
             data: Object.values(paketCounts),
             backgroundColor: '#0E7490',
-            borderColor: '#0E7490',
-            borderWidth: 1,
-            borderRadius: 4,
-            barThickness: 20
+            hoverBackgroundColor: '#0B5C73',
+            borderRadius: 6,
+            barThickness: 28
           }]
         },
         options: {
@@ -224,20 +261,17 @@ async function loadCharts() {
           indexAxis: 'y',
           plugins: {
             legend: { display: false },
-            tooltip: {
-              backgroundColor: '#0F1B2D',
-              cornerRadius: 8
-            }
+            tooltip: shadcnTooltip
           },
           scales: {
             x: { 
               beginAtZero: true,
-              grid: { display: false },
-              ticks: { font: { family: "'IBM Plex Mono', monospace", size: 11 } }
+              grid: { color: '#F0F2F5' },
+              ticks: { font: { family: "'IBM Plex Mono', monospace", size: 11 }, color: '#5B6B7B' }
             },
             y: {
               grid: { display: false },
-              ticks: { font: { family: "'IBM Plex Sans', sans-serif", weight: '500' } }
+              ticks: { font: { family: "'IBM Plex Sans', sans-serif", size: 12, weight: '500' }, color: '#5B6B7B' }
             }
           }
         }
@@ -252,7 +286,7 @@ async function loadCharts() {
 
       const ctxRevenue = document.getElementById('chartRevenue');
       const gradientLine = ctxRevenue.getContext('2d').createLinearGradient(0, 0, 0, 300);
-      gradientLine.addColorStop(0, 'rgba(14, 116, 144, 0.08)');
+      gradientLine.addColorStop(0, 'rgba(14, 116, 144, 0.12)');
       gradientLine.addColorStop(1, 'rgba(14, 116, 144, 0)');
 
       if (chartRevenue) chartRevenue.destroy();
@@ -269,9 +303,9 @@ async function loadCharts() {
             fill: true,
             borderWidth: 2,
             pointRadius: 0,
-            pointHoverRadius: 6,
+            pointHoverRadius: 5,
             pointHoverBackgroundColor: '#0E7490',
-            pointHoverBorderColor: 'white',
+            pointHoverBorderColor: '#fff',
             pointHoverBorderWidth: 2
           }]
         },
@@ -284,21 +318,17 @@ async function loadCharts() {
           },
           plugins: {
             legend: { display: false },
-            tooltip: {
-              backgroundColor: '#0F1B2D',
-              padding: 12,
-              cornerRadius: 8
-            }
+            tooltip: shadcnTooltip
           },
           scales: {
             y: { 
               beginAtZero: true,
-              grid: { color: '#E7EBEF' },
-              ticks: { font: { family: "'IBM Plex Mono', monospace", size: 11 } }
+              grid: { color: '#F0F2F5' },
+              ticks: { font: { family: "'IBM Plex Mono', monospace", size: 11 }, color: '#5B6B7B' }
             },
             x: {
               grid: { display: false },
-              ticks: { font: { family: "'IBM Plex Sans', sans-serif" } }
+              ticks: { font: { family: "'IBM Plex Sans', sans-serif", size: 12 }, color: '#5B6B7B' }
             }
           }
         }

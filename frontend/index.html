@@ -194,9 +194,12 @@
           <div class="col-lg-4">
             <div class="card reveal">
               <div class="card-header">
-                <h5 class="card-title mb-0">Status Pembayaran</h5>
+                <div class="card-header-text">
+                  <h5 class="card-title mb-0">Status Pembayaran</h5>
+                  <p class="card-description">Distribusi tagihan berdasarkan status</p>
+                </div>
               </div>
-              <div class="card-body" style="height: 300px;">
+              <div class="chart-container" style="height: 260px;">
                 <canvas id="chartPembayaran"></canvas>
               </div>
             </div>
@@ -208,9 +211,12 @@
           <div class="col-lg-6">
             <div class="card reveal">
               <div class="card-header">
-                <h5 class="card-title mb-0">Distribusi Paket Layanan</h5>
+                <div class="card-header-text">
+                  <h5 class="card-title mb-0">Paket Layanan</h5>
+                  <p class="card-description">Jumlah pelanggan per paket</p>
+                </div>
               </div>
-              <div class="card-body" style="height: 300px;">
+              <div class="chart-container" style="height: 260px;">
                 <canvas id="chartPaket"></canvas>
               </div>
             </div>
@@ -218,9 +224,12 @@
           <div class="col-lg-6">
             <div class="card reveal">
               <div class="card-header">
-                <h5 class="card-title mb-0">Tren Tagihan Bulanan</h5>
+                <div class="card-header-text">
+                  <h5 class="card-title mb-0">Tren Tagihan</h5>
+                  <p class="card-description">Jumlah tagihan per bulan</p>
+                </div>
               </div>
-              <div class="card-body" style="height: 300px;">
+              <div class="chart-container" style="height: 280px;">
                 <canvas id="chartRevenue"></canvas>
               </div>
             </div>
