@@ -601,8 +601,111 @@ html.sidebar-collapsed .main-content {
 
 .chart-container {
   position: relative;
-  height: 260px;
   padding: 16px;
+}
+
+/* Chart card accent — left border in signal color */
+.chart-card-accent {
+  border-left: 3px solid var(--signal);
+}
+
+/* Period label */
+.card-period {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--mute);
+  font-weight: 500;
+}
+
+/* Header KPI (inline stat in header) */
+.card-header-kpi {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.card-kpi-value {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.card-kpi-delta {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--neutral-bg);
+  color: var(--mute);
+}
+
+.card-kpi-delta.delta-up {
+  background: var(--ok-bg);
+  color: var(--ok-text);
+}
+
+.card-kpi-delta.delta-down {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+/* Header badge */
+.card-header-badge {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--mute);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+/* Chart stats row (companion tiles below chart) */
+.chart-stats-row {
+  display: flex;
+  border-top: 1px solid var(--line);
+  padding: 0;
+}
+
+.chart-stat {
+  flex: 1;
+  text-align: center;
+  padding: 14px 12px;
+  border-right: 1px solid var(--line);
+}
+
+.chart-stat:last-child {
+  border-right: none;
+}
+
+.chart-stat-value {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.chart-stat-danger {
+  color: var(--danger-text);
+}
+
+.chart-stat-warning {
+  color: var(--warn-text);
+}
+
+.chart-stat-label {
+  display: block;
+  font-size: 11px;
+  color: var(--mute);
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 /* ==========================================================================

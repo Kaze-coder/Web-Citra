@@ -232,6 +232,14 @@ async function loadCharts() {
         plugins: [centerTextPlugin]
       });
 
+      // Populate companion stat tiles
+      const elLunas = document.getElementById('chartStatLunas');
+      const elBelum = document.getElementById('chartStatBelum');
+      const elCicilan = document.getElementById('chartStatCicilan');
+      if (elLunas) elLunas.textContent = countLunas;
+      if (elBelum) elBelum.textContent = countBelumLunas;
+      if (elCicilan) elCicilan.textContent = countCicilan;
+
       // Chart 2: Paket Layanan (Bar)
       const paketCounts = {};
       pelangganData.forEach(p => {
@@ -241,6 +249,11 @@ async function loadCharts() {
 
       const ctxPaket = document.getElementById('chartPaket');
 
+      // Vertical gradient for bars
+      const barGradient = ctxPaket.getContext('2d').createLinearGradient(0, 0, 0, 300);
+      barGradient.addColorStop(0, 'rgba(14, 116, 144, 0.9)');
+      barGradient.addColorStop(1, 'rgba(14, 116, 144, 0.4)');
+
       if (chartPaket) chartPaket.destroy();
       chartPaket = new Chart(ctxPaket, {
         type: 'bar',
@@ -249,33 +262,36 @@ async function loadCharts() {
           datasets: [{
             label: 'Jumlah Pelanggan',
             data: Object.values(paketCounts),
-            backgroundColor: '#0E7490',
+            backgroundColor: barGradient,
             hoverBackgroundColor: '#0B5C73',
-            borderRadius: 6,
-            barThickness: 28
+            borderRadius: 8,
+            maxBarThickness: 40
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          indexAxis: 'y',
           plugins: {
             legend: { display: false },
             tooltip: shadcnTooltip
           },
           scales: {
-            x: { 
+            y: { 
               beginAtZero: true,
               grid: { color: '#F0F2F5' },
               ticks: { font: { family: "'IBM Plex Mono', monospace", size: 11 }, color: '#5B6B7B' }
             },
-            y: {
+            x: {
               grid: { display: false },
               ticks: { font: { family: "'IBM Plex Sans', sans-serif", size: 12, weight: '500' }, color: '#5B6B7B' }
             }
           }
         }
       });
+
+      // Populate paket count badge
+      const elPaketCount = document.getElementById('totalPaketCount');
+      if (elPaketCount) elPaketCount.textContent = Object.keys(paketCounts).length + ' paket';
 
       // Chart 3: Tren Tagihan (Line)
       const bulanCounts = {};
@@ -286,27 +302,31 @@ async function loadCharts() {
 
       const ctxRevenue = document.getElementById('chartRevenue');
       const gradientLine = ctxRevenue.getContext('2d').createLinearGradient(0, 0, 0, 300);
-      gradientLine.addColorStop(0, 'rgba(14, 116, 144, 0.12)');
+      gradientLine.addColorStop(0, 'rgba(14, 116, 144, 0.20)');
       gradientLine.addColorStop(1, 'rgba(14, 116, 144, 0)');
+
+      const bulanKeys = Object.keys(bulanCounts).slice(-12);
+      const bulanVals = Object.values(bulanCounts).slice(-12);
 
       if (chartRevenue) chartRevenue.destroy();
       chartRevenue = new Chart(ctxRevenue, {
         type: 'line',
         data: {
-          labels: Object.keys(bulanCounts).slice(-12),
+          labels: bulanKeys,
           datasets: [{
             label: 'Jumlah Tagihan',
-            data: Object.values(bulanCounts).slice(-12),
+            data: bulanVals,
             borderColor: '#0E7490',
             backgroundColor: gradientLine,
             tension: 0.4,
             fill: true,
-            borderWidth: 2,
+            borderWidth: 2.5,
             pointRadius: 0,
             pointHoverRadius: 5,
-            pointHoverBackgroundColor: '#0E7490',
-            pointHoverBorderColor: '#fff',
-            pointHoverBorderWidth: 2
+            pointBackgroundColor: '#FFFFFF',
+            pointHoverBackgroundColor: '#FFFFFF',
+            pointHoverBorderColor: '#0E7490',
+            pointHoverBorderWidth: 2.5
           }]
         },
         options: {
@@ -333,6 +353,29 @@ async function loadCharts() {
           }
         }
       });
+
+      // Populate trend KPI in header
+      const elTrendTotal = document.getElementById('trendTotal');
+      const elTrendDelta = document.getElementById('trendDelta');
+      if (elTrendTotal) {
+        const totalTagihan = bulanVals.reduce((a, b) => a + b, 0);
+        elTrendTotal.textContent = totalTagihan;
+      }
+      if (elTrendDelta && bulanVals.length >= 2) {
+        const last = bulanVals[bulanVals.length - 1];
+        const prev = bulanVals[bulanVals.length - 2];
+        const diff = last - prev;
+        if (diff > 0) {
+          elTrendDelta.textContent = '+' + diff + ' vs bulan lalu';
+          elTrendDelta.className = 'card-kpi-delta delta-up';
+        } else if (diff < 0) {
+          elTrendDelta.textContent = diff + ' vs bulan lalu';
+          elTrendDelta.className = 'card-kpi-delta delta-down';
+        } else {
+          elTrendDelta.textContent = '0 vs bulan lalu';
+          elTrendDelta.className = 'card-kpi-delta';
+        }
+      }
     }
   } catch (error) {
     console.error('Error loading charts:', error);

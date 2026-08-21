@@ -190,43 +190,61 @@
               </div>
             </div>
           </div>
-
-          <div class="col-lg-4">
-            <div class="card reveal">
-              <div class="card-header">
-                <div class="card-header-text">
-                  <h5 class="card-title mb-0">Status Pembayaran</h5>
-                  <p class="card-description">Distribusi tagihan berdasarkan status</p>
-                </div>
-              </div>
-              <div class="chart-container" style="height: 260px;">
-                <canvas id="chartPembayaran"></canvas>
-              </div>
-            </div>
-          </div>
         </div>
 
         <!-- Charts Row -->
         <div class="row mt-4">
-          <div class="col-lg-6">
+          <div class="col-lg-4">
             <div class="card reveal">
               <div class="card-header">
                 <div class="card-header-text">
-                  <h5 class="card-title mb-0">Paket Layanan</h5>
-                  <p class="card-description">Jumlah pelanggan per paket</p>
+                  <span class="card-period">Bulan ini</span>
+                  <h5 class="card-title mb-0">Status Pembayaran</h5>
                 </div>
               </div>
-              <div class="chart-container" style="height: 260px;">
+              <div class="chart-container" style="height: 280px;">
+                <canvas id="chartPembayaran"></canvas>
+              </div>
+              <div class="chart-stats-row">
+                <div class="chart-stat">
+                  <span class="chart-stat-value" id="chartStatLunas">0</span>
+                  <span class="chart-stat-label">Lunas</span>
+                </div>
+                <div class="chart-stat">
+                  <span class="chart-stat-value chart-stat-danger" id="chartStatBelum">0</span>
+                  <span class="chart-stat-label">Belum Bayar</span>
+                </div>
+                <div class="chart-stat">
+                  <span class="chart-stat-value chart-stat-warning" id="chartStatCicilan">0</span>
+                  <span class="chart-stat-label">Cicilan</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="card reveal">
+              <div class="card-header">
+                <div class="card-header-text">
+                  <span class="card-period">Semua pelanggan</span>
+                  <h5 class="card-title mb-0">Distribusi Paket</h5>
+                </div>
+                <span class="card-header-badge" id="totalPaketCount">0 paket</span>
+              </div>
+              <div class="chart-container" style="height: 280px;">
                 <canvas id="chartPaket"></canvas>
               </div>
             </div>
           </div>
-          <div class="col-lg-6">
-            <div class="card reveal">
+          <div class="col-lg-4">
+            <div class="card chart-card-accent reveal">
               <div class="card-header">
                 <div class="card-header-text">
+                  <span class="card-period">12 bulan terakhir</span>
                   <h5 class="card-title mb-0">Tren Tagihan</h5>
-                  <p class="card-description">Jumlah tagihan per bulan</p>
+                </div>
+                <div class="card-header-kpi">
+                  <span class="card-kpi-value" id="trendTotal">0</span>
+                  <span class="card-kpi-delta" id="trendDelta">-</span>
                 </div>
               </div>
               <div class="chart-container" style="height: 280px;">
