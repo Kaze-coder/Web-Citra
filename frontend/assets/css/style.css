@@ -1634,3 +1634,48 @@ div.modal {
     display: none;
   }
 }
+
+/* ==========================================================================
+   Kolom Alamat + tombol lokasi (Maps / Earth Web / KML)
+   ========================================================================== */
+.alamat-cell {
+  max-width: 320px;
+}
+
+.alamat-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.alamat-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.loc-actions {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.loc-btn {
+  width: 30px;
+  height: 30px;
+  min-height: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  line-height: 1;
+}
+
+.loc-btn i {
+  margin: 0;
+}

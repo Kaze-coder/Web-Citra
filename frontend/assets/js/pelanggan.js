@@ -90,14 +90,25 @@ function escapeXml(str) {
     .replace(/'/g, '&apos;');
 }
 
-// Bangun tombol aksi lokasi (Earth Web + unduh KML) untuk satu baris pelanggan
+// Bangun tombol aksi lokasi (Maps + Earth Web + unduh KML) untuk satu baris pelanggan
 function buildLokasiButtons(p) {
   const coords = getPelangganCoords(p);
-  if (!coords) return '';
   const nama = escapeHtml(p.nama_pelanggan || '');
-  const btnEarth = `<button type="button" class="btn btn-outline-primary btn-sm ms-2" style="padding: 2px 7px;" onclick="openEarthWeb(${coords.lat}, ${coords.lng})" title="Buka di Google Earth Web" aria-label="Buka lokasi ${nama} di Google Earth Web"><i class="fas fa-globe"></i></button>`;
-  const btnKml = `<button type="button" class="btn btn-outline-secondary btn-sm ms-1" style="padding: 2px 7px;" onclick="downloadKML(${coords.lat}, ${coords.lng}, '${nama.replace(/'/g, "\\'")}', '${escapeHtml(p.alamat || '').replace(/'/g, "\\'")}')" title="Unduh KML (Google Earth Pro)" aria-label="Unduh file KML lokasi ${nama} untuk Google Earth Pro"><i class="fas fa-download"></i></button>`;
-  return btnEarth + btnKml;
+  const buttons = [];
+
+  // Google Maps: pakai koordinat jika ada, kalau tidak pakai teks alamat
+  if (coords || p.alamat) {
+    const query = coords ? `${coords.lat},${coords.lng}` : encodeURIComponent(p.alamat);
+    buttons.push(`<a href="https://www.google.com/maps/search/?api=1&query=${query}" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm loc-btn" title="Buka di Google Maps" aria-label="Buka lokasi ${nama} di Google Maps"><i class="fas fa-map-marker-alt"></i></a>`);
+  }
+
+  // Google Earth Web + unduh KML hanya bila koordinat tersedia
+  if (coords) {
+    buttons.push(`<button type="button" class="btn btn-outline-primary btn-sm loc-btn" onclick="openEarthWeb(${coords.lat}, ${coords.lng})" title="Buka di Google Earth Web" aria-label="Buka lokasi ${nama} di Google Earth Web"><i class="fas fa-globe"></i></button>`);
+    buttons.push(`<button type="button" class="btn btn-outline-secondary btn-sm loc-btn" onclick="downloadKML(${coords.lat}, ${coords.lng}, '${nama.replace(/'/g, "\\'")}', '${escapeHtml(p.alamat || '').replace(/'/g, "\\'")}')" title="Unduh KML (Google Earth Pro)" aria-label="Unduh file KML lokasi ${nama} untuk Google Earth Pro"><i class="fas fa-download"></i></button>`);
+  }
+
+  return buttons.length ? `<div class="loc-actions">${buttons.join('')}</div>` : '';
 }
 
 // Ambil data pelanggan dari API
@@ -126,9 +137,9 @@ async function loadPelanggan() {
         <tr>
           <td>${escapeHtml(p.nama_pelanggan)}</td>
           <td>${escapeHtml(p.no_telepon)}</td>
-          <td style="max-width: 250px;" title="${escapeHtml(p.alamat || '-')}">
-            <div class="d-flex align-items-center justify-content-between">
-              <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(p.alamat || '-')}</span>
+          <td class="alamat-cell" title="${escapeHtml(p.alamat || '-')}">
+            <div class="alamat-wrap">
+              <span class="alamat-text">${escapeHtml(p.alamat || '-')}</span>
               ${buildLokasiButtons(p)}
             </div>
           </td>
