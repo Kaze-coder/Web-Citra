@@ -127,17 +127,16 @@ async function loadCharts() {
       const tagihanData = tagRes.data.data;
       const pelangganData = pelRes.data.data;
 
-      // Tooltip putih bergaya shadcn — dipakai semua chart
+      // Tooltip mono gelap — dipakai semua chart
       const shadcnTooltip = {
-        backgroundColor: '#FFFFFF',
-        titleColor: '#16233A',
-        bodyColor: '#5B6B7B',
-        borderColor: '#D8DEE6',
-        borderWidth: 1,
-        cornerRadius: 8,
-        padding: 12,
-        titleFont: { family: "'IBM Plex Sans', sans-serif", size: 13, weight: '600' },
-        bodyFont: { family: "'IBM Plex Mono', monospace", size: 12 },
+        backgroundColor: '#0F1B2D',
+        titleColor: '#FFFFFF',
+        bodyColor: '#B8C3CE',
+        borderWidth: 0,
+        cornerRadius: 6,
+        padding: 10,
+        titleFont: { family: "'IBM Plex Sans', sans-serif", size: 12, weight: '500' },
+        bodyFont: { family: "'IBM Plex Mono', monospace", size: 11 },
         displayColors: true,
         boxWidth: 8,
         boxHeight: 8,
@@ -184,10 +183,10 @@ async function loadCharts() {
       const data = [];
       const bgColors = [];
 
-      // Tampilkan status pembayaran
-      if (countLunas > 0) { labels.push('Lunas'); data.push(countLunas); bgColors.push('#0E7490'); }
-      if (countBelumLunas > 0) { labels.push('Belum Lunas'); data.push(countBelumLunas); bgColors.push('#B42318'); }
-      if (countCicilan > 0) { labels.push('Cicilan'); data.push(countCicilan); bgColors.push('#93610B'); }
+      // Tampilkan status pembayaran (mono — warna semantik ada di stat tiles)
+      if (countLunas > 0) { labels.push('Lunas'); data.push(countLunas); bgColors.push('#0F1B2D'); }
+      if (countBelumLunas > 0) { labels.push('Belum Lunas'); data.push(countBelumLunas); bgColors.push('#5B6B7B'); }
+      if (countCicilan > 0) { labels.push('Cicilan'); data.push(countCicilan); bgColors.push('#B8C3CE'); }
 
       // Jika tidak ada data
       if (data.length === 0) {
@@ -214,7 +213,7 @@ async function loadCharts() {
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          cutout: '80%',
+          cutout: '78%',
           plugins: {
             legend: {
               position: 'bottom',
@@ -249,11 +248,6 @@ async function loadCharts() {
 
       const ctxPaket = document.getElementById('chartPaket');
 
-      // Vertical gradient for bars
-      const barGradient = ctxPaket.getContext('2d').createLinearGradient(0, 0, 0, 300);
-      barGradient.addColorStop(0, 'rgba(14, 116, 144, 0.9)');
-      barGradient.addColorStop(1, 'rgba(14, 116, 144, 0.4)');
-
       if (chartPaket) chartPaket.destroy();
       chartPaket = new Chart(ctxPaket, {
         type: 'bar',
@@ -262,10 +256,10 @@ async function loadCharts() {
           datasets: [{
             label: 'Jumlah Pelanggan',
             data: Object.values(paketCounts),
-            backgroundColor: barGradient,
-            hoverBackgroundColor: '#0B5C73',
-            borderRadius: 8,
-            maxBarThickness: 40
+            backgroundColor: '#0F1B2D',
+            hoverBackgroundColor: '#16233A',
+            borderRadius: 6,
+            maxBarThickness: 36
           }]
         },
         options: {
@@ -302,8 +296,8 @@ async function loadCharts() {
 
       const ctxRevenue = document.getElementById('chartRevenue');
       const gradientLine = ctxRevenue.getContext('2d').createLinearGradient(0, 0, 0, 300);
-      gradientLine.addColorStop(0, 'rgba(14, 116, 144, 0.20)');
-      gradientLine.addColorStop(1, 'rgba(14, 116, 144, 0)');
+      gradientLine.addColorStop(0, 'rgba(15, 27, 45, 0.08)');
+      gradientLine.addColorStop(1, 'rgba(15, 27, 45, 0)');
 
       const bulanKeys = Object.keys(bulanCounts).slice(-12);
       const bulanVals = Object.values(bulanCounts).slice(-12);
@@ -316,17 +310,17 @@ async function loadCharts() {
           datasets: [{
             label: 'Jumlah Tagihan',
             data: bulanVals,
-            borderColor: '#0E7490',
+            borderColor: '#0F1B2D',
             backgroundColor: gradientLine,
-            tension: 0.4,
+            tension: 0.35,
             fill: true,
-            borderWidth: 2.5,
+            borderWidth: 1.5,
             pointRadius: 0,
-            pointHoverRadius: 5,
+            pointHoverRadius: 4,
             pointBackgroundColor: '#FFFFFF',
             pointHoverBackgroundColor: '#FFFFFF',
-            pointHoverBorderColor: '#0E7490',
-            pointHoverBorderWidth: 2.5
+            pointHoverBorderColor: '#0F1B2D',
+            pointHoverBorderWidth: 1.5
           }]
         },
         options: {
@@ -343,7 +337,7 @@ async function loadCharts() {
           scales: {
             y: { 
               beginAtZero: true,
-              grid: { color: '#F0F2F5' },
+              grid: { color: '#F0F2F5', borderDash: [3, 3] },
               ticks: { font: { family: "'IBM Plex Mono', monospace", size: 11 }, color: '#5B6B7B' }
             },
             x: {

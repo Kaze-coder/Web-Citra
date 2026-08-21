@@ -95,164 +95,147 @@
 
       <!-- Isi Halaman -->
       <div class="content-area">
-        <!-- Statistik Ringkas -->
-        <div class="row mb-4">
-          <div class="col-xl-3 col-md-6 mb-4">
-            <div class="stat-card reveal">
-              <div class="stat-header">
-                <div class="stat-icon bg-primary">
-                  <i class="fas fa-users"></i>
-                </div>
-                <div class="stat-trend trend-up" id="trend-total-pelanggan">
-                  <i class="fas fa-arrow-up" id="icon-total-pelanggan"></i> <span id="pct-total-pelanggan">0%</span>
-                </div>
+        <div class="bento-grid">
+          <!-- Row 1: Stat cards -->
+          <div class="bento-item bento-stat stat-card reveal">
+            <div class="stat-header">
+              <div class="stat-icon bg-primary">
+                <i class="fas fa-users"></i>
               </div>
-              <div class="stat-content">
-                <span class="stat-label">Total Pelanggan</span>
-                <h3 class="stat-value" id="totalPelanggan">0</h3>
+              <div class="stat-trend trend-up" id="trend-total-pelanggan">
+                <i class="fas fa-arrow-up" id="icon-total-pelanggan"></i> <span id="pct-total-pelanggan">0%</span>
+              </div>
+            </div>
+            <div class="stat-content">
+              <span class="stat-label">Total Pelanggan</span>
+              <h3 class="stat-value" id="totalPelanggan">0</h3>
+            </div>
+          </div>
+
+          <div class="bento-item bento-stat stat-card reveal">
+            <div class="stat-header">
+              <div class="stat-icon bg-success">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="stat-trend trend-up" id="trend-pelanggan-aktif">
+                <i class="fas fa-arrow-up" id="icon-pelanggan-aktif"></i> <span id="pct-pelanggan-aktif">0%</span>
+              </div>
+            </div>
+            <div class="stat-content">
+              <span class="stat-label">Pelanggan Aktif</span>
+              <h3 class="stat-value" id="pelangganAktif">0</h3>
+            </div>
+          </div>
+
+          <div class="bento-item bento-stat stat-card reveal">
+            <div class="stat-header">
+              <div class="stat-icon bg-warning">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div class="stat-trend trend-down" id="trend-tagihan-belum">
+                <i class="fas fa-arrow-down" id="icon-tagihan-belum"></i> <span id="pct-tagihan-belum">0%</span>
+              </div>
+            </div>
+            <div class="stat-content">
+              <span class="stat-label">Tagihan Belum Bayar</span>
+              <h3 class="stat-value" id="tagihanBelum">0</h3>
+            </div>
+          </div>
+
+          <div class="bento-item bento-stat stat-card reveal">
+            <div class="stat-header">
+              <div class="stat-icon bg-info">
+                <i class="fas fa-money-bill"></i>
+              </div>
+              <div class="stat-trend trend-up" id="trend-pemasukan">
+                <i class="fas fa-arrow-up" id="icon-pemasukan"></i> <span id="pct-pemasukan">0%</span>
+              </div>
+            </div>
+            <div class="stat-content">
+              <span class="stat-label">Total Pemasukan</span>
+              <h3 class="stat-value" id="totalPemasukan">Rp 0</h3>
+            </div>
+          </div>
+
+          <!-- Row 2: Tagihan Terbaru (wide) + Status Pembayaran donut -->
+          <div class="bento-item bento-wide card reveal">
+            <div class="card-header">
+              <h5 class="card-title mb-0">Tagihan Terbaru</h5>
+            </div>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Pelanggan</th>
+                    <th>Jumlah</th>
+                    <th>Status</th>
+                    <th>Bulan</th>
+                  </tr>
+                </thead>
+                <tbody id="tagihanTable">
+                  <tr><td colspan="4" class="text-center">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="bento-item card reveal">
+            <div class="card-header">
+              <div class="card-header-text">
+                <span class="card-period">Bulan ini</span>
+                <h5 class="card-title mb-0">Status Pembayaran</h5>
+              </div>
+            </div>
+            <div class="chart-container" style="height: 260px;">
+              <canvas id="chartPembayaran"></canvas>
+            </div>
+            <div class="chart-stats-row">
+              <div class="chart-stat">
+                <span class="chart-stat-value" id="chartStatLunas">0</span>
+                <span class="chart-stat-label">Lunas</span>
+              </div>
+              <div class="chart-stat">
+                <span class="chart-stat-value chart-stat-danger" id="chartStatBelum">0</span>
+                <span class="chart-stat-label">Belum Bayar</span>
+              </div>
+              <div class="chart-stat">
+                <span class="chart-stat-value chart-stat-warning" id="chartStatCicilan">0</span>
+                <span class="chart-stat-label">Cicilan</span>
               </div>
             </div>
           </div>
 
-          <div class="col-xl-3 col-md-6 mb-4">
-            <div class="stat-card reveal">
-              <div class="stat-header">
-                <div class="stat-icon bg-success">
-                  <i class="fas fa-check-circle"></i>
-                </div>
-                <div class="stat-trend trend-up" id="trend-pelanggan-aktif">
-                  <i class="fas fa-arrow-up" id="icon-pelanggan-aktif"></i> <span id="pct-pelanggan-aktif">0%</span>
-                </div>
+          <!-- Row 3: Tren Tagihan (wide area) + Distribusi Paket -->
+          <div class="bento-item bento-wide card chart-card-accent reveal">
+            <div class="card-header">
+              <div class="card-header-text">
+                <span class="card-period">12 bulan terakhir</span>
+                <h5 class="card-title mb-0">Tren Tagihan</h5>
               </div>
-              <div class="stat-content">
-                <span class="stat-label">Pelanggan Aktif</span>
-                <h3 class="stat-value" id="pelangganAktif">0</h3>
+              <div class="card-header-kpi">
+                <span class="card-kpi-value" id="trendTotal">0</span>
+                <span class="card-kpi-delta" id="trendDelta">-</span>
               </div>
+            </div>
+            <div class="chart-container" style="height: 300px;">
+              <canvas id="chartRevenue"></canvas>
             </div>
           </div>
 
-          <div class="col-xl-3 col-md-6 mb-4">
-            <div class="stat-card reveal">
-              <div class="stat-header">
-                <div class="stat-icon bg-warning">
-                  <i class="fas fa-clock"></i>
-                </div>
-                <div class="stat-trend trend-down" id="trend-tagihan-belum">
-                  <i class="fas fa-arrow-down" id="icon-tagihan-belum"></i> <span id="pct-tagihan-belum">0%</span>
-                </div>
+          <div class="bento-item card reveal">
+            <div class="card-header">
+              <div class="card-header-text">
+                <span class="card-period">Semua pelanggan</span>
+                <h5 class="card-title mb-0">Distribusi Paket</h5>
               </div>
-              <div class="stat-content">
-                <span class="stat-label">Tagihan Belum Bayar</span>
-                <h3 class="stat-value" id="tagihanBelum">0</h3>
-              </div>
+              <span class="card-header-badge" id="totalPaketCount">0 paket</span>
             </div>
-          </div>
-
-          <div class="col-xl-3 col-md-6 mb-4">
-            <div class="stat-card reveal">
-              <div class="stat-header">
-                <div class="stat-icon bg-info">
-                  <i class="fas fa-money-bill"></i>
-                </div>
-                <div class="stat-trend trend-up" id="trend-pemasukan">
-                  <i class="fas fa-arrow-up" id="icon-pemasukan"></i> <span id="pct-pemasukan">0%</span>
-                </div>
-              </div>
-              <div class="stat-content">
-                <span class="stat-label">Total Pemasukan</span>
-                <h3 class="stat-value" id="totalPemasukan">Rp 0</h3>
-              </div>
+            <div class="chart-container" style="height: 280px;">
+              <canvas id="chartPaket"></canvas>
             </div>
           </div>
         </div>
-
-        <!-- Tabel & Grafik -->
-        <div class="row">
-          <div class="col-lg-8">
-            <div class="card reveal">
-              <div class="card-header">
-                <h5 class="card-title mb-0">Tagihan Terbaru</h5>
-              </div>
-              <div class="table-responsive">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Pelanggan</th>
-                      <th>Jumlah</th>
-                      <th>Status</th>
-                      <th>Bulan</th>
-                    </tr>
-                  </thead>
-                  <tbody id="tagihanTable">
-                    <tr><td colspan="4" class="text-center">Loading...</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Charts Row -->
-        <div class="row mt-4">
-          <div class="col-lg-4">
-            <div class="card reveal">
-              <div class="card-header">
-                <div class="card-header-text">
-                  <span class="card-period">Bulan ini</span>
-                  <h5 class="card-title mb-0">Status Pembayaran</h5>
-                </div>
-              </div>
-              <div class="chart-container" style="height: 280px;">
-                <canvas id="chartPembayaran"></canvas>
-              </div>
-              <div class="chart-stats-row">
-                <div class="chart-stat">
-                  <span class="chart-stat-value" id="chartStatLunas">0</span>
-                  <span class="chart-stat-label">Lunas</span>
-                </div>
-                <div class="chart-stat">
-                  <span class="chart-stat-value chart-stat-danger" id="chartStatBelum">0</span>
-                  <span class="chart-stat-label">Belum Bayar</span>
-                </div>
-                <div class="chart-stat">
-                  <span class="chart-stat-value chart-stat-warning" id="chartStatCicilan">0</span>
-                  <span class="chart-stat-label">Cicilan</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-4">
-            <div class="card reveal">
-              <div class="card-header">
-                <div class="card-header-text">
-                  <span class="card-period">Semua pelanggan</span>
-                  <h5 class="card-title mb-0">Distribusi Paket</h5>
-                </div>
-                <span class="card-header-badge" id="totalPaketCount">0 paket</span>
-              </div>
-              <div class="chart-container" style="height: 280px;">
-                <canvas id="chartPaket"></canvas>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-4">
-            <div class="card chart-card-accent reveal">
-              <div class="card-header">
-                <div class="card-header-text">
-                  <span class="card-period">12 bulan terakhir</span>
-                  <h5 class="card-title mb-0">Tren Tagihan</h5>
-                </div>
-                <div class="card-header-kpi">
-                  <span class="card-kpi-value" id="trendTotal">0</span>
-                  <span class="card-kpi-delta" id="trendDelta">-</span>
-                </div>
-              </div>
-              <div class="chart-container" style="height: 280px;">
-                <canvas id="chartRevenue"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
+      </div>
 
       </div>
     </div>

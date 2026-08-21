@@ -732,11 +732,50 @@ html.sidebar-collapsed .main-content {
   box-shadow: var(--shadow-hover);
 }
 
-/* Page-load stagger — stat cards sit one per Bootstrap column */
+/* Page-load stagger — stat cards */
 .row > :nth-child(1) > .stat-card { animation-delay: 0ms; }
 .row > :nth-child(2) > .stat-card { animation-delay: 60ms; }
 .row > :nth-child(3) > .stat-card { animation-delay: 120ms; }
 .row > :nth-child(4) > .stat-card { animation-delay: 180ms; }
+
+.bento-grid > :nth-child(1) .stat-card,
+.bento-grid > :nth-child(1).stat-card { animation-delay: 0ms; }
+.bento-grid > :nth-child(2).stat-card { animation-delay: 60ms; }
+.bento-grid > :nth-child(3).stat-card { animation-delay: 120ms; }
+.bento-grid > :nth-child(4).stat-card { animation-delay: 180ms; }
+
+/* ==========================================================================
+   Bento grid — asymmetric dashboard layout
+   ========================================================================== */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+}
+
+.bento-item {
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+/* Stats: 3 of 12 cols each (4 across) */
+.bento-stat { grid-column: span 3; }
+
+/* Wide items: 8 of 12 cols */
+.bento-wide { grid-column: span 8; }
+
+/* Normal chart cards: 4 of 12 cols */
+.bento-item:not(.bento-stat):not(.bento-wide) { grid-column: span 4; }
+
+@media (max-width: 1024px) {
+  .bento-stat { grid-column: span 6; }
+  .bento-wide { grid-column: span 12; }
+  .bento-item:not(.bento-stat):not(.bento-wide) { grid-column: span 12; }
+}
+
+@media (max-width: 576px) {
+  .bento-stat { grid-column: span 12; }
+}
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(8px); }
