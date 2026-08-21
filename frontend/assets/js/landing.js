@@ -1,6 +1,7 @@
 /**
  * Citra NET — Landing Page
- * GSAP animations (quiet editorial motion), smooth scroll, nav behavior, mobile menu.
+ * Network Operations motion: GSAP scroll reveals, smooth scroll, nav behavior, mobile menu.
+ * The hero waveform animates via CSS (stroke-dashoffset) — no JS needed for it.
  */
 
 (function () {
@@ -11,9 +12,9 @@
   ------------------------------------------------------------------ */
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* Motion tokens — quiet, editorial */
+  /* Motion tokens — quiet, orchestrated */
   var EASE = 'expo.out'; /* cubic-bezier(0.16, 1, 0.3, 1) */
-  var DURATION = 0.6;
+  var DURATION = 0.5;
   var TRAVEL_Y = 12;
   var TRAVEL_X = 12;
   var STAGGER = 0.08;
@@ -108,7 +109,7 @@
   });
 
   /* ------------------------------------------------------------------
-     GSAP Animations — quiet scroll entries, transform + opacity only
+     GSAP Animations — transform + opacity only
   ------------------------------------------------------------------ */
   function initGSAPAnimations() {
     if (typeof gsap === 'undefined') return false;
@@ -117,26 +118,31 @@
 
     if (prefersReducedMotion) return true;
 
-    /* Hero — staggered entrance (title → subtitle → CTAs) */
+    /* Hero — staggered entrance: chip -> title -> subtitle -> CTAs -> readout */
     var heroTl = gsap.timeline({ defaults: { ease: EASE, duration: DURATION } });
 
     heroTl
-      .from('#heroTitle', {
+      .from('#heroChip', {
         opacity: 0,
         y: TRAVEL_Y,
-        delay: 0.15
+        delay: 0.1
       })
-      .from('#heroSubtitle', {
-        opacity: 0,
-        y: TRAVEL_Y
-      }, '-=0.4')
-      .from('#heroCtas', {
+      .from('#heroTitle', {
         opacity: 0,
         y: TRAVEL_Y
       }, '-=0.35')
-      .from('.hero__scroll-hint', {
+      .from('#heroSubtitle', {
         opacity: 0,
-        duration: 0.5
+        y: TRAVEL_Y
+      }, '-=0.3')
+      .from('#heroCtas', {
+        opacity: 0,
+        y: TRAVEL_Y
+      }, '-=0.3')
+      .from('#heroReadout', {
+        opacity: 0,
+        y: TRAVEL_Y,
+        duration: 0.6
       }, '-=0.2');
 
     /* Package cards — stagger reveal on scroll, 80ms cascade */
@@ -238,7 +244,7 @@
     animatedElements.forEach(function (el) {
       el.style.opacity = '0';
       el.style.transform = 'translateY(12px)';
-      el.style.transition = 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+      el.style.transition = 'opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
     });
 
     var observer = new IntersectionObserver(

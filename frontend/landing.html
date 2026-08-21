@@ -3,17 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Citra NET — Internet cepat dan stabil untuk rumah Anda. Paket mulai dari 30 Mbps dengan instalasi gratis dan support 24/7.">
-  <title>Citra NET — Internet Cepat untuk Rumah Anda</title>
+  <meta name="description" content="Citra NET — Internet rumah yang stabil untuk perumahan. Paket fiber 30-100 Mbps, instalasi gratis, support 24/7.">
+  <title>Citra NET — Internet Rumah yang Stabil, Tanpa Drama</title>
 
-  <!-- Fonts: Newsreader (serif display) + Geist Sans (body) -->
+  <!-- Fonts: Space Grotesk (display) + IBM Plex Sans (body) + IBM Plex Mono (data) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,700;1,6..72,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-sans/style.css">
-
-  <!-- Phosphor Icons -->
-  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/regular/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Landing CSS -->
   <link rel="stylesheet" href="assets/css/landing.css">
@@ -24,7 +20,7 @@
   <nav class="nav" id="nav" aria-label="Navigasi utama">
     <div class="nav__inner">
       <a href="#" class="nav__logo" aria-label="Citra NET - Beranda">
-        <span class="nav__logo-mark"></span>
+        <span class="pulse-dot nav__logo-mark" aria-hidden="true"></span>
         Citra NET
       </a>
 
@@ -58,23 +54,33 @@
   <main>
     <!-- HERO — Attention -->
     <section class="hero" id="hero" aria-label="Hero">
-      <div class="hero__bg" aria-hidden="true">
-        <img
-          src="https://picsum.photos/seed/fiber-internet/1920/1080"
-          alt=""
-          class="hero__bg-img"
-          loading="eager"
-        >
-        <div class="hero__overlay"></div>
-        <div class="hero__grain"></div>
-      </div>
-
       <div class="hero__content">
-        <h1 class="hero__title" id="heroTitle">Internet Cepat<br>untuk Rumah Anda</h1>
-        <p class="hero__subtitle" id="heroSubtitle">Koneksi fiber optik stabil hingga 100 Mbps, tanpa buffering, tanpa drama.</p>
+        <span class="hero__chip" id="heroChip">
+          <span class="pulse-dot hero__chip-dot" aria-hidden="true"></span>
+          Jaringan aktif
+        </span>
+
+        <h1 class="hero__title" id="heroTitle">Internet rumah yang stabil, tanpa drama.</h1>
+        <p class="hero__subtitle" id="heroSubtitle">Fiber optik hingga 100 Mbps untuk perumahan — instalasi gratis, support 24 jam.</p>
+
         <div class="hero__ctas" id="heroCtas">
-          <a href="#paket" class="btn btn--primary">Lihat Paket</a>
-          <a href="#kontak" class="btn btn--outline">Hubungi Kami</a>
+          <a href="#paket" class="btn btn--primary">Lihat paket</a>
+          <a href="#cakupan" class="btn btn--outline">Cek cakupan</a>
+        </div>
+
+        <!-- Live speed readout — the signature waveform -->
+        <div class="hero__readout" id="heroReadout" role="img" aria-label="Ilustrasi throughput jaringan stabil di 100 Mbps">
+          <div class="hero__readout-meta">
+            <span class="hero__readout-label">Throughput jaringan</span>
+            <span class="hero__readout-value">100<span class="hero__readout-unit"> Mbps</span></span>
+            <span class="hero__readout-sub">simetris · latensi 4 ms</span>
+          </div>
+          <svg class="hero__wave" viewBox="0 0 320 64" aria-hidden="true" focusable="false">
+            <path class="hero__wave-base" pathLength="100"
+              d="M0 32 C 13.3 12, 26.7 12, 40 32 S 66.7 52, 80 32 S 106.7 12, 120 32 S 146.7 52, 160 32 S 186.7 12, 200 32 S 226.7 52, 240 32 S 266.7 12, 280 32 S 306.7 52, 320 32" />
+            <path class="hero__wave-flow" pathLength="100"
+              d="M0 32 C 13.3 12, 26.7 12, 40 32 S 66.7 52, 80 32 S 106.7 12, 120 32 S 146.7 52, 160 32 S 186.7 12, 200 32 S 226.7 52, 240 32 S 266.7 12, 280 32 S 306.7 52, 320 32" />
+          </svg>
         </div>
       </div>
 
@@ -109,19 +115,19 @@
             </div>
             <ul class="package-card__features">
               <li>
-                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                <svg class="icon-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
                 Kecepatan hingga 30 Mbps
               </li>
               <li>
-                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                <svg class="icon-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
                 Unlimited tanpa FUP
               </li>
               <li>
-                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                <svg class="icon-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
                 Router WiFi gratis
               </li>
               <li>
-                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                <svg class="icon-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
                 Support 24/7
               </li>
             </ul>
@@ -145,27 +151,27 @@
             </div>
             <ul class="package-card__features">
               <li>
-                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                <svg class="icon-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
                 Kecepatan hingga 50 Mbps
               </li>
               <li>
-                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                <svg class="icon-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
                 Unlimited tanpa FUP
               </li>
               <li>
-                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                <svg class="icon-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
                 Router WiFi 6 gratis
               </li>
               <li>
-                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                <svg class="icon-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
                 Support 24/7 prioritas
               </li>
               <li>
-                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                <svg class="icon-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
                 Gratis instalasi
               </li>
             </ul>
-            <a href="#kontak" class="btn btn--primary btn--full">Pilih Paket</a>
+            <a href="#kontak" class="btn btn--accent btn--full">Pilih Paket</a>
           </article>
 
           <!-- Paket 100 Mbps -->
@@ -184,23 +190,23 @@
             </div>
             <ul class="package-card__features">
               <li>
-                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                <svg class="icon-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
                 Kecepatan hingga 100 Mbps
               </li>
               <li>
-                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                <svg class="icon-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
                 Unlimited tanpa FUP
               </li>
               <li>
-                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                <svg class="icon-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
                 Router WiFi 6 mesh gratis
               </li>
               <li>
-                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                <svg class="icon-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
                 Support 24/7 prioritas
               </li>
               <li>
-                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                <svg class="icon-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
                 Gratis instalasi + kabel LAN
               </li>
             </ul>
@@ -222,7 +228,7 @@
             <ul class="features__list">
               <li class="feature-item" data-animate="feature-left">
                 <div class="feature-item__icon" aria-hidden="true">
-                  <i class="ph ph-lightning"></i>
+                  <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
                 </div>
                 <div class="feature-item__text">
                   <h3 class="feature-item__title">Kecepatan Stabil</h3>
@@ -231,7 +237,7 @@
               </li>
               <li class="feature-item" data-animate="feature-right">
                 <div class="feature-item__icon" aria-hidden="true">
-                  <i class="ph ph-wrench"></i>
+                  <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
                 </div>
                 <div class="feature-item__text">
                   <h3 class="feature-item__title">Instalasi Gratis</h3>
@@ -240,7 +246,7 @@
               </li>
               <li class="feature-item" data-animate="feature-left">
                 <div class="feature-item__icon" aria-hidden="true">
-                  <i class="ph ph-headset"></i>
+                  <svg viewBox="0 0 24 24"><path d="M3 18v-6a9 9 0 0118 0v6"/><path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3v5zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3v5z"/></svg>
                 </div>
                 <div class="feature-item__text">
                   <h3 class="feature-item__title">Support 24/7</h3>
@@ -249,7 +255,7 @@
               </li>
               <li class="feature-item" data-animate="feature-right">
                 <div class="feature-item__icon" aria-hidden="true">
-                  <i class="ph ph-handshake"></i>
+                  <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 019.9-1"/></svg>
                 </div>
                 <div class="feature-item__text">
                   <h3 class="feature-item__title">Tanpa Kontrak Panjang</h3>
@@ -306,12 +312,12 @@
           <p class="cta__desc">Hubungi tim kami sekarang. Konsultasi gratis, instalasi dalam 1-3 hari kerja.</p>
           <a
             href="https://wa.me/6281234567890?text=Halo%20Citra%20NET%2C%20saya%20ingin%20berlangganan%20internet."
-            class="btn btn--primary btn--lg"
+            class="btn btn--accent btn--lg"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Hubungi kami via WhatsApp"
           >
-            <i class="ph ph-whatsapp-logo" aria-hidden="true"></i>
+            <svg class="icon-inline" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
             Hubungi Kami via WhatsApp
           </a>
         </div>
@@ -325,7 +331,7 @@
       <div class="footer__inner">
         <div class="footer__brand">
           <span class="footer__logo">
-            <span class="nav__logo-mark"></span>
+            <span class="pulse-dot nav__logo-mark" aria-hidden="true"></span>
             Citra NET
           </span>
           <p class="footer__tagline">Internet cepat dan stabil untuk setiap rumah.</p>

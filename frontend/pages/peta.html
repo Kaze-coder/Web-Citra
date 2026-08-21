@@ -11,8 +11,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-sans/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/style.css">
   <style>
     .content-area {
@@ -49,27 +48,27 @@
       padding: 5px 12px;
       border-radius: 9999px;
       background: var(--surface);
-      border: 1px solid var(--border);
+      border: 1px solid var(--line);
       font-size: 12px;
       font-weight: 500;
-      color: var(--text-secondary);
+      color: var(--mute);
     }
 
     .gee-status-dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: #B4B2AC;
+      background: #A7B2BE;
       flex-shrink: 0;
     }
 
     .gee-status-dot.gee-connected {
-      background: var(--green-text);
+      background: var(--signal);
       box-shadow: none;
     }
 
     .gee-status-dot.gee-loading {
-      background: var(--yellow-text);
+      background: var(--warn-text);
       animation: gee-pulse 1.2s ease-in-out infinite;
     }
 
@@ -84,7 +83,7 @@
       position: relative;
       border-radius: var(--radius);
       overflow: hidden;
-      border: 1px solid var(--border);
+      border: 1px solid var(--line);
       box-shadow: none;
       min-height: 400px;
     }
@@ -105,7 +104,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(251, 251, 250, 0.9);
+      background: rgba(244, 246, 248, 0.9);
       z-index: 1000;
       flex-direction: column;
       align-items: center;
@@ -117,8 +116,8 @@
     .map-loading-spinner {
       width: 36px;
       height: 36px;
-      border: 3px solid var(--border);
-      border-top: 3px solid var(--primary);
+      border: 3px solid var(--line);
+      border-top: 3px solid var(--signal);
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
@@ -135,28 +134,28 @@
 
     .map-loading-subtext {
       font-size: 12px;
-      color: var(--text-secondary);
+      color: var(--mute);
       margin-top: -6px;
     }
 
     /* Leaflet popup styling */
     .leaflet-popup-content-wrapper {
       border-radius: 8px;
-      border: 1px solid var(--border);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      border: 1px solid var(--line);
+      box-shadow: 0 2px 10px rgba(15, 27, 45, 0.06);
     }
 
     .leaflet-popup-content {
       margin: 8px 12px;
-      font-family: var(--font-sans);
+      font-family: var(--font-body);
     }
 
     .popup-content-customer { font-size: 13px; }
-    .popup-content-customer b { font-size: 14px; color: var(--text-strong); display: block; margin-bottom: 8px; }
-    .popup-content-customer hr { margin: 5px 0; border: none; border-top: 1px solid var(--border); }
-    .popup-content-customer small { color: var(--text-secondary); line-height: 1.6; }
+    .popup-content-customer b { font-size: 14px; color: var(--ink); display: block; margin-bottom: 8px; }
+    .popup-content-customer hr { margin: 5px 0; border: none; border-top: 1px solid var(--line); }
+    .popup-content-customer small { color: var(--mute); line-height: 1.6; }
     .popup-info-item { margin: 3px 0; display: flex; align-items: flex-start; }
-    .popup-info-item i { color: var(--blue-text); margin-right: 6px; font-size: 12px; margin-top: 2px; flex-shrink: 0; }
+    .popup-info-item i { color: var(--signal); margin-right: 6px; font-size: 12px; margin-top: 2px; flex-shrink: 0; }
 
     .leaflet-marker-icon { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
     .leaflet-marker-icon:hover { filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3)); }
@@ -229,6 +228,14 @@
             <i class="fas fa-bars"></i>
           </button>
           <h1 class="page-title">Peta Lokasi Pelanggan</h1>
+        </div>
+        <div class="signal-indicator">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect class="sig-bar sig-bar-1" x="1" y="8" width="2.5" height="5" rx="1" fill="currentColor"/>
+            <rect class="sig-bar sig-bar-2" x="5.75" y="5" width="2.5" height="8" rx="1" fill="currentColor"/>
+            <rect class="sig-bar sig-bar-3" x="10.5" y="2" width="2.5" height="11" rx="1" fill="currentColor"/>
+          </svg>
+          <span>Terhubung</span>
         </div>
       </nav>
 

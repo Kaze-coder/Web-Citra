@@ -11,8 +11,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-sans/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/style.css">
 
   <style>
@@ -24,7 +23,7 @@
       align-items: center;
       justify-content: center;
       padding: 32px 16px;
-      background: var(--background);
+      background: var(--paper);
     }
 
     .login-card {
@@ -32,7 +31,7 @@
       width: 100%;
       max-width: 400px;
       background: var(--surface);
-      border: 1px solid var(--border);
+      border: 1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: none;
       overflow: hidden;
@@ -56,19 +55,37 @@
     }
 
     .login-brand h1 {
-      font-family: var(--font-serif);
+      font-family: var(--font-display);
       font-size: 24px;
       font-weight: 600;
       letter-spacing: -0.02em;
       line-height: 1.1;
-      color: var(--text-strong);
+      color: var(--ink);
       margin: 0;
     }
 
     .login-brand p {
       font-size: 13px;
-      color: var(--text-secondary);
+      color: var(--mute);
       margin: 8px 0 0;
+    }
+
+    /* Indikator sinyal di atas form */
+    .login-signal {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      color: var(--signal);
+    }
+
+    .login-signal span {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--mute);
     }
 
     /* Toggle lihat/sembunyikan password */
@@ -93,25 +110,25 @@
       border: none;
       background: transparent;
       border-radius: var(--radius-sm);
-      color: var(--text-secondary);
+      color: var(--mute);
       cursor: pointer;
       transition: color 150ms ease, background-color 150ms ease;
     }
 
     .btn-toggle-password:hover {
-      color: var(--text-strong);
-      background: var(--surface-alt);
+      color: var(--ink);
+      background: var(--surface-2);
     }
 
     .btn-toggle-password:focus-visible {
-      outline: 2px solid var(--primary);
+      outline: 2px solid var(--signal);
       outline-offset: 2px;
     }
 
     .btn-login {
       margin-top: 8px;
-      height: 36px;
-      padding: 0 16px;
+      height: 38px;
+      padding: 0 18px;
       font-size: 13px;
     }
 
@@ -119,7 +136,7 @@
       margin: 24px 0 0;
       text-align: center;
       font-size: 12px;
-      color: var(--text-secondary);
+      color: var(--mute);
     }
 
     @keyframes login-rise {
@@ -155,6 +172,15 @@
           <img src="../assets/logo.png" alt="Logo Citra NET">
           <h1>Citra NET Manager</h1>
           <p>Masuk ke akun admin Anda</p>
+        </div>
+
+        <div class="login-signal">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect class="sig-bar sig-bar-1" x="1" y="8" width="2.5" height="5" rx="1" fill="currentColor"/>
+            <rect class="sig-bar sig-bar-2" x="5.75" y="5" width="2.5" height="8" rx="1" fill="currentColor"/>
+            <rect class="sig-bar sig-bar-3" x="10.5" y="2" width="2.5" height="11" rx="1" fill="currentColor"/>
+          </svg>
+          <span>Jaringan Aktif</span>
         </div>
 
         <form id="loginForm">
