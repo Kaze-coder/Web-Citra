@@ -41,7 +41,7 @@ async function loadPerangkat() {
       } else {
         table.innerHTML = res.data.data.map(p => `
         <tr>
-          <td>${p.pelanggan_id ? escapeHtml(p.pelanggan_id.nama_pelanggan) : '-'}</td>
+          <td>${p.nama_pelanggan ? escapeHtml(p.nama_pelanggan) : '-'}</td>
           <td>${escapeHtml(p.nama_perangkat)}</td>
           <td>${escapeHtml(p.tipe_perangkat)}</td>
           <td>${escapeHtml(p.ip_address || '-')}</td>
@@ -98,7 +98,7 @@ async function loadPerangkatData(id) {
     const res = await axios.get(`/perangkat/${id}`);
     if (res.data.success) {
       const p = res.data.data;
-      document.getElementById('pelanggan_id').value = p.pelanggan_id.id || p.pelanggan_id;
+      document.getElementById('pelanggan_id').value = p.pelanggan_id;
       document.getElementById('nama_perangkat').value = p.nama_perangkat;
       document.getElementById('tipe_perangkat').value = p.tipe_perangkat;
       document.getElementById('ip_address').value = p.ip_address || '';
