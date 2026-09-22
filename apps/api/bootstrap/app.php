@@ -5,12 +5,15 @@ use App\Http\Middleware\RequestId;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -55,9 +58,27 @@ return Application::configure(basePath: dirname(__DIR__))
                 : null;
         });
 
+        $exceptions->render(function (AccessDeniedHttpException $exception, Request $request) use ($error): ?JsonResponse {
+            return $request->is('api/*')
+                ? $error($request, 'Anda tidak memiliki izin untuk tindakan ini.', 403)
+                : null;
+        });
+
         $exceptions->render(function (ModelNotFoundException $exception, Request $request) use ($error): ?JsonResponse {
             return $request->is('api/*')
                 ? $error($request, 'Data tidak ditemukan.', 404)
+                : null;
+        });
+
+        $exceptions->render(function (NotFoundHttpException $exception, Request $request) use ($error): ?JsonResponse {
+            return $request->is('api/*')
+                ? $error($request, 'Data tidak ditemukan.', 404)
+                : null;
+        });
+
+        $exceptions->render(function (QueryException $exception, Request $request) use ($error): ?JsonResponse {
+            return $request->is('api/*') && str_starts_with((string) $exception->getCode(), '23')
+                ? $error($request, 'Data bertentangan dengan data yang sudah ada.', 409)
                 : null;
         });
     })->create();

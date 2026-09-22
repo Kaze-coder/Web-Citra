@@ -73,6 +73,7 @@ trait BuildsLegacySchema
             $table->timestamp('tanggal_dibuat')->nullable();
             $table->timestamp('tanggal_diperbarui')->nullable();
             $table->foreign('pelanggan_id')->references('id')->on('pelanggan')->cascadeOnDelete();
+            $table->unique(['pelanggan_id', 'bulan_tagihan'], 'uq_tagihan_pelanggan_bulan');
         });
     }
 }
