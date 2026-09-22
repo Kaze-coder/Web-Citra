@@ -9,7 +9,7 @@ Replace the Express backend and static HTML frontend with a Laravel API and a Ne
 
 ## Confirmed Decisions
 
-- Use Laravel 13 for the API and business logic.
+- Use Laravel 12 for the API and business logic (Laravel 13 requires PHP 8.3; this machine runs PHP 8.2.12).
 - Use Next.js 16 App Router, TypeScript, Tailwind CSS, shadcn/ui, and PaceUI for every page.
 - Migrate the landing page, login, dashboard, customers, devices, billing, map, delivery schedules, and admin management.
 - Build the replacement beside the current application, verify parity, then cut over.
