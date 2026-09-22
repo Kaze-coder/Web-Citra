@@ -4,8 +4,10 @@ use App\Http\Controllers\Api\V1\AdminController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BillingController;
 use App\Http\Controllers\Api\V1\CustomerImportController;
+use App\Http\Controllers\Api\V1\EarthEngineController;
 use App\Http\Controllers\Api\V1\GeocodingController;
 use App\Http\Controllers\Api\V1\HealthController;
+use App\Http\Controllers\Api\V1\KmlController;
 use App\Http\Controllers\Api\V1\LokasiController;
 use App\Http\Controllers\Api\V1\PelangganController;
 use App\Http\Controllers\Api\V1\PerangkatController;
@@ -34,6 +36,8 @@ Route::middleware(['auth:sanctum', 'active.admin'])->group(function (): void {
     Route::post('/pelanggan/geocode/auto-all', [PelangganController::class, 'geocodeMissing'])->middleware('throttle:operations');
     Route::post('/pelanggan/import', CustomerImportController::class)->middleware('throttle:operations');
     Route::get('/maps/customers', [PelangganController::class, 'coordinates']);
+    Route::get('/maps/customers.kml', [KmlController::class, 'all']);
+    Route::get('/maps/customers/{pelanggan}.kml', [KmlController::class, 'customer'])->whereNumber('pelanggan');
     Route::apiResource('pelanggan', PelangganController::class);
 
     Route::get('/perangkat/pelanggan/{pelanggan}', [PerangkatController::class, 'byCustomer'])->whereNumber('pelanggan');
@@ -62,4 +66,10 @@ Route::middleware(['auth:sanctum', 'active.admin'])->group(function (): void {
     });
 
     Route::apiResource('admins', AdminController::class)->parameters(['admins' => 'admin']);
+
+    Route::prefix('earth-engine')->group(function (): void {
+        Route::get('/status', [EarthEngineController::class, 'status']);
+        Route::get('/tiles', [EarthEngineController::class, 'tiles']);
+        Route::delete('/cache', [EarthEngineController::class, 'clearCache'])->middleware('throttle:operations');
+    });
 });

@@ -1,0 +1,23 @@
+{
+  "name": "citra-earth-engine-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Private Google Earth Engine tile service for Citra NET Manager",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@google/earthengine": "^1.7.28",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0"
+  },
+  "overrides": {
+    "uuid": "^11.1.1"
+  }
+}

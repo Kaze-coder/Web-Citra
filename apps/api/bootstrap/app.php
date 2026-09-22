@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\ExternalServiceException;
 use App\Http\Middleware\EnsureAdminIsActive;
 use App\Http\Middleware\RequestId;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -85,6 +86,12 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (ConnectionException|RequestException $exception, Request $request) use ($error): ?JsonResponse {
+            return $request->is('api/*')
+                ? $error($request, 'Layanan eksternal sedang tidak tersedia.', 502)
+                : null;
+        });
+
+        $exceptions->render(function (ExternalServiceException $exception, Request $request) use ($error): ?JsonResponse {
             return $request->is('api/*')
                 ? $error($request, 'Layanan eksternal sedang tidak tersedia.', 502)
                 : null;

@@ -8,6 +8,7 @@ package-lock.json
 yarn.lock
 **/package-lock.json
 !apps/web/package-lock.json
+!services/earth-engine/package-lock.json
 
 # Environment variables (JANGAN PUSH!)
 .env
