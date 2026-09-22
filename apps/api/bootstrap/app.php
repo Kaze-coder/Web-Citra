@@ -9,6 +9,8 @@ use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -79,6 +81,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (QueryException $exception, Request $request) use ($error): ?JsonResponse {
             return $request->is('api/*') && str_starts_with((string) $exception->getCode(), '23')
                 ? $error($request, 'Data bertentangan dengan data yang sudah ada.', 409)
+                : null;
+        });
+
+        $exceptions->render(function (ConnectionException|RequestException $exception, Request $request) use ($error): ?JsonResponse {
+            return $request->is('api/*')
+                ? $error($request, 'Layanan eksternal sedang tidak tersedia.', 502)
                 : null;
         });
     })->create();

@@ -35,4 +35,19 @@ return [
         ],
     ],
 
+    'nominatim' => [
+        'url' => env('NOMINATIM_URL', 'https://nominatim.openstreetmap.org'),
+        'user_agent' => env('NOMINATIM_USER_AGENT', 'Citra-NET/2.0'),
+    ],
+
+    'fonnte' => [
+        'url' => env('FONNTE_API_URL', 'https://api.fonnte.com'),
+        'token' => env('FONNTE_TOKEN'),
+    ],
+
+    'earth_engine' => [
+        'url' => env('EARTH_ENGINE_SERVICE_URL', 'http://localhost:5000'),
+        'token' => env('EARTH_ENGINE_TOKEN'),
+    ],
+
 ];

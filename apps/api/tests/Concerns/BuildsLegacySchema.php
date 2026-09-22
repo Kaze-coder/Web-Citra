@@ -75,5 +75,20 @@ trait BuildsLegacySchema
             $table->foreign('pelanggan_id')->references('id')->on('pelanggan')->cascadeOnDelete();
             $table->unique(['pelanggan_id', 'bulan_tagihan'], 'uq_tagihan_pelanggan_bulan');
         });
+
+        if (! Schema::hasTable('notification_dispatches')) {
+            Schema::create('notification_dispatches', function (Blueprint $table): void {
+                $table->id();
+                $table->string('dedupe_key', 64)->unique();
+                $table->string('channel', 20)->default('whatsapp');
+                $table->string('recipient', 30);
+                $table->text('message');
+                $table->string('status', 20)->default('queued');
+                $table->unsignedSmallInteger('attempts')->default(0);
+                $table->text('last_error')->nullable();
+                $table->timestamp('sent_at')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 }

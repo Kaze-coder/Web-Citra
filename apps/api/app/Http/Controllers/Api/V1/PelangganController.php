@@ -6,10 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PelangganRequest;
 use App\Models\Pelanggan;
 use App\Models\Tagihan;
+use App\Services\GeocodingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class PelangganController extends Controller
 {
@@ -81,7 +84,7 @@ class PelangganController extends Controller
         return $this->success($this->data($pelanggan->load('lokasi')), 'Data pelanggan berhasil diambil.');
     }
 
-    public function store(PelangganRequest $request): JsonResponse
+    public function store(PelangganRequest $request, GeocodingService $geocoding): JsonResponse
     {
         $this->authorize('create', Pelanggan::class);
 
@@ -104,7 +107,66 @@ class PelangganController extends Controller
             return $pelanggan->load('lokasi');
         });
 
+        if (! $pelanggan->lokasi && $pelanggan->alamat) {
+            try {
+                $coordinates = $geocoding->geocode($pelanggan->alamat);
+                if ($coordinates) {
+                    $pelanggan->lokasi()->create([
+                        'latitude' => $coordinates['latitude'],
+                        'longitude' => $coordinates['longitude'],
+                        'keterangan_lokasi' => $coordinates['formatted_address'],
+                    ]);
+                    $pelanggan->load('lokasi');
+                }
+            } catch (Throwable $exception) {
+                Log::warning('Auto-geocode pelanggan gagal.', [
+                    'pelanggan_id' => $pelanggan->id,
+                    'exception' => $exception::class,
+                ]);
+            }
+        }
+
         return $this->success($this->data($pelanggan), 'Pelanggan baru berhasil ditambahkan.', status: 201);
+    }
+
+    public function geocodeMissing(GeocodingService $geocoding): JsonResponse
+    {
+        $this->authorize('create', Pelanggan::class);
+        $customers = Pelanggan::query()->whereDoesntHave('lokasi')->whereNotNull('alamat')->get();
+        $success = 0;
+        $failed = 0;
+
+        foreach ($customers as $index => $pelanggan) {
+            try {
+                $coordinates = $geocoding->geocode($pelanggan->alamat);
+                if ($coordinates) {
+                    $pelanggan->lokasi()->create([
+                        'latitude' => $coordinates['latitude'],
+                        'longitude' => $coordinates['longitude'],
+                        'keterangan_lokasi' => $coordinates['formatted_address'],
+                    ]);
+                    $success++;
+                } else {
+                    $failed++;
+                }
+            } catch (Throwable $exception) {
+                $failed++;
+                Log::warning('Batch geocode pelanggan gagal.', [
+                    'pelanggan_id' => $pelanggan->id,
+                    'exception' => $exception::class,
+                ]);
+            }
+
+            if ($index < $customers->count() - 1) {
+                usleep(1_000_000);
+            }
+        }
+
+        return $this->success([
+            'total' => $customers->count(),
+            'success' => $success,
+            'failed' => $failed,
+        ], 'Proses geocoding pelanggan selesai.');
     }
 
     public function update(PelangganRequest $request, Pelanggan $pelanggan): JsonResponse

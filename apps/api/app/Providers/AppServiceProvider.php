@@ -45,5 +45,13 @@ class AppServiceProvider extends ServiceProvider
 
             return Limit::perMinute(5)->by($username.'|'.$request->ip());
         });
+
+        RateLimiter::for('geocoding', fn (Request $request): Limit => Limit::perMinute(30)
+            ->by((string) ($request->user()?->id ?? $request->ip())));
+        RateLimiter::for('nominatim', fn (): Limit => Limit::perSecond(1));
+        RateLimiter::for('operations', fn (Request $request): Limit => Limit::perMinute(10)
+            ->by((string) $request->user()?->id));
+        RateLimiter::for('whatsapp', fn (Request $request): Limit => Limit::perMinute(30)
+            ->by((string) $request->user()?->id));
     }
 }
