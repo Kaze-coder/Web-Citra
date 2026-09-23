@@ -1,128 +1,66 @@
+"use client";
+
 import Link from "next/link";
-
+import { LogOutIcon, RadioTowerIcon } from "lucide-react";
+import { menuItems } from "@/components/items";
+import { NavItem } from "@/components/nav-item";
+import { Button } from "@/components/ui/button";
 import {
-    BadgeCheckIcon,
-    BellIcon,
-    ChevronsUpDownIcon,
-    CreditCardIcon,
-    LogOutIcon,
-    Settings2Icon,
-    UserIcon,
-} from "lucide-react";
-
-import { demoAdminMenuItems } from "@/components/items";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useAuth } from "@/components/auth-provider";
+import { initials } from "@/lib/format";
 
-import { NavItem } from "./nav-item";
+export function AppSidebar() {
+  const { user, logout } = useAuth();
+  const visibleItems = menuItems.filter((item) => !item.roles || item.roles.includes(user.role));
 
-export const DemoAdminSidebar = () => {
-    return (
-        <Sidebar>
-            <SidebarHeader className="flex-row items-center gap-2.5 p-4">
-                <Link href="/" className="flex items-center gap-2.5">
-                    <div className="bg-primary text-primary-foreground flex size-7.5 items-center justify-center rounded-md text-xl font-medium">
-                        <Settings2Icon className="size-4.5" />
-                    </div>
-                    <p className="text-xl font-semibold">Admin</p>
-                </Link>
-            </SidebarHeader>
-            <SidebarContent>
-                <SidebarMenu className="mt-2 mb-2 gap-0.5 px-2">
-                    {demoAdminMenuItems.map((item, index) => (
-                        <NavItem item={item} key={index} />
-                    ))}
-                </SidebarMenu>
-            </SidebarContent>
-            <SidebarFooter className="border-t p-1">
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger
-                                render={
-                                    <SidebarMenuButton
-                                        size="lg"
-                                        className="data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground">
-                                        <Avatar className="size-8">
-                                            <AvatarImage
-                                                src="https://images.unsplash.com/photo-1599566150163-29194dcabd9c?w=80&h=80&fit=crop&crop=face"
-                                                alt="John Doe"
-                                            />
-                                            <AvatarFallback>JD</AvatarFallback>
-                                        </Avatar>
-                                        <div className="grid flex-1 text-left text-sm leading-tight">
-                                            <span className="truncate font-semibold">John Doe</span>
-                                            <span className="text-muted-foreground truncate text-xs">
-                                                john@example.com
-                                            </span>
-                                        </div>
-                                        <ChevronsUpDownIcon className="ms-auto size-4" />
-                                    </SidebarMenuButton>
-                                }
-                            />
-                            <DropdownMenuContent
-                                className="w-(--anchor-width) min-w-56 rounded-lg"
-                                side="top"
-                                align="start"
-                                sideOffset={4}>
-                                <div className="flex items-center gap-2.5 p-2 text-left text-sm">
-                                    <Avatar className="size-8">
-                                        <AvatarImage
-                                            src="https://images.unsplash.com/photo-1599566150163-29194dcabd9c?w=80&h=80&fit=crop&crop=face"
-                                            alt="John Doe"
-                                        />
-                                        <AvatarFallback>JD</AvatarFallback>
-                                    </Avatar>
-                                    <div className="grid flex-1 text-left text-sm leading-tight">
-                                        <span className="truncate font-semibold">John Doe</span>
-                                        <span className="text-muted-foreground truncate text-xs">john@example.com</span>
-                                    </div>
-                                </div>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuGroup>
-                                    <DropdownMenuItem>
-                                        <UserIcon />
-                                        <span>Profile</span>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem>
-                                        <BadgeCheckIcon />
-                                        <span>Account</span>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem>
-                                        <CreditCardIcon />
-                                        <span>Billing</span>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem>
-                                        <BellIcon />
-                                        <span>Notifications</span>
-                                    </DropdownMenuItem>
-                                </DropdownMenuGroup>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem variant="destructive">
-                                    <LogOutIcon />
-                                    <span>Sign Out</span>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </SidebarMenuItem>
-                </SidebarMenu>
-            </SidebarFooter>
-        </Sidebar>
-    );
-};
+  return (
+    <Sidebar collapsible="icon" className="border-r-0">
+      <SidebarHeader className="border-b p-3">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" render={<Link href="/dashboard" />}>
+              <span className="grid size-8 place-items-center rounded-md bg-emerald-700 text-white shadow-sm shadow-emerald-950/15">
+                <RadioTowerIcon className="size-4.5" />
+              </span>
+              <span className="grid leading-tight">
+                <span className="font-semibold tracking-[-0.02em]">Citra NET</span>
+                <span className="font-mono text-[0.65rem] text-muted-foreground">OPS MANAGER</span>
+              </span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+      <SidebarContent className="py-3">
+        <SidebarMenu className="gap-1 px-2">
+          {visibleItems.map((item) => <NavItem key={item.href} item={item} />)}
+        </SidebarMenu>
+      </SidebarContent>
+      <SidebarFooter className="border-t p-2">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" className="h-auto py-2" render={<div />}>
+              <span className="grid size-8 place-items-center rounded-md bg-sidebar-accent text-xs font-semibold">
+                {initials(user.nama_lengkap || user.username)}
+              </span>
+              <span className="grid min-w-0 flex-1 text-left leading-tight">
+                <span className="truncate text-sm font-medium">{user.nama_lengkap || user.username}</span>
+                <span className="truncate text-xs capitalize text-muted-foreground">{user.role.replace("_", " ")}</span>
+              </span>
+              <Button variant="ghost" size="icon-sm" aria-label="Keluar" onClick={() => void logout()}>
+                <LogOutIcon />
+              </Button>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+    </Sidebar>
+  );
+}
