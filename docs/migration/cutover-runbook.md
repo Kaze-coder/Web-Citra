@@ -93,6 +93,7 @@ Build Next.js harus dilakukan dengan `LARAVEL_API_ORIGIN` produksi karena rewrit
 6. Aktifkan tepat satu scheduler:
    - Linux cron: `* * * * * cd /path/apps/api && php artisan schedule:run >> /dev/null 2>&1`
    - Windows Task Scheduler: ulangi setiap 1 menit, program `php`, argumen `artisan schedule:run`, working directory `apps/api`.
+   - Instalasi Laragon lokal repository ini menyediakan launcher di `scripts/windows/` untuk API, web port `3100`, queue worker, dan scheduler.
 7. Arahkan reverse proxy ke Next.js; Laravel dan Earth Engine tetap private.
 
 ## 5. Smoke Test
