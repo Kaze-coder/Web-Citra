@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Citra NET Web
 
-## Getting Started
+Next.js 16 operations console untuk Laravel API Citra NET.
 
-First, run the development server:
+## Environment
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```env
+LARAVEL_API_ORIGIN=http://localhost:8000
+NEXT_PUBLIC_APP_NAME=Citra NET
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`LARAVEL_API_ORIGIN` hanya dipakai server Next.js untuk rewrite `/api/*` dan `/sanctum/*`. Browser tidak mengakses origin Laravel secara langsung.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Commands
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm ci
+npm run dev -- --webpack
+npm run lint
+npx tsc --noEmit
+npm run build
+npm start
+```
 
-## Learn More
+## Browser E2E
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npx playwright install chromium
+npm run test:e2e
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+E2E membangun production bundle, membuat SQLite test baru, menjalankan Laravel di `127.0.0.1:8100`, menjalankan Next.js di `127.0.0.1:3100`, lalu menguji login/logout, role, CRUD pelanggan, perangkat, tagihan, antrean reminder, peta, admin, dan navigasi mobile.

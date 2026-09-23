@@ -1,137 +1,88 @@
-# Citra NET Manager — Sistem Manajemen ISP
+# Citra NET Manager
 
-Sistem manajemen pelanggan WiFi/ISP berbasis web. Kelola pelanggan, perangkat, tagihan, lokasi, dan reminder WhatsApp otomatis.
+Platform operasional ISP untuk pelanggan, perangkat, tagihan, lokasi, WhatsApp, dan pemetaan jaringan.
 
----
+## Arsitektur
 
-## Fitur Utama
+| Komponen | Lokasi | Teknologi |
+|---|---|---|
+| Web | `apps/web` | Next.js 16, React 19, TypeScript, Tailwind 4, PaceUI |
+| API | `apps/api` | Laravel 12, Sanctum, queue, scheduler |
+| Pemetaan | `services/earth-engine` | Node.js, Google Earth Engine |
+| Database | MySQL | Schema legacy dipertahankan, migration hanya untuk kebutuhan framework dan constraint |
 
-- Dashboard — statistik real-time, chart pembayaran/paket/revenue
-- Manajemen Pelanggan — CRUD + pencarian + auto-geocoding alamat
-- Manajemen Perangkat — pelacakan router/modem/mikrotik per pelanggan
-- Tagihan Otomatis — billing scheduler harian (node-cron), auto-create + kirim WA
-- Integrasi WhatsApp — reminder tagihan via Fonnte API
-- Peta Lokasi — visualisasi sebaran pelanggan (Leaflet + ESRI/OSM/Carto)
-- Peta Satelit — Google Earth Engine tiles (opsional, butuh service account)
-- Export Data — CSV pelanggan/tagihan, import Excel pelanggan
-- Login & Auth — JWT Bearer token, role-based (super_admin/admin/operator)
-- Desain Responsif — Bootstrap 5.3, mobile-friendly
+`backend/` dan `frontend/` adalah aplikasi legacy yang tetap tersedia selama masa stabilisasi. Jangan menjalankan scheduler legacy dan Laravel secara bersamaan.
 
----
+## Prasyarat
 
-## Teknologi
+- PHP 8.2 dengan PDO MySQL dan PDO SQLite
+- Composer 2
+- Node.js 20 atau lebih baru
+- MySQL 8
+- Chromium untuk E2E: `cd apps/web && npx playwright install chromium`
 
-| Layer | Stack |
-|---|---|
-| Backend | Node.js + Express 4 |
-| Database | **MySQL** (mysql2/promise) — Laragon/phpMyAdmin lokal |
-| Auth | JWT (jsonwebtoken) + bcryptjs |
-| Frontend | HTML5 + Vanilla JS + Bootstrap 5.3 + Leaflet.js + Chart.js |
-| Otomasi | node-cron (billing scheduler harian 00:00) |
-| Notifikasi | Fonnte API (WhatsApp) |
-| Geocoding | Nominatim/OpenStreetMap |
-| Opsional | Google Earth Engine (@google/earthengine) |
+## Pengembangan Lokal
 
----
+1. Siapkan API:
 
-## Struktur Folder
-
-```
-website-citra/
-├── backend/
-│   ├── config/              # Konfigurasi database MySQL (mysql2 pool)
-│   ├── controllers/         # Logika bisnis (8 controller)
-│   ├── models/              # Data access layer MySQL (*Model.js)
-│   ├── routes/              # Endpoint API (10 route files)
-│   ├── services/            # WhatsApp, BillingScheduler, Geocoding, EarthEngine
-│   └── middleware/          # Auth JWT, validasi input, error handler
-├── frontend/
-│   ├── assets/              # CSS, JS, logo
-│   ├── pages/               # Login, Pelanggan, Perangkat, Tagihan, Peta, Jadwal
-│   └── index.html           # Dashboard
-├── database/
-│   ├── isp_database.sql     # Schema + seed data (5 tabel)
-│   └── fix-auth.sql         # Reset password MySQL root (Laragon)
-└── README.md
-```
-
----
-
-## Instalasi
-
-### Prasyarat
-- Node.js v16+
-- MySQL 8.x (Laragon sudah include)
-- Browser modern
-
-### Langkah
-
-1. **Clone & install**
    ```bash
-   git clone https://github.com/madawwardana-netizen/website-citra.git
-   cd website-citra/backend
-   npm install
-   ```
-
-2. **Import database**
-   ```bash
-   mysql -u root < ../database/isp_database.sql
-   ```
-   Ini membuat database `isp_management` dengan 5 tabel + seed data (6 pelanggan, 2 admin).
-
-3. **Konfigurasi environment**
-   ```bash
+   cd apps/api
+   composer install
    cp .env.example .env
+   php artisan key:generate
+   php artisan serve --host=127.0.0.1 --port=8000
    ```
-   Edit `.env` — isi `WHATSAPP_API_KEY` (dari Fonnte), `JWT_SECRET` (random string panjang). MySQL default Laragon (root tanpa password) sudah preset.
 
-4. **Jalankan server**
+2. Siapkan web:
+
    ```bash
-   npm start
+   cd apps/web
+   npm ci
+   cp .env.example .env.local
+   npm run dev -- --webpack
    ```
-   Server berjalan di `http://localhost:5000`
 
-5. **Login**
-   Buka `http://localhost:5000` → redirect ke halaman login.
-   - **Admin**: `admin` / `admin123`
-   - **Operator**: `operator` / `operator123`
+3. Buka `http://localhost:3000`. API diproksikan oleh Next.js sehingga cookie Sanctum tetap same-origin.
 
----
+4. Jalankan worker dan scheduler Laravel pada terminal terpisah bila menguji antrean:
 
-## Billing Scheduler
+   ```bash
+   php artisan queue:work
+   php artisan schedule:work
+   ```
 
-- Cron harian pukul **00:00** — cek pelanggan aktif, buat tagihan jika jatuh tempo, kirim WA.
-- Run-on-boot **dimatikan default** (set `BILLING_RUN_ON_BOOT=true` di `.env` jika diinginkan).
-- Manual: tombol "Check Billing Sekarang" di halaman Tagihan.
+## Verifikasi
 
----
+```bash
+cd apps/api
+php artisan test
+vendor/bin/pint --test
+composer validate --strict
+composer audit
 
-## API Endpoints (semua butuh Bearer JWT kecuali login)
+cd ../web
+npm run lint
+npx tsc --noEmit
+npm run test:e2e
+npm audit --audit-level=moderate
 
-| Endpoint | Keterangan |
-|---|---|
-| `POST /api/admin/login` | Login (public) |
-| `POST /api/admin/register` | Register admin (public) |
-| `GET /api/pelanggan` | List pelanggan (pagination, search) |
-| `GET /api/pelanggan/statistik` | Statistik + totalPemasukan |
-| `GET /api/pelanggan/peta/coordinates` | Koordinat untuk peta |
-| `GET/POST/PUT/DELETE /api/perangkat` | CRUD perangkat |
-| `GET/POST/PUT/DELETE /api/tagihan` | CRUD tagihan |
-| `GET /api/tagihan/statistik` | Statistik tagihan |
-| `POST /api/whatsapp/send` | Kirim WA manual |
-| `GET /api/billing/scheduler/status` | Status scheduler |
-| `GET /api/earth-engine/status` | Status GEE (opsional) |
+cd ../../services/earth-engine
+npm test
+npm audit --audit-level=moderate
+```
 
----
+E2E menggunakan SQLite terisolasi di `apps/api/storage/framework/testing/e2e.sqlite`. Bootstrap menolak database non-SQLite dan tidak menyentuh MySQL operasional.
 
-## Catatan Keamanan
+## Akses dan Keamanan
 
-- Ganti `JWT_SECRET` di `.env` dengan string acak yang panjang.
-- Jangan commit file `.env` (sudah di `.gitignore`).
-- Ganti password admin default setelah deploy.
-- `POST /api/admin/register` sebaiknya dibatasi/dihapus di production.
+- Auth memakai cookie session Laravel Sanctum dan CSRF, bukan token di browser.
+- Role `operator` bersifat read-only.
+- Role `admin` dapat mengelola operasi.
+- Hanya `super_admin` yang dapat mengelola akun administrator.
+- Tidak ada registrasi publik.
+- Earth Engine hanya boleh bind ke loopback dan wajib memakai `X-Internal-Token`.
+- Rahasia Fonnte, Earth Engine, database, dan `APP_KEY` hanya disimpan di environment server.
 
----
+## Deployment
 
-**Versi**: 3.0.0 (MySQL + Auth)
-**Status**: Aktif & Operasional
+Ikuti `docs/migration/cutover-runbook.md`. Runbook mencakup backup, pemeriksaan duplikasi tagihan, migration, cache produksi, worker, scheduler, smoke test, dan rollback.

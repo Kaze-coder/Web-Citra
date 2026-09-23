@@ -19,15 +19,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   async function refresh() {
-    const response = await apiFetch<Admin>("/api/v1/auth/user");
-    setUser(response.data);
+    const response = await apiFetch<{ user: Admin }>("/api/v1/auth/user");
+    setUser(response.data.user);
   }
 
   useEffect(() => {
     let active = true;
-    apiFetch<Admin>("/api/v1/auth/user")
+    apiFetch<{ user: Admin }>("/api/v1/auth/user")
       .then((response) => {
-        if (active) setUser(response.data);
+        if (active) setUser(response.data.user);
       })
       .catch((error) => {
         if (error instanceof ApiError && error.status === 401) router.replace("/login");
