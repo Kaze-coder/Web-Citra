@@ -39,10 +39,10 @@ Platform operasional ISP untuk pelanggan, perangkat, tagihan, lokasi, WhatsApp, 
    cd apps/web
    npm ci
    cp .env.example .env.local
-   npm run dev -- --webpack
+   npm run dev
    ```
 
-3. Buka `http://localhost:3000`. API diproksikan oleh Next.js sehingga cookie Sanctum tetap same-origin.
+3. Buka `http://localhost:3001`. API diproksikan oleh Next.js sehingga cookie Sanctum tetap same-origin.
 
 4. Jalankan worker dan scheduler Laravel pada terminal terpisah bila menguji antrean:
 

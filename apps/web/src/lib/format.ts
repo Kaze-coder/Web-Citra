@@ -4,7 +4,7 @@ export const rupiah = new Intl.NumberFormat("id-ID", {
   maximumFractionDigits: 0,
 });
 
-export const tanggal = new Intl.DateTimeFormat("id-ID", {
+const tanggal = new Intl.DateTimeFormat("id-ID", {
   day: "2-digit",
   month: "short",
   year: "numeric",

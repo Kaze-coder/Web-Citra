@@ -15,7 +15,7 @@ NEXT_PUBLIC_APP_NAME=Citra NET
 
 ```bash
 npm ci
-npm run dev -- --webpack
+npm run dev
 npm run lint
 npx tsc --noEmit
 npm run build

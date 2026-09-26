@@ -92,7 +92,7 @@ export default function PelangganPage() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6 lg:space-y-8">
       <PageHeader eyebrow="Customer registry" title="Pelanggan" description="Data layanan, kontak, paket, dan titik instalasi pelanggan." actions={canWrite && <>
         <label className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg border px-2.5 text-sm font-medium hover:bg-muted"><FileUpIcon className="size-4" /> Impor<input type="file" accept=".csv,.xlsx,.ods" className="sr-only" onChange={(event) => void importFile(event)} /></label>
         <Button onClick={() => setEditing(null)}><PlusIcon /> Tambah pelanggan</Button>
@@ -107,7 +107,7 @@ export default function PelangganPage() {
           <TableHeader><TableRow><TableHead>Pelanggan</TableHead><TableHead>Paket</TableHead><TableHead>Biaya</TableHead><TableHead>Status</TableHead><TableHead>Mulai</TableHead><TableHead className="w-12"><span className="sr-only">Aksi</span></TableHead></TableRow></TableHeader>
           <TableBody>{customers.map((customer) => <TableRow key={customer.id}>
             <TableCell><button className="text-left" onClick={() => setDetail(customer)}><span className="block font-medium hover:underline">{customer.nama_pelanggan}</span><span className="text-xs text-muted-foreground">{customer.no_telepon}</span></button></TableCell>
-            <TableCell>{customer.paket_layanan || "-"}</TableCell><TableCell className="font-mono">{customer.harga_bulanan ? rupiah.format(Number(customer.harga_bulanan)) : "-"}</TableCell><TableCell><StatusBadge value={customer.status} /></TableCell><TableCell>{formatDate(customer.tanggal_langganan)}</TableCell>
+            <TableCell>{customer.paket_layanan || "-"}</TableCell><TableCell className="tabular-nums">{customer.harga_bulanan ? rupiah.format(Number(customer.harga_bulanan)) : "-"}</TableCell><TableCell><StatusBadge value={customer.status} /></TableCell><TableCell>{formatDate(customer.tanggal_langganan)}</TableCell>
             <TableCell><DropdownMenu><DropdownMenuTrigger render={<Button variant="ghost" size="icon-sm" aria-label={`Aksi ${customer.nama_pelanggan}`} />}><MoreHorizontalIcon /></DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuItem onClick={() => setDetail(customer)}><MapPinIcon /> Detail lokasi</DropdownMenuItem>{canWrite && <><DropdownMenuItem onClick={() => setEditing(customer)}><PencilIcon /> Edit</DropdownMenuItem><DropdownMenuItem variant="destructive" onClick={() => setDeleting(customer)}><Trash2Icon /> Hapus</DropdownMenuItem></>}</DropdownMenuContent></DropdownMenu></TableCell>
           </TableRow>)}</TableBody>
         </Table></div> : <EmptyState title="Pelanggan tidak ditemukan" description="Ubah pencarian atau tambahkan pelanggan pertama." />}

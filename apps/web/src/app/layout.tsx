@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
-import { Fira_Code, Fira_Sans } from "next/font/google";
+import { IBM_Plex_Mono, Instrument_Sans } from "next/font/google";
 import { Providers } from "@/components/providers";
 import "./globals.css";
 
-const firaSans = Fira_Sans({
-  variable: "--font-fira-sans",
+const instrumentSans = Instrument_Sans({
+  variable: "--font-instrument-sans",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
 });
 
-const firaCode = Fira_Code({
-  variable: "--font-fira-code",
+const ibmPlexMono = IBM_Plex_Mono({
+  variable: "--font-ibm-plex-mono",
   subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -24,7 +24,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="id"
       suppressHydrationWarning
-      className={`${firaSans.variable} ${firaCode.variable} h-full antialiased`}
+      className={`${instrumentSans.variable} ${ibmPlexMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
         <a href="#main-content" className="sr-only z-[80] bg-background p-3 focus:not-sr-only focus:fixed focus:top-2 focus:left-2">Lewati ke konten utama</a>

@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { ArrowLeftIcon, LoaderCircleIcon, LockKeyholeIcon, RadioTowerIcon } from "lucide-react";
+import { ArrowLeftIcon, LoaderCircleIcon, LockKeyholeIcon } from "lucide-react";
 import { apiFetch, ApiError, csrf, json } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/field";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { BrandLogo } from "@/components/brand-logo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -21,10 +23,7 @@ export default function LoginPage() {
 
     try {
       await csrf();
-      await apiFetch("/api/v1/auth/login", {
-        method: "POST",
-        body: json({ username: data.get("username"), password: data.get("password") }),
-      });
+      await apiFetch("/api/v1/auth/login", { method: "POST", body: json({ username: data.get("username"), password: data.get("password") }) });
       router.replace("/dashboard");
       router.refresh();
     } catch (cause) {
@@ -35,34 +34,40 @@ export default function LoginPage() {
   }
 
   return (
-    <main id="main-content" className="grid min-h-dvh bg-[#07110f] text-[#eef7f2] lg:grid-cols-[minmax(0,1fr)_minmax(28rem,.72fr)]">
-      <section className="relative hidden overflow-hidden border-r border-white/10 p-12 lg:flex lg:flex-col lg:justify-between">
-        <Link href="/" className="flex items-center gap-2.5 font-semibold"><span className="grid size-8 place-items-center rounded-md bg-emerald-400 text-[#07110f]"><RadioTowerIcon className="size-4" /></span>Citra NET</Link>
-        <div className="relative z-10 max-w-xl">
-          <p className="font-mono text-xs tracking-[0.2em] text-emerald-400 uppercase">Internal access</p>
-          <h1 className="mt-5 text-5xl font-semibold leading-[.98] tracking-[-.05em]">Operasional jaringan dimulai dari data yang tepercaya.</h1>
-          <p className="mt-6 max-w-md leading-7 text-slate-400">Akses dibatasi untuk administrator dan operator aktif Citra NET.</p>
+    <main id="main-content" className="grid min-h-dvh bg-background text-foreground lg:grid-cols-[minmax(0,1.05fr)_minmax(27rem,.68fr)]">
+      <section className="relative hidden overflow-hidden border-r border-foreground/15 bg-[#173d2f] p-10 text-[#f2efe5] lg:flex lg:flex-col lg:justify-between xl:p-14">
+        <Link href="/login" className="relative z-10 w-fit" aria-label="Citra NET"><BrandLogo className="text-white" /></Link>
+        <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(rgba(242,239,229,.2)_1px,transparent_1px),linear-gradient(90deg,rgba(242,239,229,.2)_1px,transparent_1px)] [background-size:4rem_4rem]" />
+        <div className="relative z-10 max-w-2xl">
+          <p className="font-mono text-[0.64rem] tracking-[0.2em] text-emerald-200 uppercase">Restricted operations access</p>
+          <h1 className="mt-6 text-5xl font-semibold leading-[0.92] tracking-[-0.04em] xl:text-7xl">Masuk untuk menjaga operasi tetap bergerak.</h1>
+          <p className="mt-7 max-w-md leading-7 text-emerald-50/70">Akses khusus administrator dan operator aktif Citra NET.</p>
         </div>
-        <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(rgba(52,211,153,.2)_1px,transparent_1px),linear-gradient(90deg,rgba(52,211,153,.2)_1px,transparent_1px)] [background-size:42px_42px]" />
-        <p className="relative z-10 font-mono text-[0.68rem] text-slate-500">SESSION PROTECTED BY LARAVEL SANCTUM</p>
+        <div className="relative z-10 flex justify-between border-t border-white/20 pt-4 font-mono text-[0.58rem] tracking-[0.14em] text-emerald-50/60 uppercase"><span>Sanctum protected</span><span>Bogor / Indonesia</span></div>
       </section>
 
-      <section className="grid place-items-center bg-background p-5 text-foreground sm:p-10">
-        <div className="w-full max-w-sm">
-          <Link href="/" className="mb-10 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground lg:hidden"><ArrowLeftIcon className="size-4" /> Kembali</Link>
-          <div className="mb-8 flex size-11 items-center justify-center rounded-lg bg-emerald-700 text-white"><LockKeyholeIcon className="size-5" /></div>
-          <h2 className="text-3xl font-semibold tracking-[-.04em]">Masuk ke pusat operasi</h2>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">Gunakan akun yang diberikan super administrator.</p>
+      <section className="flex min-h-dvh flex-col">
+        <div className="flex h-16 items-center justify-between border-b border-foreground/15 px-5 sm:px-8">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm font-medium"><ArrowLeftIcon className="size-4" /> Kembali</Link>
+          <ThemeToggle />
+        </div>
+        <div className="grid flex-1 place-items-center px-5 py-12 sm:px-10">
+          <div className="w-full max-w-sm">
+            <div className="mb-10 flex items-end justify-between border-b border-foreground/15 pb-5"><span className="grid size-10 place-items-center rounded-sm bg-primary text-primary-foreground"><LockKeyholeIcon className="size-4.5" /></span><span className="font-mono text-[0.58rem] tracking-[0.14em] text-muted-foreground uppercase">Portal / 01</span></div>
+            <p className="section-kicker">Internal access</p>
+            <h2 className="mt-3 text-4xl font-semibold leading-none tracking-[-0.04em]">Masuk ke pusat operasi</h2>
+            <p className="mt-4 text-sm leading-6 text-muted-foreground">Gunakan akun yang diberikan super administrator.</p>
 
-          <form className="mt-8 grid gap-5" onSubmit={submit}>
-            <Field label="Username" name="username" autoComplete="username" required autoFocus />
-            <Field label="Password" name="password" type="password" autoComplete="current-password" required />
-            {error && <p role="alert" className="rounded-md border border-destructive/25 bg-destructive/8 px-3 py-2 text-sm text-destructive">{error}</p>}
-            <Button type="submit" size="lg" className="mt-1 h-10 bg-emerald-700 text-white hover:bg-emerald-800" disabled={loading}>
-              {loading && <LoaderCircleIcon className="animate-spin" />} {loading ? "Memeriksa akun" : "Masuk"}
-            </Button>
-          </form>
-          <p className="mt-8 text-xs leading-5 text-muted-foreground">Jika akun Anda dinonaktifkan, hubungi super administrator. Tidak ada registrasi publik.</p>
+            <form className="mt-9 grid gap-5" onSubmit={submit}>
+              <Field label="Username" name="username" autoComplete="username" required autoFocus />
+              <Field label="Password" name="password" type="password" autoComplete="current-password" required />
+              {error && <p role="alert" className="border border-destructive/25 bg-destructive/8 px-3 py-2 text-sm text-destructive">{error}</p>}
+              <Button type="submit" size="lg" className="mt-2 h-11" disabled={loading}>
+                {loading && <LoaderCircleIcon className="animate-spin" />} {loading ? "Memeriksa akun" : "Masuk"}
+              </Button>
+            </form>
+            <p className="mt-8 border-t border-foreground/12 pt-5 text-xs leading-5 text-muted-foreground">Jika akun dinonaktifkan, hubungi super administrator. Tidak ada registrasi publik.</p>
+          </div>
         </div>
       </section>
     </main>

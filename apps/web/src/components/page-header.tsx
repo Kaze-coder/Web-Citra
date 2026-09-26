@@ -7,11 +7,11 @@ export function PageHeader({ eyebrow, title, description, actions }: {
   actions?: ReactNode;
 }) {
   return (
-    <header className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-end sm:justify-between">
-      <div className="max-w-2xl">
-        {eyebrow && <p className="mb-1 font-mono text-[0.68rem] tracking-[0.16em] text-emerald-700 uppercase dark:text-emerald-400">{eyebrow}</p>}
-        <h1 className="text-2xl font-semibold tracking-[-0.035em] sm:text-3xl">{title}</h1>
-        <p className="mt-1.5 text-sm leading-6 text-muted-foreground">{description}</p>
+    <header className="grid gap-6 border-b border-foreground/15 pb-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end lg:pb-8">
+      <div className="max-w-3xl">
+        {eyebrow && <p className="section-kicker mb-3">{eyebrow}</p>}
+        <h1 className="text-3xl font-semibold leading-none tracking-[-0.04em] sm:text-4xl lg:text-[2.75rem]">{title}</h1>
+        <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">{description}</p>
       </div>
       {actions && <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>}
     </header>

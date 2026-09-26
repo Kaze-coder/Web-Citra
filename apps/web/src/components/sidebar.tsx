@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { LogOutIcon, RadioTowerIcon } from "lucide-react";
+import { LogOutIcon } from "lucide-react";
+import { BrandLogo } from "@/components/brand-logo";
 import { menuItems } from "@/components/items";
 import { NavItem } from "@/components/nav-item";
 import { Button } from "@/components/ui/button";
@@ -23,38 +24,33 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon" className="border-r-0">
-      <SidebarHeader className="border-b p-3">
+      <SidebarHeader className="border-b border-sidebar-border p-3 group-data-[collapsible=icon]:p-2">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" render={<Link href="/dashboard" />}>
-              <span className="grid size-8 place-items-center rounded-md bg-emerald-700 text-white shadow-sm shadow-emerald-950/15">
-                <RadioTowerIcon className="size-4.5" />
-              </span>
-              <span className="grid leading-tight">
-                <span className="font-semibold tracking-[-0.02em]">Citra NET</span>
-                <span className="font-mono text-[0.65rem] text-muted-foreground">OPS MANAGER</span>
-              </span>
+            <SidebarMenuButton size="lg" className="h-14 rounded-none px-1 transition-none hover:bg-transparent hover:text-inherit active:bg-transparent data-open:hover:bg-transparent group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0!" render={<Link href="/dashboard" aria-label="Citra NET - Pusat operasi" />}>
+              <BrandLogo className="group-data-[collapsible=icon]:hidden" />
+              <BrandLogo compact className="hidden group-data-[collapsible=icon]:block" />
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent className="py-3">
-        <SidebarMenu className="gap-1 px-2">
+      <SidebarContent className="py-5">
+        <SidebarMenu className="gap-0.5 px-2">
           {visibleItems.map((item) => <NavItem key={item.href} item={item} />)}
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter className="border-t p-2">
+      <SidebarFooter className="border-t border-sidebar-border p-2">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" className="h-auto py-2" render={<div />}>
-              <span className="grid size-8 place-items-center rounded-md bg-sidebar-accent text-xs font-semibold">
+            <SidebarMenuButton size="lg" className="h-auto py-2 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-0!" render={<div />}>
+              <span className="grid size-8 place-items-center rounded-sm bg-sidebar-accent text-xs font-semibold group-data-[collapsible=icon]:hidden">
                 {initials(user.nama_lengkap || user.username)}
               </span>
-              <span className="grid min-w-0 flex-1 text-left leading-tight">
+              <span className="grid min-w-0 flex-1 text-left leading-tight group-data-[collapsible=icon]:hidden">
                 <span className="truncate text-sm font-medium">{user.nama_lengkap || user.username}</span>
                 <span className="truncate text-xs capitalize text-muted-foreground">{user.role.replace("_", " ")}</span>
               </span>
-              <Button variant="ghost" size="icon-sm" aria-label="Keluar" onClick={() => void logout()}>
+              <Button variant="ghost" size="icon-sm" className="group-data-[collapsible=icon]:size-8" aria-label="Keluar" onClick={() => void logout()}>
                 <LogOutIcon />
               </Button>
             </SidebarMenuButton>
