@@ -25,6 +25,35 @@ test.describe.serial("Citra NET operations", () => {
     await expect(page.getByRole("heading", { name: "Akses dibatasi" })).toBeVisible();
   });
 
+  test("customer profile is complete and repeat navigation reuses list data", async ({ page }) => {
+    await login(page, "admin");
+    let customerListRequests = 0;
+    page.on("request", (request) => {
+      const url = new URL(request.url());
+      if (request.method() === "GET" && url.pathname === "/api/v1/pelanggan" && url.searchParams.get("limit") === "12") customerListRequests++;
+    });
+
+    await page.getByRole("link", { name: "Pelanggan" }).click();
+    await expect(page.getByText("Pelanggan Seed", { exact: true })).toBeVisible();
+    expect(customerListRequests).toBe(1);
+
+    await page.getByText("Pelanggan Seed", { exact: true }).click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog.getByText("Pelanggan #1")).toBeVisible();
+    await expect(dialog.getByRole("link", { name: "628123450001" })).toHaveAttribute("href", "tel:628123450001");
+    await expect(dialog.getByRole("link", { name: "pelanggan@example.test" })).toHaveAttribute("href", "mailto:pelanggan@example.test");
+    await expect(dialog.getByText("Jl. Pengujian No. 1, Bogor")).toBeVisible();
+    await expect(dialog.getByText("Fiber 50 Mbps")).toBeVisible();
+    await expect(dialog.getByText("Lokasi E2E")).toBeVisible();
+    await dialog.getByRole("button", { name: "Close" }).click();
+
+    await page.getByRole("link", { name: "Tagihan" }).click();
+    await expect(page.getByRole("heading", { name: "Tagihan", exact: true })).toBeVisible();
+    await page.getByRole("link", { name: "Pelanggan" }).click();
+    await expect(page.getByText("Pelanggan Seed", { exact: true })).toBeVisible();
+    expect(customerListRequests).toBe(1);
+  });
+
   test("admin can create, edit, and delete a customer", async ({ page }) => {
     await login(page, "admin");
     await page.goto("/pelanggan");

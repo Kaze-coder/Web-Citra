@@ -1,6 +1,6 @@
 "use client";
 
-import { apiFetch, ApiError, csrf } from "@/lib/api";
+import { apiFetch, ApiError, clearApiCache, csrf } from "@/lib/api";
 import type { Admin } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
@@ -41,6 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function logout() {
     await csrf();
     await apiFetch<null>("/api/v1/auth/logout", { method: "POST", body: "{}" });
+    clearApiCache();
     router.replace("/login");
     router.refresh();
   }

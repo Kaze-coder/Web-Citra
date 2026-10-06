@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { ArrowLeftIcon, LoaderCircleIcon, LockKeyholeIcon } from "lucide-react";
+import { LoaderCircleIcon, LockKeyholeIcon } from "lucide-react";
 import { apiFetch, ApiError, csrf, json } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/field";
@@ -47,8 +47,7 @@ export default function LoginPage() {
       </section>
 
       <section className="flex min-h-dvh flex-col">
-        <div className="flex h-16 items-center justify-between border-b border-foreground/15 px-5 sm:px-8">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm font-medium"><ArrowLeftIcon className="size-4" /> Kembali</Link>
+        <div className="flex h-16 items-center justify-end border-b border-foreground/15 px-5 sm:px-8">
           <ThemeToggle />
         </div>
         <div className="grid flex-1 place-items-center px-5 py-12 sm:px-10">

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { ArrowUpRightIcon, CircleDollarSignIcon, ClockAlertIcon, UsersIcon } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { apiFetch } from "@/lib/api";
+import { cachedApiFetch } from "@/lib/api";
 import type { Tagihan } from "@/lib/types";
 import { rupiah, formatDate } from "@/lib/format";
 import { PageHeader } from "@/components/page-header";
@@ -20,9 +20,9 @@ export default function DashboardPage() {
 
   useEffect(() => {
     Promise.all([
-      apiFetch<CustomerStats>("/api/v1/pelanggan/statistik"),
-      apiFetch<BillingStats>("/api/v1/tagihan/statistik"),
-      apiFetch<Tagihan[]>("/api/v1/tagihan", { params: { limit: 6 } }),
+      cachedApiFetch<CustomerStats>("/api/v1/pelanggan/statistik", {}, { onRevalidate: (response) => setCustomer(response.data) }),
+      cachedApiFetch<BillingStats>("/api/v1/tagihan/statistik", {}, { onRevalidate: (response) => setBilling(response.data) }),
+      cachedApiFetch<Tagihan[]>("/api/v1/tagihan", { params: { limit: 6 } }, { onRevalidate: (response) => setRecent(response.data) }),
     ]).then(([customers, bills, invoices]) => {
       setCustomer(customers.data);
       setBilling(bills.data);

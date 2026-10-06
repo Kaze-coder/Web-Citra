@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { MoreHorizontalIcon, PencilIcon, PlusIcon, RouterIcon, Trash2Icon } from "lucide-react";
-import { apiFetch, ApiError, json, type Pagination as PaginationType } from "@/lib/api";
+import { apiFetch, ApiError, cachedApiFetch, invalidateApiCache, json, type Pagination as PaginationType } from "@/lib/api";
 import type { Pelanggan, Perangkat } from "@/lib/types";
 import { formatDate } from "@/lib/format";
 import { useAuth } from "@/components/auth-provider";
@@ -32,15 +32,15 @@ export default function PerangkatPage() {
   const [busy, setBusy] = useState(false);
 
   async function load() {
-    const response = await apiFetch<Perangkat[]>("/api/v1/perangkat", { params: { page, limit: 15 } });
+    const response = await cachedApiFetch<Perangkat[]>("/api/v1/perangkat", { params: { page, limit: 15 } }, { force: true });
     setDevices(response.data); setPagination(response.meta.pagination);
   }
 
   useEffect(() => {
     let active = true;
     Promise.all([
-      apiFetch<Perangkat[]>("/api/v1/perangkat", { params: { page, limit: 15 } }),
-      apiFetch<Pelanggan[]>("/api/v1/pelanggan", { params: { limit: 100 } }),
+      cachedApiFetch<Perangkat[]>("/api/v1/perangkat", { params: { page, limit: 15 } }, { onRevalidate: (response) => { if (active) { setDevices(response.data); setPagination(response.meta.pagination); } } }),
+      cachedApiFetch<Pelanggan[]>("/api/v1/pelanggan", { params: { limit: 100 } }, { onRevalidate: (response) => { if (active) setCustomers(response.data); } }),
     ]).then(([deviceResponse, customerResponse]) => {
       if (active) { setDevices(deviceResponse.data); setPagination(deviceResponse.meta.pagination); setCustomers(customerResponse.data); }
     });
@@ -52,14 +52,14 @@ export default function PerangkatPage() {
     const payload = Object.fromEntries(new FormData(event.currentTarget).entries());
     try {
       await apiFetch(editing?.id ? `/api/v1/perangkat/${editing.id}` : "/api/v1/perangkat", { method: editing?.id ? "PATCH" : "POST", body: json(payload) });
-      notify(editing?.id ? "Perangkat diperbarui." : "Perangkat ditambahkan."); setEditing(undefined); await load();
+      notify(editing?.id ? "Perangkat diperbarui." : "Perangkat ditambahkan."); setEditing(undefined); invalidateApiCache("/api/v1/perangkat"); await load();
     } catch (cause) { if (cause instanceof ApiError) setErrors(cause.meta.errors ?? {}); notify(cause instanceof ApiError ? cause.message : "Perangkat gagal disimpan.", "error"); }
     finally { setBusy(false); }
   }
 
   async function remove() {
     if (!deleting) return; setBusy(true);
-    try { await apiFetch(`/api/v1/perangkat/${deleting.id}`, { method: "DELETE" }); notify("Perangkat dihapus."); setDeleting(undefined); await load(); }
+    try { await apiFetch(`/api/v1/perangkat/${deleting.id}`, { method: "DELETE" }); notify("Perangkat dihapus."); setDeleting(undefined); invalidateApiCache("/api/v1/perangkat"); await load(); }
     catch (cause) { notify(cause instanceof ApiError ? cause.message : "Perangkat gagal dihapus.", "error"); }
     finally { setBusy(false); }
   }

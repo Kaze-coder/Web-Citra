@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CalendarClockIcon, PlayIcon, SendIcon } from "lucide-react";
-import { apiFetch, ApiError } from "@/lib/api";
+import { apiFetch, ApiError, cachedApiFetch, invalidateApiCache } from "@/lib/api";
 import type { BillingSchedule } from "@/lib/types";
 import { rupiah } from "@/lib/format";
 import { useAuth } from "@/components/auth-provider";
@@ -16,16 +16,16 @@ export default function JadwalPage() {
   const { user } = useAuth(); const { notify } = useToast(); const canRun = user.role !== "operator";
   const [schedules, setSchedules] = useState<BillingSchedule[]>([]); const [running, setRunning] = useState(false);
 
-  async function load() { setSchedules((await apiFetch<BillingSchedule[]>("/api/v1/billing/schedules")).data); }
+  async function load() { setSchedules((await cachedApiFetch<BillingSchedule[]>("/api/v1/billing/schedules", {}, { force: true })).data); }
   useEffect(() => {
     let active = true;
-    apiFetch<BillingSchedule[]>("/api/v1/billing/schedules").then((response) => { if (active) setSchedules(response.data); });
+    cachedApiFetch<BillingSchedule[]>("/api/v1/billing/schedules", {}, { onRevalidate: (response) => { if (active) setSchedules(response.data); } }).then((response) => { if (active) setSchedules(response.data); });
     return () => { active = false; };
   }, []);
 
   async function runBilling() {
     setRunning(true);
-    try { const response = await apiFetch<{ created: number; queued: number }>("/api/v1/billing/run", { method: "POST", body: "{}" }); notify(`${response.data.created} tagihan dibuat, ${response.data.queued} notifikasi masuk antrean.`); await load(); }
+    try { const response = await apiFetch<{ created: number; queued: number }>("/api/v1/billing/run", { method: "POST", body: "{}" }); notify(`${response.data.created} tagihan dibuat, ${response.data.queued} notifikasi masuk antrean.`); invalidateApiCache("/api/v1/billing/schedules", "/api/v1/tagihan", "/api/v1/pelanggan/statistik"); await load(); }
     catch (cause) { notify(cause instanceof ApiError ? cause.message : "Billing gagal dijalankan.", "error"); }
     finally { setRunning(false); }
   }

@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { DownloadIcon, Layers3Icon, MapPinIcon } from "lucide-react";
-import { apiFetch } from "@/lib/api";
+import { cachedApiFetch } from "@/lib/api";
 import type { EarthLayer, Pelanggan } from "@/lib/types";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
@@ -13,8 +13,8 @@ const NetworkMap = dynamic(() => import("@/components/network-map"), { ssr: fals
 export default function PetaPage() {
   const [customers, setCustomers] = useState<Pelanggan[]>([]); const [layers, setLayers] = useState<EarthLayer[]>([]); const [geeOnline, setGeeOnline] = useState(false);
   useEffect(() => {
-    apiFetch<Pelanggan[]>("/api/v1/maps/customers").then((response) => setCustomers(response.data));
-    apiFetch<EarthLayer[]>("/api/v1/earth-engine/tiles").then((response) => { setLayers(response.data); setGeeOnline(true); }).catch(() => setGeeOnline(false));
+    cachedApiFetch<Pelanggan[]>("/api/v1/maps/customers", {}, { onRevalidate: (response) => setCustomers(response.data) }).then((response) => setCustomers(response.data));
+    cachedApiFetch<EarthLayer[]>("/api/v1/earth-engine/tiles", {}, { onRevalidate: (response) => { setLayers(response.data); setGeeOnline(true); } }).then((response) => { setLayers(response.data); setGeeOnline(true); }).catch(() => setGeeOnline(false));
   }, []);
 
   return <div className="space-y-6 lg:space-y-8"><PageHeader eyebrow="Geospatial workspace" title="Peta jaringan" description="Titik pelanggan, layer satelit, dan ekspor Google Earth." actions={<Button variant="outline" render={<a href="/api/v1/maps/customers.kml" />}><DownloadIcon /> Unduh semua KML</Button>} />

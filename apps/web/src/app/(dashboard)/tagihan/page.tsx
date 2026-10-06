@@ -12,6 +12,8 @@ import {
 import {
   apiFetch,
   ApiError,
+  cachedApiFetch,
+  invalidateApiCache,
   json,
   type Pagination as PaginationType,
 } from "@/lib/api";
@@ -57,6 +59,10 @@ type Stats = {
   totalPemasukan: string;
 };
 
+function invalidateBillingData() {
+  invalidateApiCache("/api/v1/tagihan", "/api/v1/billing/schedules", "/api/v1/pelanggan/statistik");
+}
+
 export default function TagihanPage() {
   const { user } = useAuth();
   const { notify } = useToast();
@@ -74,10 +80,10 @@ export default function TagihanPage() {
 
   async function load() {
     const [list, summary] = await Promise.all([
-      apiFetch<Tagihan[]>("/api/v1/tagihan", {
+      cachedApiFetch<Tagihan[]>("/api/v1/tagihan", {
         params: { page, limit: 15, status },
-      }),
-      apiFetch<Stats>("/api/v1/tagihan/statistik"),
+      }, { force: true }),
+      cachedApiFetch<Stats>("/api/v1/tagihan/statistik", {}, { force: true }),
     ]);
     setInvoices(list.data);
     setPagination(list.meta.pagination);
@@ -87,11 +93,11 @@ export default function TagihanPage() {
   useEffect(() => {
     let active = true;
     Promise.all([
-      apiFetch<Tagihan[]>("/api/v1/tagihan", {
+      cachedApiFetch<Tagihan[]>("/api/v1/tagihan", {
         params: { page, limit: 15, status },
-      }),
-      apiFetch<Stats>("/api/v1/tagihan/statistik"),
-      apiFetch<Pelanggan[]>("/api/v1/pelanggan", { params: { limit: 100 } }),
+      }, { onRevalidate: (response) => { if (active) { setInvoices(response.data); setPagination(response.meta.pagination); } } }),
+      cachedApiFetch<Stats>("/api/v1/tagihan/statistik", {}, { onRevalidate: (response) => { if (active) setStats(response.data); } }),
+      cachedApiFetch<Pelanggan[]>("/api/v1/pelanggan", { params: { limit: 100 } }, { onRevalidate: (response) => { if (active) setCustomers(response.data); } }),
     ]).then(([list, summary, customerResponse]) => {
       if (active) {
         setInvoices(list.data);
@@ -119,6 +125,7 @@ export default function TagihanPage() {
       );
       notify(editing?.id ? "Tagihan diperbarui." : "Tagihan dibuat.");
       setEditing(undefined);
+      invalidateBillingData();
       await load();
     } catch (cause) {
       if (cause instanceof ApiError) setErrors(cause.meta.errors ?? {});
@@ -142,6 +149,7 @@ export default function TagihanPage() {
         }),
       });
       notify("Tagihan ditandai lunas.");
+      invalidateBillingData();
       await load();
     } catch (cause) {
       notify(
@@ -177,6 +185,7 @@ export default function TagihanPage() {
       await apiFetch(`/api/v1/tagihan/${deleting.id}`, { method: "DELETE" });
       notify("Tagihan dihapus.");
       setDeleting(undefined);
+      invalidateBillingData();
       await load();
     } catch (cause) {
       notify(

@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { MoreHorizontalIcon, PencilIcon, PlusIcon, ShieldAlertIcon, Trash2Icon } from "lucide-react";
-import { apiFetch, ApiError, json, type Pagination as PaginationType } from "@/lib/api";
+import { apiFetch, ApiError, cachedApiFetch, invalidateApiCache, json, type Pagination as PaginationType } from "@/lib/api";
 import type { Admin } from "@/lib/types";
 import { formatDate } from "@/lib/format";
 import { useAuth } from "@/components/auth-provider";
@@ -23,11 +23,11 @@ export default function AdminPage() {
   const [admins, setAdmins] = useState<Admin[]>([]); const [pagination, setPagination] = useState<PaginationType>(); const [page, setPage] = useState(1);
   const [editing, setEditing] = useState<Admin | null | undefined>(undefined); const [deleting, setDeleting] = useState<Admin>(); const [errors, setErrors] = useState<Record<string, string[]>>({}); const [busy, setBusy] = useState(false);
 
-  async function load() { const response = await apiFetch<Admin[]>("/api/v1/admins", { params: { page, limit: 15 } }); setAdmins(response.data); setPagination(response.meta.pagination); }
+  async function load() { const response = await cachedApiFetch<Admin[]>("/api/v1/admins", { params: { page, limit: 15 } }, { force: true }); setAdmins(response.data); setPagination(response.meta.pagination); }
   useEffect(() => {
     if (user.role !== "super_admin") return;
     let active = true;
-    apiFetch<Admin[]>("/api/v1/admins", { params: { page, limit: 15 } }).then((response) => {
+    cachedApiFetch<Admin[]>("/api/v1/admins", { params: { page, limit: 15 } }, { onRevalidate: (response) => { if (active) { setAdmins(response.data); setPagination(response.meta.pagination); } } }).then((response) => {
       if (active) { setAdmins(response.data); setPagination(response.meta.pagination); }
     });
     return () => { active = false; };
@@ -38,12 +38,12 @@ export default function AdminPage() {
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setBusy(true); setErrors({}); const payload = Object.fromEntries(new FormData(event.currentTarget).entries());
     if (!payload.password) { delete payload.password; delete payload.password_confirmation; }
-    try { await apiFetch(editing?.id ? `/api/v1/admins/${editing.id}` : "/api/v1/admins", { method: editing?.id ? "PATCH" : "POST", body: json(payload) }); notify(editing?.id ? "Administrator diperbarui." : "Administrator ditambahkan."); setEditing(undefined); await load(); }
+    try { await apiFetch(editing?.id ? `/api/v1/admins/${editing.id}` : "/api/v1/admins", { method: editing?.id ? "PATCH" : "POST", body: json(payload) }); notify(editing?.id ? "Administrator diperbarui." : "Administrator ditambahkan."); setEditing(undefined); invalidateApiCache("/api/v1/admins"); await load(); }
     catch (cause) { if (cause instanceof ApiError) setErrors(cause.meta.errors ?? {}); notify(cause instanceof ApiError ? cause.message : "Administrator gagal disimpan.", "error"); }
     finally { setBusy(false); }
   }
 
-  async function remove() { if (!deleting) return; setBusy(true); try { await apiFetch(`/api/v1/admins/${deleting.id}`, { method: "DELETE" }); notify("Administrator dihapus."); setDeleting(undefined); await load(); } catch (cause) { notify(cause instanceof ApiError ? cause.message : "Administrator gagal dihapus.", "error"); } finally { setBusy(false); } }
+  async function remove() { if (!deleting) return; setBusy(true); try { await apiFetch(`/api/v1/admins/${deleting.id}`, { method: "DELETE" }); notify("Administrator dihapus."); setDeleting(undefined); invalidateApiCache("/api/v1/admins"); await load(); } catch (cause) { notify(cause instanceof ApiError ? cause.message : "Administrator gagal dihapus.", "error"); } finally { setBusy(false); } }
 
   return <div className="space-y-6 lg:space-y-8"><PageHeader eyebrow="Access control" title="Administrator" description="Kelola akun, peran, dan status akses operasional." actions={<Button onClick={() => setEditing(null)}><PlusIcon /> Tambah admin</Button>} />
     <div className="data-grid">{admins.length ? <div className="overflow-x-auto"><Table><TableHeader><TableRow><TableHead>Administrator</TableHead><TableHead>Role</TableHead><TableHead>Status</TableHead><TableHead>Login terakhir</TableHead><TableHead className="w-12"><span className="sr-only">Aksi</span></TableHead></TableRow></TableHeader><TableBody>{admins.map((admin) => <TableRow key={admin.id}><TableCell><span className="font-medium">{admin.nama_lengkap || admin.username}</span><span className="block text-xs text-muted-foreground">{admin.email}</span></TableCell><TableCell className="capitalize">{admin.role.replace("_", " ")}</TableCell><TableCell><StatusBadge value={admin.status} /></TableCell><TableCell>{formatDate(admin.tanggal_login_terakhir)}</TableCell><TableCell><DropdownMenu><DropdownMenuTrigger render={<Button variant="ghost" size="icon-sm" aria-label={`Aksi ${admin.username}`} />}><MoreHorizontalIcon /></DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuItem onClick={() => setEditing(admin)}><PencilIcon /> Edit</DropdownMenuItem>{admin.id !== user.id && <DropdownMenuItem variant="destructive" onClick={() => setDeleting(admin)}><Trash2Icon /> Hapus</DropdownMenuItem>}</DropdownMenuContent></DropdownMenu></TableCell></TableRow>)}</TableBody></Table></div> : <EmptyState title="Belum ada administrator" />}<Pagination value={pagination} onChange={setPage} /></div>
