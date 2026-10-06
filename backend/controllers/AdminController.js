@@ -1,14 +1,8 @@
-/**
- * Admin Controller
- * Authentication: login & register (JWT + bcrypt)
- */
-
 const jwt = require('jsonwebtoken');
 const AdminModel = require('../models/AdminModel');
 require('dotenv').config();
 
 class AdminController {
-  // POST /api/admin/login
   static async login(req, res) {
     try {
       const { username, password } = req.body;
